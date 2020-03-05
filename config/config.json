@@ -1,0 +1,41 @@
+{
+    "development": {
+        "config_id": "development",
+        "app_name": "Mitrabiz API",
+        "app_desc": "Mitrabiz NodeJS API",
+        "node_port": 3000,
+        "json_indentation": 4,
+        "api": "",
+        "pg_host": "127.0.0.1",
+        "pg_port": 5432,
+        "pg_db": "mitrabiz_new",
+        "pg_user": "mitrabiz-dev",
+        "pg_password": "mitrabiz-dev-1234"
+    },
+    "local": {
+        "config_id": "local",
+        "app_name": "Mitrabiz API",
+        "app_desc": "Mitrabiz NodeJS API",
+        "node_port": 3000,
+        "json_indentation": 4,
+        "api": "",
+        "pg_host": "localhost",
+        "pg_port": 5432,
+        "pg_db": "mitrabiz_new",
+        "pg_user": "budi",
+        "pg_password": ""
+    },
+    "production": {
+        "config_id": "production",
+        "app_name": "Mitrabiz API",
+        "app_desc": "Mitrabiz NodeJS API",
+        "node_port": 3000,
+        "json_indentation": 4,
+        "api": "",
+        "pg_host": "127.0.0.1",
+        "pg_port": 5432,
+        "pg_db": "mitrabiz_new",
+        "pg_user": "mitrabiz-prod",
+        "pg_password": "mitrabiz-prod-1234"
+    }
+}

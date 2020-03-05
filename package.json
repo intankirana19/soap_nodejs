@@ -1,0 +1,28 @@
+{
+  "name": "mitrabiz-api",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "fix-memory-limit": "cross-env LIMIT=8192 increase-memory-limit",
+    "start": "node ./bin/start --max-old-space-size=8192"
+  },
+  "dependencies": {
+    "bluebird": "^3.5.4",
+    "body-parser": "^1.18.3",
+    "cookie-parser": "~1.4.3",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "csv-reader": "^1.0.6",
+    "debug": "~2.6.9",
+    "express": "~4.16.0",
+    "http-errors": "~1.6.2",
+    "increase-memory-limit": "^1.0.3",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.11",
+    "morgan": "~1.9.0",
+    "multer": "^1.4.2",
+    "pg-promise": "^8.6.5",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4"
+  }
+}
