@@ -5,12 +5,15 @@
         "app_desc": "Mitrabiz NodeJS API",
         "node_port": 3000,
         "json_indentation": 4,
-        "api": "",
+        "api_reg": "https://api.smsblast.id/v2/reg/",
+        "api_prem": "https://api.smsblast.id/v2/prem/",
         "pg_host": "127.0.0.1",
         "pg_port": 5432,
         "pg_db": "mitrabiz_new",
         "pg_user": "mitrabiz-dev",
-        "pg_password": "mitrabiz-dev-1234"
+        "pg_password": "mitrabiz-dev-1234",
+        "api_user" : "yptrial",
+        "api_password": "DADI15dL"
     },
     "local": {
         "config_id": "local",
@@ -18,12 +21,15 @@
         "app_desc": "Mitrabiz NodeJS API",
         "node_port": 3000,
         "json_indentation": 4,
-        "api": "",
+        "api_reg": "https://api.smsblast.id/v2/reg",
+        "api_prem": "https://api.smsblast.id/v2/prem/",
         "pg_host": "localhost",
         "pg_port": 5432,
         "pg_db": "mitrabiz_new",
         "pg_user": "budi",
-        "pg_password": ""
+        "pg_password": "",
+        "api_user" : "yptrial",
+        "api_password": "DADI15dL"
     },
     "production": {
         "config_id": "production",
@@ -31,11 +37,14 @@
         "app_desc": "Mitrabiz NodeJS API",
         "node_port": 3000,
         "json_indentation": 4,
-        "api": "",
+        "api_reg": "https://api.smsblast.id/v2/reg",
+        "api_prem": "https://api.smsblast.id/v2/prem/",
         "pg_host": "127.0.0.1",
         "pg_port": 5432,
         "pg_db": "mitrabiz_new",
         "pg_user": "mitrabiz-prod",
-        "pg_password": "mitrabiz-prod-1234"
+        "pg_password": "mitrabiz-prod-1234",
+        "api_user" : "yptrial",
+        "api_password": "DADI15dL"
     }
 }
