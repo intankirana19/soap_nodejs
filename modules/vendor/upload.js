@@ -24,7 +24,7 @@ function upload(req,res){
             res.status(400)
             .json({
                 status: 'error',
-                message: 'Not Authorized'
+                message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
             var dir = 'data-temp/';

@@ -46,7 +46,7 @@ const jwt = require('jsonwebtoken');
             if(data.length !=0){
                 const token = jwt.sign({
                     data: data
-                }, jwtKey, { expiresIn: '1h' });
+                }, jwtKey, { expiresIn: '24h' });
             
                 res.cookie('token', token, { maxAge: 900000, httpOnly: true });
                 res.status(200)
@@ -68,17 +68,28 @@ const jwt = require('jsonwebtoken');
 
     function verifyToken(token1,token2){
         var tokenOne = jwt.verify(token1, jwtKey, (err, verifiedJwt) => {
+            
+
             if(err){
                 return '0';
             }else{
-                return '1';
+                if(verifiedJwt.data.role_id == 1 || verifiedJwt.data.role_id == 2 ){
+                    return '1';
+                }else{
+                    return '0';
+                }
+                
             }
         });
         var tokenTwo = jwt.verify(token2, jwtKey, (err, verifiedJwt) => {
             if(err){
                 return '0';
             }else{
-                return '1';
+                if(verifiedJwt.data.role_id == 1 || verifiedJwt.data.role_id == 2 ){
+                    return '1';
+                }else{
+                    return '0';
+                }
             }
         });
         if(tokenOne == 1 && tokenTwo == 1){
