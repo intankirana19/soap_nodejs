@@ -1,13 +1,12 @@
 const Fs = require('fs');
 const CsvReadableStream = require('csv-reader');
 const multer  = require('multer');
-var auth = require('../auth')
+var auth = require('../shared/auth')
 
 
 let checkUser = function(token1,token2) {
     return new Promise(function(resolve, reject) {
         const checkToken = auth.verifyToken(token1,token2);
-
         if (checkToken == 1) {
             resolve(1);
         }else{
@@ -38,7 +37,7 @@ function upload(req,res){
                 callback(null, dir);
                 },
                 filename: function (req, file, callback) {
-                callback(null, file.fieldname + '-' + date+'.csv');
+                callback(null, file.fieldname + '-' + date +'.csv');
                     
                 }
             });
@@ -85,6 +84,5 @@ function upload(req,res){
 
 
 module.exports = {
-    checkUser:checkUser,
     upload:upload
 }

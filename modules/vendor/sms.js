@@ -1,5 +1,5 @@
 const request = require('request-promise');
-var auth = require('../auth');
+var auth = require('../shared/auth');
 
 function sendSMS(req,res){
   let user64 = auth.smsUser();

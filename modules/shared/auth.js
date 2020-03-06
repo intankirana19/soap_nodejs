@@ -1,6 +1,6 @@
 "use strict";
 var crypto = require("crypto");
-const db = require('../config/db');
+const db = require('../../config/db');
 const jwt = require('jsonwebtoken');
 
     const keys = new Buffer.from('MitraBizKey17088');
