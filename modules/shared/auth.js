@@ -89,9 +89,15 @@ const jwt = require('jsonwebtoken');
 
     }
 
+    function smsUser(){
+        const base = Buffer.from(global.gConfig.api_user+':'+global.gConfig.api_password);
+        const base64 = base.toString('base64');
+        return base64;
+    }
 module.exports = {
     encrypt:encrypt,
     decrypt:decrypt,
     checkUser:checkUser,
-    verifyToken:verifyToken
+    verifyToken:verifyToken,
+    smsUser:smsUser
 }
