@@ -48,7 +48,7 @@ const jwt = require('jsonwebtoken');
                     data: data
                 }, jwtKey, { expiresIn: '24h' });
             
-                res.cookie('token', token, { maxAge: 900000, httpOnly: true });
+                res.cookie('token', token, { maxAge: 3600000, httpOnly: true });
                 res.status(200)
                 .json({
                     status: 'success',
@@ -71,29 +71,53 @@ const jwt = require('jsonwebtoken');
             
 
             if(err){
-                return '0';
+                const data = {
+                    code : 0,
+                    user : ''
+                }
+                return data;
             }else{
                 if(verifiedJwt.data.role_id == 1 || verifiedJwt.data.role_id == 2 ){
-                    return '1';
+                    const data = {
+                        code : 1,
+                        user : verifiedJwt
+                    }
+                    return data;
                 }else{
-                    return '0';
+                    const data = {
+                        code : 0,
+                        user : ''
+                    }
+                    return data;
                 }
                 
             }
         });
         var tokenTwo = jwt.verify(token2, jwtKey, (err, verifiedJwt) => {
             if(err){
-                return '0';
+                const data = {
+                    code : 0,
+                    user : ''
+                }
+                return data;
             }else{
                 if(verifiedJwt.data.role_id == 1 || verifiedJwt.data.role_id == 2 ){
-                    return '1';
+                    const data = {
+                        code : 1,
+                        user : verifiedJwt
+                    }
+                    return data;
                 }else{
-                    return '0';
+                    const data = {
+                        code : 0,
+                        user : ''
+                    }
+                    return data;
                 }
             }
         });
-        if(tokenOne == 1 && tokenTwo == 1){
-            return 1;
+        if(tokenOne.code == 1 && tokenTwo.code == 1){
+            return tokenOne;
         }else{
             return 0;
         }

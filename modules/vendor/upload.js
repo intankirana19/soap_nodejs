@@ -7,8 +7,9 @@ var auth = require('../shared/auth')
 let checkUser = function(token1,token2) {
     return new Promise(function(resolve, reject) {
         const checkToken = auth.verifyToken(token1,token2);
-        if (checkToken == 1) {
-            resolve(1);
+        console.log(checkToken)
+        if (checkToken.code == 1) {
+            resolve(checkToken.user.data);
         }else{
             resolve(0);
         }
