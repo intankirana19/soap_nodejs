@@ -30,7 +30,7 @@ function sendSMS(req,res){
           });
       }else{
 
-        db.dbs.one('select * from clients where id = $1', [result.client_id])
+        db.dbs.one('select * from sms.clients where id = $1', [result.client_id])
         .then(function (data) {          
           let user64 = auth.smsUser();
           if(global.gConfig.config_id == 'local' || global.gConfig.config_id == 'development'){

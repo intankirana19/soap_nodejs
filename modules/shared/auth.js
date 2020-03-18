@@ -41,7 +41,7 @@ const jwt = require('jsonwebtoken');
 
     function checkUser(req,res){
         var password = encrypt(req.body.password);
-        db.dbs.one('select * from accounts where username = $1 and password = $2', [req.body.username, password])
+        db.dbs.one('select * from sms.accounts where username = $1 and password = $2', [req.body.username, password])
         .then(function (data) {
             if(data.length !=0){
                 const token = jwt.sign({
