@@ -45,3 +45,13 @@ start app : node ./bin/start
 - BODY :
     - msisdn : string
     - message : string
+
+- RESPONSE : {
+    "status": "success",
+    "message": {
+        "code": "1",
+        "status": "SUCCESS",
+        "message": "SUCCESS",
+        "msgid": "11124899408"
+    }
+}

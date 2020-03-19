@@ -48,7 +48,7 @@ const jwt = require('jsonwebtoken');
                     data: data
                 }, jwtKey, { expiresIn: '24h' });
             
-                res.cookie('token', token, { maxAge: 3600000, httpOnly: true });
+                res.cookie('token', token, { maxAge: 86400000, httpOnly: true });
                 res.status(200)
                 .json({
                     status: 'success',
@@ -129,6 +129,8 @@ const jwt = require('jsonwebtoken');
         const base64 = base.toString('base64');
         return base64;
     }
+
+    
 module.exports = {
     encrypt:encrypt,
     decrypt:decrypt,

@@ -54,6 +54,25 @@ function sendSMS(req,res){
                           message: err
                       });
               }else{
+                // {
+                //     "status": "success",
+                //     "message": {
+                //         "code": "1",
+                //         "status": "SUCCESS",
+                //         "message": "SUCCESS",
+                //         "msgid": "11124899408"
+                //     }
+
+                const report = {
+                  msgid : body.msgid,
+                  content : formData.message,
+                  msisdn : formData.msisdn,
+                  status : body.status,
+                  message : body.message,
+                  client_id : result.client_id 
+                }
+                db.dbs.none('INSERT INTO report_sms(msgid, content, msisdn, status, message, client_id ) VALUES(${msgid}, ${content}, ${msisdn}, ${status}, ${message}, ${client_id})', report)
+
                 res.status(200)
                 .json({
                     status: 'success',
