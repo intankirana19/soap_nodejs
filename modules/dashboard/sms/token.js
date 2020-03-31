@@ -16,11 +16,6 @@ let checkUser = function(token1,token2) {
     });
 }
 
-// check MD Media Reguler Token
-function getSmsToken(req,res,next){
-
-}
-
 function getAllClientSmsToken(req,res,next){
     var page = req.query.page -1;
     var itemperpage = req.query.itemperpage;
@@ -130,7 +125,7 @@ function addClientSmsToken(req,res,next){
                 var tokenQty = new Number(dataToken.amount);
                 var amount = new Number(req.body.amount);
                 var totalAmount = tokenQty + amount;
-                db.dbs.none('UPDATE sms.tokens SET amount = $1 where client_id = $2', [totalAmount,clientId])
+                db.dbs.none('UPDATE sms.tokens SET amount = $1 WHERE client_id = $2', [totalAmount,clientId])
                 .then(function (data) {
     
                     res.status(200)

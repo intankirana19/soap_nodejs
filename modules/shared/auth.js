@@ -41,9 +41,15 @@ const jwt = require('jsonwebtoken');
 
     function checkUser(req,res){
         var password = encrypt(req.body.password);
-        db.dbs.one('select * from sms.accounts where username = $1 and password = $2', [req.body.username, password])
+        db.dbs.one('select * from sms.accounts where email = $1 and password = $2', [req.body.email, password])
         .then(function (data) {
-            if(data.length !=0){
+            if (data.is_active === false || data.is_delete === true) {
+                res.status(400)
+                .json({
+                    status: 1,
+                    message: 'Akun telah dinon-aktifkan'
+                })  
+            } else if(data.length !=0){
                 const token = jwt.sign({
                     data: data
                 }, jwtKey, { expiresIn: '24h' });
@@ -55,10 +61,10 @@ const jwt = require('jsonwebtoken');
                     token: token
                 }).end();
                 
-            }else{
+            } else{
                 res.status(400)
                 .json({
-                    status: 'error',
+                    status: 2,
                     message: 'Invalid Username or Password'
                 })  
             }
@@ -129,6 +135,7 @@ const jwt = require('jsonwebtoken');
         const base64 = base.toString('base64');
         return base64;
     }
+
 module.exports = {
     encrypt:encrypt,
     decrypt:decrypt,

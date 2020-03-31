@@ -16,11 +16,6 @@ let checkUser = function(token1,token2) {
     });
 }
 
-// check MD Media Premium Token
-function getOtpToken(req,res,next){
-
-}
-
 
 function getAllClientOtpToken(req,res,next){
     var page = req.query.page -1;
@@ -110,6 +105,38 @@ function getClientOtpToken(req,res,next){
     });
 }
 
+function topUpClientOtpToken(req,res,next){
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+  
+    checkUser(token1,token2).then(function(result){
+        if(result == 0){
+            res.status(400)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            // uid
+            // amount
+            // status
+            // cltuid
+            // topup_by
+            // var d = new Date();
+            // var date = ("0" + d.getDate()).slice(-2).toString();
+            // var month = ("0" + (d.getMonth() + 1)).slice(-2).toString();
+            // var ddmm = date + month;
+            // var mili = d.getTime();
+            // var mNumber 
+
+            // var amount = new Number(req.body.amount);
+            // const client = req.body.client;
+            // const by = req.body.topup_by;
+        
+            
+        }
+    });
+}
 
 function addClientOtpToken(req,res,next){
     const token1 = req.header('authorization');
@@ -154,6 +181,11 @@ function addClientOtpToken(req,res,next){
     });
 }
 
+function getTopUpHistory(req,res,next){
+    
+}
+
+
 function otpTopupRequest(req,res,next){
 
 }
@@ -163,8 +195,12 @@ function resetOtpToken(req,res,next){
 }
 
 
+
 module.exports={
     getAllClientOtpToken:getAllClientOtpToken,
     getClientOtpToken:getClientOtpToken,
-    addClientOtpToken:addClientOtpToken
+    otpTopupRequest:otpTopupRequest,
+    addClientOtpToken:addClientOtpToken,
+    getTopUpHistory:getTopUpHistory,
+    resetOtpToken:resetOtpToken
 }
