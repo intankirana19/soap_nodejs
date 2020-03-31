@@ -85,8 +85,7 @@ function getClientOtpToken(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
-            const decode = auth.verifyToken(token1,token2);
-            var clientId = decode.user.data.client_id;
+            var clientId = result.client_id;
 
             db.dbs.one('SELECT t.id,amount,t.cltuid,c.sender as client,t.create_at,t.update_at FROM otp.tokens t left join sms.clients c on t.cltuid = c.cltuid WHERE c.id = ' + clientId)
             .then(function (data) {
@@ -150,8 +149,7 @@ function addClientOtpToken(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
-            const decode = auth.verifyToken(token1,token2);
-            var clientId = decode.user.data.client_id;
+            var clientId = result.client_id;
 
             db.dbs.one('SELECT amount,t.cltuid FROM otp.tokens t left join sms.clients c on t.cltuid = c.cltuid WHERE c.id = ' + clientId)
             .then(function (dataClient) {

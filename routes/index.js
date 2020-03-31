@@ -6,6 +6,7 @@ var index = require('../modules/index');
 var upload = require('../modules/vendor/upload');
 var auth = require('../modules/shared/auth');
 var sms = require('../modules/vendor/sms');
+var dsms = require('../modules/dashboard/sms/sms');
 var account = require('../modules/shared/account');
 var client = require('../modules/shared/client');
 var smsReport = require('../modules/dashboard/sms/reports');
@@ -21,6 +22,9 @@ router.put('/upload', upload.upload);
 
 //user login
 router.post('/login', auth.checkUser);
+
+//create SMS 
+router.post('/sms/create', dsms.createSms)
 
 //send SMS
 router.post('/sms', sms.sendSMS)

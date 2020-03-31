@@ -31,8 +31,14 @@ function sendSMS(req,res){
       }else{
 
         db.dbs.one('select * from sms.clients where id = $1', [result.client_id])
-        .then(function (data) {          
-          let user64 = auth.smsUser();
+        .then(function (data) {
+
+          var msg_id = req.body.msg_id;
+
+          db.dbs.one('select * from sms.messages where id = $1', [msg_id])
+          .then(function (msg) {
+
+            let user64 = auth.smsUser();
           if(global.gConfig.config_id == 'local' || global.gConfig.config_id == 'development'){
             var sender = 'MD Media';
           }else if(global.gConfig.config_id == 'production'){
@@ -41,7 +47,7 @@ function sendSMS(req,res){
           
             var formData = {
                 sender : sender,
-                message: req.body.message,
+                message: msg.text,
                 msisdn: req.body.msisdn,
 
             };
@@ -61,6 +67,9 @@ function sendSMS(req,res){
                 });
               }
             });
+
+          });
+          
         });
       }
     

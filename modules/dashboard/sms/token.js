@@ -84,8 +84,7 @@ function getClientSmsToken(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
-            const decode = auth.verifyToken(token1,token2);
-            var clientId = decode.user.data.client_id;
+            var clientId = result.client_id;
 
             db.dbs.one('SELECT t.id,amount,t.client_id,c.sender as client,t.create_at,t.update_at FROM sms.tokens t left join sms.clients c on t.client_id = c.id WHERE c.id = ' + clientId)
             .then(function (data) {
@@ -117,8 +116,7 @@ function addClientSmsToken(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
-            const decode = auth.verifyToken(token1,token2);
-            var clientId = decode.user.data.client_id;
+            var clientId = result.client_id;
 
             db.dbs.one('SELECT amount FROM sms.tokens t left join sms.clients c on t.client_id = c.id WHERE c.id = ' + clientId)
             .then(function (dataToken) {
