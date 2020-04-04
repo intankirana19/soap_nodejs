@@ -140,6 +140,8 @@ function addClient(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
+            const type = req.body.type;
+
             const alias = req.body.alias;
             const name = req.body.name;
             const phone = req.body.phone;
@@ -148,21 +150,55 @@ function addClient(req,res,next){
             const sender = req.body.sender;
             const pass = encrypt(req.body.password);
 
+
             const status = false;
 
-            const query = 'INSERT INTO sms.clients (cltuid,name,phone,email,pic,sender,password,is_active,is_delete) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $8)'
-        
-            db.dbs.none(query, [alias,name,phone,email,pic,sender,pass,status]) 
-            .then(function (data) {
+            const q1 = 'INSERT INTO sms.clients (cltuid,name,phone,email,pic,sender,password,is_active,is_delete) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $8)';
+            const q2 = 'SELECT id FROM sms.clients WHERE cltuid = $1';
+            const q3 = 'INSERT INTO sms.tokens (amount, client_id, is_active) VALUES ($1, $2, $3)';
+            const q4 = 'INSERT INTO otp.tokens (amount, cltuid, is_active) VALUES ($1, $2, $3)';
+
+            db.dbs.tx(async t => {
+                await t.none(q1, [alias,name,phone,email,pic,sender,pass,status]);
+                const client = await t.one(q2, [alias]);
+                if ( type == 1) {
+                    t.batch([
+                        t.none(q3, [0, client.id, true]),
+                        t.none(q4, [0, alias, true])
+                    ]);
+                } else if ( type == 2){
+                    t.batch([
+                        t.none(q3, [0, client.id, true]),
+                        t.none(q4, [0, alias, false])
+                    ]);
+                } else {
+                    t.batch([
+                        t.none(q3, [0, client.id, false]),
+                        t.none(q4, [0, alias, true])
+                    ]);
+                }
+            })
+            .then(() => {
                 res.status(200)
                 .json({
                     status: 'success',
                     message: 'Berhasil menambahkan klien.'
                 });
             })
-            .catch(function (err) {
-                return next(err);
+            .catch(error => {
+                return next(error);
             });
+            // db.dbs.none(query, [alias,name,phone,email,pic,sender,pass,status]) 
+            // .then(function (data) {
+            //     res.status(200)
+            //     .json({
+            //         status: 'success',
+            //         message: 'Berhasil menambahkan klien.'
+            //     });
+            // })
+            // .catch(function (err) {
+            //     return next(err);
+            // });
         }
     });
 }

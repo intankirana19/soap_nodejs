@@ -6,7 +6,7 @@ var index = require('../modules/index');
 var upload = require('../modules/vendor/upload');
 var auth = require('../modules/shared/auth');
 var sms = require('../modules/vendor/sms');
-var dsms = require('../modules/dashboard/sms/sms');
+var dsms = require('../modules/dashboard/sms/message');
 var account = require('../modules/shared/account');
 var client = require('../modules/shared/client');
 var smsReport = require('../modules/dashboard/sms/reports');
@@ -51,13 +51,14 @@ router.patch('/client/delete', client.deleteClient);
 router.get('/sms/getreports', smsReport.getSmsReport);
 router.get('/sms/gettokenlist', smsToken.getAllClientSmsToken);
 router.get('/sms/getclienttoken', smsToken.getClientSmsToken);
-router.patch('/sms/addclienttoken', smsToken.addClientSmsToken);
+router.post('/sms/topupclienttoken', smsToken.topUpClientSmsToken);
 
 //Dashboard-otp
 router.get('/otp/getreports', otpReport.getOtpReport);
 router.get('/otp/gettokenlist', otpToken.getAllClientOtpToken);
 router.get('/otp/getclienttoken', otpToken.getClientOtpToken);
-router.patch('/otp/addclienttoken', otpToken.addClientOtpToken);
+router.post('/otp/topupclienttoken', otpToken.topUpClientOtpToken);
+
 
 // router.post('/report/save', report.saveReport);
 // router.patch('/report/update', report.updateReport);

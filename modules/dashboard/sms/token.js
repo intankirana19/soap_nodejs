@@ -103,8 +103,7 @@ function getClientSmsToken(req,res,next){
     });
 }
 
-
-function addClientSmsToken(req,res,next){
+function topUpClientSmsToken(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
@@ -116,33 +115,101 @@ function addClientSmsToken(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
-            var clientId = result.client_id;
 
-            db.dbs.one('SELECT amount FROM sms.tokens t left join sms.clients c on t.client_id = c.id WHERE c.id = ' + clientId)
-            .then(function (dataToken) {
-                var tokenQty = new Number(dataToken.amount);
+            const q1 = 'SELECT amount FROM sms.tokens t left join sms.clients c on t.client_id = c.id WHERE c.id = $1';
+            const q2 = 'UPDATE sms.tokens SET amount = $1 WHERE client_id = $2';
+            const q3 = 'INSERT INTO sms.topups (amount, client_id, status, uid, topup_by) VALUES ($1, $2, $3, $4, $5)';
+
+            const q4 = 'SELECT sender FROM sms.clients WHERE id = $1';
+            const q5 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
+
+            db.dbs.tx(async t => {
+
                 var amount = new Number(req.body.amount);
-                var totalAmount = tokenQty + amount;
-                db.dbs.none('UPDATE sms.tokens SET amount = $1 WHERE client_id = $2', [totalAmount,clientId])
-                .then(function (data) {
+
+                const cid = req.body.client_id;
+                const status = req.body.status;
     
-                    res.status(200)
-                    .json({
-                        status: 'success',
-                        message: 'Berhasil menambahkan token.'
-                    });
-                })
-                .catch(function (err) {
-                    return next(err);
+                var d = new Date();
+                var r = ((1 + (Math.floor(Math.random() * 2))) * 10000 + (Math.floor(Math.random() * 10000))).toString();
+                var date = ("0" + d.getDate()).slice(-2).toString();
+                var month = ("0" + (d.getMonth() + 1)).slice(-2).toString();
+                var mmdd = month + date;
+                var uid = "49" + mmdd + r;
+    
+                const by = result.username;
+
+                const token = await t.one(q1, [cid]);
+
+                var tokenQty = new Number(token.amount);
+                var amt = new Number (amount)
+                var totalAmount = tokenQty + amt;
+
+                await t.none(q2, [totalAmount, cid]);
+
+                await t.none(q3, [amount, cid, status, uid, by]);
+
+                const c = await t.one(q4, [cid]);
+                const log = "Top Up Token Broadcast" + " - " + c.sender;
+
+                await t.none(q5, [log, result.id]);
+
+
+            })
+            .then(() => {
+                res.status(200)
+                .json({
+                    status: 'success',
+                    message: 'Top Up Token Broadcast Berhasil.' 
                 });
             })
-            .catch(function (err) {
-                return next(err);
+            .catch(error => {
+                return next(error);
             });
-
         }
+
     });
 }
+
+// function addClientSmsToken(req,res,next){
+//     const token1 = req.header('authorization');
+//     const token2 = req.cookies['token'];
+  
+//     checkUser(token1,token2).then(function(result){
+//         if(result == 0){
+//             res.status(400)
+//             .json({
+//                 status: 'error',
+//                 message: 'Not Authorized, Please RE-LOGIN'
+//             });
+//         }else{
+//             var clientId = result.client_id;
+
+//             db.dbs.one('SELECT amount FROM sms.tokens t left join sms.clients c on t.client_id = c.id WHERE c.id = ' + clientId)
+//             .then(function (dataToken) {
+//                 var tokenQty = new Number(dataToken.amount);
+//                 var amount = new Number(req.body.amount);
+//                 var totalAmount = tokenQty + amount;
+//                 db.dbs.none('UPDATE sms.tokens SET amount = $1 WHERE client_id = $2', [totalAmount,clientId])
+//                 .then(function (data) {
+    
+//                     res.status(200)
+//                     .json({
+//                         status: 'success',
+//                         message: 'Berhasil menambahkan token.'
+//                     });
+//                 })
+//                 .catch(function (err) {
+//                     return next(err);
+//                 });
+//             })
+//             .catch(function (err) {
+//                 return next(err);
+//             });
+
+//         }
+//     });
+// }
 
 function otpTopupRequest(req,res,next){
 
@@ -156,5 +223,6 @@ function resetSmsToken(req,res,next){
 module.exports={
     getAllClientSmsToken:getAllClientSmsToken,
     getClientSmsToken:getClientSmsToken,
-    addClientSmsToken:addClientSmsToken
+    topUpClientSmsToken:topUpClientSmsToken
+    // addClientSmsToken:addClientSmsToken
 }

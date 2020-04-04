@@ -39,10 +39,19 @@ const jwt = require('jsonwebtoken');
         return dec;
     }
 
-    function checkUser(req,res){
+    function checkUser(req,res,next){
         var password = encrypt(req.body.password);
-        db.dbs.one('select * from sms.accounts where email = $1 and password = $2', [req.body.email, password])
-        .then(function (data) {
+        const email = req.body.email;
+
+        const q1 = 'select * from sms.accounts where email = $1 and password = $2';
+
+        const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
+        
+        const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
+
+        db.dbs.tx(async t => {
+            const data = await t.one(q1, [email, password]);
+
             if (data.is_active === false || data.is_delete === true) {
                 res.status(400)
                 .json({
@@ -55,11 +64,16 @@ const jwt = require('jsonwebtoken');
                 }, jwtKey, { expiresIn: '24h' });
             
                 res.cookie('token', token, { maxAge: 3600000, httpOnly: true });
+
+                const c = await t.one(q2, [data.client_id]);
+                const log = "Log In" + " - " + c.sender;
+                await t.none(q3, [log, data.id]);
+
                 res.status(200)
                 .json({
                     status: 'success',
                     token: token
-                }).end();
+                })
                 
             } else{
                 res.status(400)
@@ -69,6 +83,41 @@ const jwt = require('jsonwebtoken');
                 })  
             }
         })
+        .then(() => {
+    
+        })
+        .catch(error => {
+            return next(error);
+        });
+
+        // db.dbs.one('select * from sms.accounts where email = $1 and password = $2', [email, password])
+        // .then(function (data) {
+        //     if (data.is_active === false || data.is_delete === true) {
+        //         res.status(400)
+        //         .json({
+        //             status: 1,
+        //             message: 'Akun telah dinon-aktifkan'
+        //         })  
+        //     } else if(data.length !=0){
+        //         const token = jwt.sign({
+        //             data: data
+        //         }, jwtKey, { expiresIn: '24h' });
+            
+        //         res.cookie('token', token, { maxAge: 3600000, httpOnly: true });
+        //         res.status(200)
+        //         .json({
+        //             status: 'success',
+        //             token: token
+        //         }).end();
+                
+        //     } else{
+        //         res.status(400)
+        //         .json({
+        //             status: 2,
+        //             message: 'Invalid Username or Password'
+        //         })  
+        //     }
+        // })
 
     }
 

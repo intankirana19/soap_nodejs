@@ -28,7 +28,8 @@ function createSms(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
-            var r = ((1 + (Math.floor(Math.random() * 2) + 1)) * 1000 + (Math.floor(Math.random() * 1000) + 1)).toString();
+            const d = new Date();
+            var r = ((1 + (Math.floor(Math.random() * 2))) * 1000 + (Math.floor(Math.random() * 1000))).toString();
             var date = ("0" + d.getDate()).slice(-2).toString();
             var month = ("0" + (d.getMonth() + 1)).slice(-2).toString();
             var year = ("0" + d.getYear()).slice(-2).toString();
