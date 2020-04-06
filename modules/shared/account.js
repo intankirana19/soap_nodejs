@@ -120,20 +120,41 @@ function createAccount(req,res,next){
 
             const status = false;
 
-            const query = 'INSERT INTO sms.accounts (username, password, job_position, role_id, client_id, email, is_active, is_delete) VALUES ($1, $2, $3, $4, $5, $6, $7, $7)'
-        
-            db.dbs.none(query, [user, pass, position, role, client, email, status])
-            .then(function (data) {
-    
+            const q1 = 'INSERT INTO sms.accounts (username, password, job_position, role_id, client_id, email, is_active, is_delete) VALUES ($1, $2, $3, $4, $5, $6, $7, $7)';
+            
+            const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
+            const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
+
+            db.dbs.tx(async t => {
+                await t.none(q1, [user, pass, position, role, client, email, status]);
+
+                const c = await t.one(q2, [result.client_id])
+                const log = "Add New Account" + " - " + c.sender + " - " + result.username;
+                await t.none(q3, [log, result.id])
+            })
+            .then(() => {
                 res.status(200)
                 .json({
                     status: 'success',
                     message: 'Akun berhasil dibuat.'
                 });
             })
-            .catch(function (err) {
-                return next(err);
+            .catch(error => {
+                return next(error);
             });
+
+            // db.dbs.none(q1, [user, pass, position, role, client, email, status])
+            // .then(function (data) {
+    
+            //     res.status(200)
+            //     .json({
+            //         status: 'success',
+            //         message: 'Akun berhasil dibuat.'
+            //     });
+            // })
+            // .catch(function (err) {
+            //     return next(err);
+            // });
         }
     });
 }
@@ -156,20 +177,42 @@ function editAccount(req,res,next){
             const role = req.body.role;
             const client = req.body.client;
             const email = req.body.email;
-            const query = 'UPDATE sms.accounts SET username = $1, job_position = $2, role_id = $3, client_id = $4, email = $5 WHERE id = $6'
-        
-            db.dbs.none(query, [user, position, role, client, email, id])
-            .then(function (data) {
-    
+
+            const q1 = 'UPDATE sms.accounts SET username = $1, job_position = $2, role_id = $3, client_id = $4, email = $5 WHERE id = $6';
+            
+            const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
+            const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
+
+            db.dbs.tx(async t => {
+                await t.none(q1, [user, position, role, client, email, id]);
+
+                const c = await t.one(q2, [result.client_id])
+                const log = "Edit Account (" + id + ") " + " - " + c.sender + " - " + result.username;
+                await t.none(q3, [log, result.id])
+            })
+            .then(() => {
                 res.status(200)
                 .json({
                     status: 'success',
                     message: 'Data akun berhasil diubah.'
                 });
             })
-            .catch(function (err) {
-                return next(err);
+            .catch(error => {
+                return next(error);
             });
+
+            // db.dbs.none(q1, [user, position, role, client, email, id])
+            // .then(function (data) {
+    
+            //     res.status(200)
+            //     .json({
+            //         status: 'success',
+            //         message: 'Data akun berhasil diubah.'
+            //     });
+            // })
+            // .catch(function (err) {
+            //     return next(err);
+            // });
         }
     });
 }
@@ -188,11 +231,26 @@ function activateAccount(req,res,next){
         }else{
             const id = req.body.id;
             const isActive = req.body.isActive;
-            const query = 'UPDATE sms.accounts SET is_active = $2 WHERE id = $1'
-        
-            db.dbs.none(query, [id, isActive])
-            .then(function (data) {
+            
+            const q1 = 'UPDATE sms.accounts SET is_active = $2 WHERE id = $1';
 
+            const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
+            const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
+
+            db.dbs.tx(async t => {
+                await t.none(q1, [id, isActive]);
+
+                const c = await t.one(q2, [result.client_id]);
+
+                if(isActive == 'true') {
+                    const log = "Activate Account (" + id + ") " + " - " + c.sender + " - " + result.username;
+                    await t.none(q3, [log, result.id]);
+                } else {
+                    const log = "Deactivate Account (" + id + ") " + " - " + c.sender + " - " + result.username;
+                    await t.none(q3, [log, result.id]);
+                }
+            })
+            .then(() => {
                 if(isActive == 'true') {
                     res.status(200)
                     .json({
@@ -206,11 +264,32 @@ function activateAccount(req,res,next){
                         message: 'Akun berhasil dinon-aktifkan.'
                     });
                 }
-    
             })
-            .catch(function (err) {
-                return next(err);
+            .catch(error => {
+                return next(error);
             });
+        
+            // db.dbs.none(q1, [id, isActive])
+            // .then(function (data) {
+
+            //     if(isActive == 'true') {
+            //         res.status(200)
+            //         .json({
+            //             status: 'success',
+            //             message: 'Akun berhasil diaktifkan.'
+            //         });
+            //     } else {
+            //         res.status(200)
+            //         .json({
+            //             status: 'success',
+            //             message: 'Akun berhasil dinon-aktifkan.'
+            //         });
+            //     }
+    
+            // })
+            // .catch(function (err) {
+            //     return next(err);
+            // });
         }
     });
 }
@@ -228,20 +307,42 @@ function deleteAccount(req,res,next){
             });
         }else{
             const id = req.body.id;
-            const query = 'UPDATE sms.accounts SET is_delete = true WHERE id = $1'
-        
-            db.dbs.none(query, [id])
-            .then(function (data) {
-    
+            const q1 = 'UPDATE sms.accounts SET is_delete = true WHERE id = $1';
+
+            const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
+            const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
+
+            db.dbs.tx(async t => {
+                await t.none(q1, [id]);
+
+                const c = await t.one(q2, [result.client_id]);
+                
+                const log = "Delete Account (" + id + ") " + " - " + c.sender + " - " + result.username;
+                await t.none(q3, [log, result.id]);
+            })
+            .then(() => {
                 res.status(200)
                 .json({
                     status: 'success',
                     message: 'Akun berhasil dihapus.'
                 });
             })
-            .catch(function (err) {
-                return next(err);
+            .catch(error => {
+                return next(error);
             });
+        
+            // db.dbs.none(q1, [id])
+            // .then(function (data) {
+    
+            //     res.status(200)
+            //     .json({
+            //         status: 'success',
+            //         message: 'Akun berhasil dihapus.'
+            //     });
+            // })
+            // .catch(function (err) {
+            //     return next(err);
+            // });
         }
     });
 }

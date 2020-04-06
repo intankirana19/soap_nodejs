@@ -66,7 +66,7 @@ const jwt = require('jsonwebtoken');
                 res.cookie('token', token, { maxAge: 3600000, httpOnly: true });
 
                 const c = await t.one(q2, [data.client_id]);
-                const log = "Log In" + " - " + c.sender;
+                const log = "Log In" + " - " + c.sender + " - " + data.username;
                 await t.none(q3, [log, data.id]);
 
                 res.status(200)

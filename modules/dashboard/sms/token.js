@@ -150,7 +150,7 @@ function topUpClientSmsToken(req,res,next){
                 await t.none(q3, [amount, cid, status, uid, by]);
 
                 const c = await t.one(q4, [cid]);
-                const log = "Top Up Token Broadcast" + " - " + c.sender;
+                const log = "Top Up Token Broadcast" + " " + c.sender + " - " + result.username;
 
                 await t.none(q5, [log, result.id]);
 

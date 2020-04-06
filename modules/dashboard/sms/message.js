@@ -40,20 +40,41 @@ function createSms(req,res,next){
 
             var clientId = result.client_id;
 
-            const query = 'INSERT INTO sms.messages (msguid, text, client_id) VALUES ($1, $2, $3)'
-        
-            db.dbs.none(query, [msguid, text, clientId])
-            .then(function (data) {
-    
+            const q1 = 'INSERT INTO sms.messages (msguid, text, client_id) VALUES ($1, $2, $3)';
+
+            const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
+            const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
+
+            db.dbs.tx(async t => {
+                await t.none(q1, [msguid, text, clientId]);
+
+                const c = await t.one(q2, [result.client_id])
+                const log = "Create Broadcast Message" + " - " + c.sender + " - " + result.username;
+                await t.none(q3, [log, result.id])
+            })
+            .then(() => {
                 res.status(200)
                 .json({
                     status: 'success',
                     message: 'Pesan Broadcast berhasil dibuat.'
                 });
             })
-            .catch(function (err) {
-                return next(err);
+            .catch(error => {
+                return next(error);
             });
+        
+            // db.dbs.none(q1, [msguid, text, clientId])
+            // .then(function (data) {
+    
+            //     res.status(200)
+            //     .json({
+            //         status: 'success',
+            //         message: 'Pesan Broadcast berhasil dibuat.'
+            //     });
+            // })
+            // .catch(function (err) {
+            //     return next(err);
+            // });
         }
     });
 }

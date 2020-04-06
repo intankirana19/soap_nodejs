@@ -151,7 +151,7 @@ function topUpClientOtpToken(req,res,next){
     
 
                 const c = await t.one(q4, [client]);
-                const log = "Top Up Token OTP" + " - " + c.sender;
+                const log = "Top Up Token OTP" + " " + c.sender + " - " + result.username;
 
                 await t.none(q5, [log, result.id]);
                

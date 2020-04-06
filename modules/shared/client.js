@@ -158,24 +158,35 @@ function addClient(req,res,next){
             const q3 = 'INSERT INTO sms.tokens (amount, client_id, is_active) VALUES ($1, $2, $3)';
             const q4 = 'INSERT INTO otp.tokens (amount, cltuid, is_active) VALUES ($1, $2, $3)';
 
+            const q5 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
+
             db.dbs.tx(async t => {
                 await t.none(q1, [alias,name,phone,email,pic,sender,pass,status]);
                 const client = await t.one(q2, [alias]);
                 if ( type == 1) {
-                    t.batch([
+                    await t.batch([
                         t.none(q3, [0, client.id, true]),
                         t.none(q4, [0, alias, true])
                     ]);
+
+                    const log = "Add Regular & Premium Client" + " - " + result.username;
+                    await t.none(q5, [log, result.id]);
                 } else if ( type == 2){
-                    t.batch([
+                    await t.batch([
                         t.none(q3, [0, client.id, true]),
                         t.none(q4, [0, alias, false])
                     ]);
+
+                    const log = "Add Regular Client" + " - " + result.username;
+                    await t.none(q5, [log, result.id]);
                 } else {
-                    t.batch([
+                    await t.batch([
                         t.none(q3, [0, client.id, false]),
                         t.none(q4, [0, alias, true])
                     ]);
+
+                    const log = "Add Premium Client" + " - " + result.username;
+                    await t.none(q5, [log, result.id]);
                 }
             })
             .then(() => {
@@ -223,20 +234,41 @@ function editClient(req,res,next){
             const pic = req.body.pic;
             const sender = req.body.sender;
             
-            const query = 'UPDATE sms.clients SET cltuid = $2, name = $3, phone = $4, email = $5, pic = $6, sender = $7 WHERE id = $1'
-        
-            db.dbs.none(query, [id,alias,name,phone,email,pic,sender])
-            .then(function (data) {
-    
+            const q1 = 'UPDATE sms.clients SET cltuid = $2, name = $3, phone = $4, email = $5, pic = $6, sender = $7 WHERE id = $1';
+            
+            const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
+            const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
+
+            db.dbs.tx(async t => {
+                await t.none(q1, [id,alias,name,phone,email,pic,sender]);
+
+                const c = await t.one(q2, [result.client_id])
+                const log = "Edit Client (" + id + ") " + " - " + c.sender + " - " + result.username;
+                await t.none(q3, [log, result.id])
+            })
+            .then(() => {
                 res.status(200)
                 .json({
                     status: 'success',
-                    message: 'Data berhasil diubah.'
+                    message: 'Data klien berhasil diubah.'
                 });
             })
-            .catch(function (err) {
-                return next(err);
+            .catch(error => {
+                return next(error);
             });
+        
+            // db.dbs.none(q1, [id,alias,name,phone,email,pic,sender])
+            // .then(function (data) {
+    
+            //     res.status(200)
+            //     .json({
+            //         status: 'success',
+            //         message: 'Data klien berhasil diubah.'
+            //     });
+            // })
+            // .catch(function (err) {
+            //     return next(err);
+            // });
         }
     });
 }
@@ -255,29 +287,64 @@ function activateClient(req,res,next){
         }else{
             const id = req.body.id;
             const isActive = req.body.isActive;
-            const query = 'UPDATE sms.clients SET is_active = $2 WHERE id = $1'
-        
-            db.dbs.none(query, [id, isActive])
-            .then(function (data) {
+            const q1 = 'UPDATE sms.clients SET is_active = $2 WHERE id = $1';
 
+            const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
+            const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
+
+            db.dbs.tx(async t => {
+                await t.none(q1, [id, isActive]);
+
+                const c = await t.one(q2, [result.client_id]);
+
+                if(isActive == 'true') {
+                    const log = "Activate Client (" + id + ") " + " - " + c.sender + " - " + result.username;
+                    await t.none(q3, [log, result.id]);
+                } else {
+                    const log = "Deactivate Client (" + id + ") " + " - " + c.sender + " - " + result.username;
+                    await t.none(q3, [log, result.id]);
+                }
+            })
+            .then(() => {
                 if(isActive == 'true') {
                     res.status(200)
                     .json({
                         status: 'success',
-                        message: 'Berhasil diaktifkan.'
+                        message: 'Klien berhasil diaktifkan.'
                     });
                 } else {
                     res.status(200)
                     .json({
                         status: 'success',
-                        message: 'Berhasil dinon-aktifkan.'
+                        message: 'Klien berhasil dinon-aktifkan.'
                     });
                 }
-    
             })
-            .catch(function (err) {
-                return next(err);
+            .catch(error => {
+                return next(error);
             });
+        
+            // db.dbs.none(q1, [id, isActive])
+            // .then(function (data) {
+
+            //     if(isActive == 'true') {
+            //         res.status(200)
+            //         .json({
+            //             status: 'success',
+            //             message: 'Berhasil diaktifkan.'
+            //         });
+            //     } else {
+            //         res.status(200)
+            //         .json({
+            //             status: 'success',
+            //             message: 'Berhasil dinon-aktifkan.'
+            //         });
+            //     }
+    
+            // })
+            // .catch(function (err) {
+            //     return next(err);
+            // });
         }
     });
 }
@@ -295,20 +362,42 @@ function deleteClient(req,res,next){
             });
         }else{
             const id = req.body.id;
-            const query = 'UPDATE sms.clients SET is_delete = true WHERE id = $1'
-        
-            db.dbs.none(query, [id])
-            .then(function (data) {
-    
+            const q1 = 'UPDATE sms.clients SET is_delete = true WHERE id = $1';
+
+            const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
+            const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
+
+            db.dbs.tx(async t => {
+                await t.none(q1, [id]);
+
+                const c = await t.one(q2, [result.client_id]);
+                
+                const log = "Delete Client (" + id + ") " + " - " + c.sender + " - " + result.username;
+                await t.none(q3, [log, result.id]);
+            })
+            .then(() => {
                 res.status(200)
                 .json({
                     status: 'success',
-                    message: 'Akun berhasil dihapus.'
+                    message: 'Klien berhasil dihapus.'
                 });
             })
-            .catch(function (err) {
-                return next(err);
+            .catch(error => {
+                return next(error);
             });
+        
+            // db.dbs.none(q1, [id])
+            // .then(function (data) {
+    
+            //     res.status(200)
+            //     .json({
+            //         status: 'success',
+            //         message: 'Klien berhasil dihapus.'
+            //     });
+            // })
+            // .catch(function (err) {
+            //     return next(err);
+            // });
         }
     });
 }
