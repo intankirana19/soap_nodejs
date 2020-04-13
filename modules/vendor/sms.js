@@ -217,7 +217,45 @@ function sendSMS(req,res,next){
 
 }
 
+function checkToken(req,res,next){
+  const token1 = req.header('authorization');
+  const token2 = req.cookies['token'];
+
+  checkUser(token1,token2).then(function(result){
+      if(result == 0){
+          res.status(400)
+          .json({
+              status: 'error',
+              message: 'Not Authorized, Please RE-LOGIN'
+          });
+      }else{
+        var param = {
+          username : 'brainworxindo',
+          password: '72EP82jA'
+
+        };
+        request.post({url: global.gConfig.api_token+'token.json',formData: param}, function optionalCallback(err, httpResponse, body) {
+          if (err) {
+            res.status(400)
+                  .json({
+                      status: 'error',
+                      message: err
+                  });
+          }else{
+            res.status(200)
+            .json({
+                status: 'success',
+                message: JSON.parse(body)
+            });
+          }
+        });
+      }
+    });
+}
+
+
 
 module.exports = {
-  sendSMS:sendSMS
+  sendSMS:sendSMS,
+  checkToken:checkToken
 }

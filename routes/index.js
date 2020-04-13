@@ -7,6 +7,7 @@ var index = require('../modules/index');
 var upload = require('../modules/vendor/upload');
 var auth = require('../modules/shared/auth');
 var sms = require('../modules/vendor/sms');
+var otp = require('../modules/vendor/otp');
 var dsms = require('../modules/dashboard/sms/message');
 var account = require('../modules/dashboard/account');
 var client = require('../modules/dashboard/client');
@@ -26,10 +27,16 @@ router.put('/upload', upload.upload);
 router.post('/login', auth.checkUser);
 
 //create SMS 
-router.post('/sms/create', dsms.createSms)
+router.post('/sms/create', dsms.createSms);
 
 //send SMS
-router.post('/sms', sms.sendSMS)
+router.post('/sms', sms.sendSMS);
+
+// check MD Media SMS Token
+router.post('/sms/token', sms.checkToken);
+
+// check MD Media OTP Token
+router.post('/otp/token', otp.checkToken);
 
 //Dashboard-Account
 router.get('/account/list', account.getAllAccounts);
