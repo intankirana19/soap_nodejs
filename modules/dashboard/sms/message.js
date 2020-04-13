@@ -79,11 +79,109 @@ function createSms(req,res,next){
     });
 }
 
+function getMessageList(req,res,next){
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+  
+    checkUser(token1,token2).then(function(result){
+        if(result == 0){
+            res.status(400)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            const client = req.query.client;
+            var page = req.query.page -1;
+            var itemperpage = req.query.itemperpage;
 
+            if (client) {
+                db.dbs.any('SELECT * FROM sms.messages WHERE client_id = $3 ORDER BY update_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client])
+                .then(function (data) {
+                    if (data.length == 0) { 
+                        res.status(200)
+                        .json({
+                            status: 1,
+                            data: data,
+                            message: 'Data tidak ada',
+                            itemperpage: itemperpage,
+                            pages: 0
+                        });
+                    } else {
+                        db.dbs.any('SELECT COUNT(*) FROM sms.messages WHERE client_id = $3', [page,itemperpage,client])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+                
+                            res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: data,
+                                    message: 'Berhasil menampilkan daftar pesan',
+                                    itemperpage: itemperpage,
+                                    pages: pageQty
+                                });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else {
+                db.dbs.any('SELECT * FROM sms.messages ORDER BY update_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
+                .then(function (data) {
+                    if (data.length == 0) { 
+                        res.status(200)
+                        .json({
+                            status: 1,
+                            data: data,
+                            message: 'Data tidak ada',
+                            itemperpage: itemperpage,
+                            pages: 0
+                        });
+                    } else {
+                        db.dbs.any('SELECT COUNT(*) FROM sms.messages', [page,itemperpage])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+                
+                            res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: data,
+                                    message: 'Berhasil menampilkan daftar pesan',
+                                    itemperpage: itemperpage,
+                                    pages: pageQty
+                                });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            }
+
+        }
+
+    });
+}
 
 
 
 
 module.exports={
-    createSms:createSms
+    createSms:createSms,
+    getMessageList:getMessageList
 }
