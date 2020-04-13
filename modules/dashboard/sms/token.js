@@ -3,6 +3,8 @@
 const db = require('../../../config/db');
 var auth = require('../../shared/auth');
 
+const cron = require('node-cron');
+
 
 let checkUser = function(token1,token2) {
     return new Promise(function(resolve, reject) {
@@ -211,18 +213,103 @@ function topUpClientSmsToken(req,res,next){
 //     });
 // }
 
-function otpTopupRequest(req,res,next){
+function getTopUpHistory(req,res,next){
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+  
+    checkUser(token1,token2).then(function(result){
+        if(result == 0){
+            res.status(400)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            var page = req.query.page -1;
+            var itemperpage = req.query.itemperpage;
+
+            db.dbs.any('SELECT * FROM sms.topups ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
+            .then(function (data) {
+                if (data.length == 0) { 
+                    res.status(200)
+                    .json({
+                        status: 'success',
+                        data: data,
+                        message: 'Data tidak ada',
+                        itemperpage: itemperpage,
+                        pages: 0
+                    });
+                } else {
+                    db.dbs.any('SELECT COUNT(*) FROM sms.topups', [page,itemperpage])
+                    .then(function (dataQty) {
+                        let count = dataQty[0].count;
+                        var pageQty = (count / itemperpage).toFixed(0);
+                        if(pageQty == 0){
+                            pageQty = 1
+                        }
+            
+                        res.status(200)
+                            .json({
+                                status: 'success',
+                                data: data,
+                                message: 'Berhasil menampilkan daftar riwayat topup token Broadcast ',
+                                itemperpage: itemperpage,
+                                pages: pageQty
+                            });
+                    })
+                    .catch(function (err) {
+                        return next(err);
+                    });
+                }
+            })
+            .catch(function (err) {
+                return next(err);
+            });
+        }
+
+    });
+
+    
+}
+
+function topupRequest(req,res,next){
 
 }
 
-function resetSmsToken(req,res,next){
+// Client Broadcast Token Reset Scheduler ( every midnight of every last day of every month)
+const today = new Date();
+const tomorrow = new Date();
+tomorrow.setDate(tomorrow.getDate() + 1);
 
+if (today.getMonth() !== tomorrow.getMonth()) {
+    cron.schedule('59 23 * * *', function() {
+        const q1 = 'SELECT token FROM sms.token_reset_amount WHERE id = 1';
+        const q2 = 'UPDATE sms.tokens SET amount = $1 WHERE is_active = true';
+
+
+                db.dbs.tx(async t => {
+
+                    const amount = await t.one(q1);
+
+                    // console.log(amount.token);
+                    
+                    await t.none(q2, [amount.token]);
+                
+                })
+                .then(() => {
+                    console.log('Broadcast Token Reset Scheduler Success')
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+    });
 }
+
 
 
 module.exports={
     getAllClientSmsToken:getAllClientSmsToken,
     getClientSmsToken:getClientSmsToken,
-    topUpClientSmsToken:topUpClientSmsToken
-    // addClientSmsToken:addClientSmsToken
+    topUpClientSmsToken:topUpClientSmsToken,
+    getTopUpHistory:getTopUpHistory
 }
