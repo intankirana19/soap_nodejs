@@ -27,7 +27,7 @@ function getAllClientSmsToken(req,res,next){
   
     checkUser(token1,token2).then(function(result){
         if(result == 0){
-            res.status(400)
+            res.status(401)
             .json({
                 status: 'error',
                 message: 'Not Authorized, Please RE-LOGIN'
@@ -80,7 +80,7 @@ function getClientSmsToken(req,res,next){
   
     checkUser(token1,token2).then(function(result){
         if(result == 0){
-            res.status(400)
+            res.status(401)
             .json({
                 status: 'error',
                 message: 'Not Authorized, Please RE-LOGIN'
@@ -111,7 +111,7 @@ function topUpClientSmsToken(req,res,next){
   
     checkUser(token1,token2).then(function(result){
         if(result == 0){
-            res.status(400)
+            res.status(401)
             .json({
                 status: 'error',
                 message: 'Not Authorized, Please RE-LOGIN'
@@ -179,7 +179,7 @@ function topUpClientSmsToken(req,res,next){
   
 //     checkUser(token1,token2).then(function(result){
 //         if(result == 0){
-//             res.status(400)
+//             res.status(401)
 //             .json({
 //                 status: 'error',
 //                 message: 'Not Authorized, Please RE-LOGIN'
@@ -219,7 +219,7 @@ function getTopUpHistory(req,res,next){
   
     checkUser(token1,token2).then(function(result){
         if(result == 0){
-            res.status(400)
+            res.status(401)
             .json({
                 status: 'error',
                 message: 'Not Authorized, Please RE-LOGIN'
