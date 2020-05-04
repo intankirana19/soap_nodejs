@@ -73,7 +73,8 @@ router.get('/otp/gettokenlist', otpToken.getAllClientOtpToken);
 router.get('/otp/getclienttoken', otpToken.getClientOtpToken);
 router.post('/otp/topupclienttoken', otpToken.topUpClientOtpToken);
 
-
+// Download OTP Reports
+router.get('/otp/downloadotpreport', otpReport.downloadOtpReport);
 
 // router.post('/report/save', report.saveReport);
 // router.patch('/report/update', report.updateReport);
