@@ -1547,6 +1547,6 @@ function getOtpTokenTotalUsage(req,res,next){
 module.exports={
     getOtpReport:getOtpReport,
     getOtpDailyTokenUsage:getOtpDailyTokenUsage,
-    getOtpTokenTotalUsage:getOtpTokenTotalUsage
+    getOtpTokenTotalUsage:getOtpTokenTotalUsage,
     downloadOtpReport:downloadOtpReport
 }
