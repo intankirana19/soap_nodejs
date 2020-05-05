@@ -63,12 +63,14 @@ router.patch('/reset/edit', tokenReset.edit);
 
 //Dashboard-sms
 router.get('/sms/getreports', smsReport.getSmsReport);
+router.get('/sms/reportcount', smsReport.reportCount);
 router.get('/sms/gettokenlist', smsToken.getAllClientSmsToken);
 router.get('/sms/getclienttoken', smsToken.getClientSmsToken);
 router.post('/sms/topupclienttoken', smsToken.topUpClientSmsToken);
 
 //Dashboard-otp
 router.get('/otp/getreports', otpReport.getOtpReport);
+router.get('/otp/reportcount', otpReport.reportCount);
 router.get('/otp/gettokenlist', otpToken.getAllClientOtpToken);
 router.get('/otp/getclienttoken', otpToken.getClientOtpToken);
 router.post('/otp/topupclienttoken', otpToken.topUpClientOtpToken);
