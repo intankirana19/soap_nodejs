@@ -49,6 +49,9 @@ router.patch('/account/delete', account.deleteAccount);
 router.get('/account/roleslist', account.getRoles);
 router.get('/account/role', account.accountRole);
 
+//Dashboard-Logs
+route.get('/account/log', account.getLogs);
+
 //Dashboard-Clients
 router.get('/client/list', client.getAllClients);
 router.post('/client/add', client.addClient);
