@@ -502,21 +502,132 @@ function getLogs(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
+            const datefrom = req.query.datefrom;
+            const dateto = req.query.dateto;
             var page = req.query.page -1;
             var itemperpage = req.query.itemperpage;
 
-            db.dbs.any('SELECT * FROM sms.logs ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
-            .then(function (data) {
-                res.status(200)
-                .json({
-                    status: 'success',
-                    data: data,
-                    message: 'Berhasil menampilkan daftar log'
+            if (datefrom && dateto) {
+                db.dbs.any('SELECT * FROM sms.logs WHERE create_at :: DATE BETWEEN DATE $3 AND $4 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom,dateto])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 2,
+                            data: data,
+                            message: 'Data tidak ada',
+                            itemperpage: itemperpage,
+                            pages: 0
+                        });
+                    } else {
+                        db.dbs.any('SELECT COUNT(*) FROM sms.logs WHERE create_at :: DATE BETWEEN DATE $3 AND $4 ORDER BY create_at desc', [page,itemperpage,datefrom,dateto])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+    
+                            res.status(200)
+                            .json({
+                                status: 'success',
+                                data: data,
+                                message: 'Berhasil menampilkan daftar log',
+                                itemperpage: itemperpage,
+                                pages: pageQty
+                            });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
                 });
-            })
-            .catch(function (err) {
-                return next(err);
-            });
+            } else if (datefrom) {
+                db.dbs.any('SELECT * FROM sms.logs WHERE create_at :: DATE BETWEEN DATE $3 AND $3 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom])
+                .then(function (data) {
+                    db.dbs.any('SELECT COUNT(*) FROM sms.logs WHERE create_at :: DATE BETWEEN DATE $3 AND $3 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom])
+                    .then(function (dataQty) {
+                        let count = dataQty[0].count;
+                        var pageQty = (count / itemperpage).toFixed(0);
+                        if(pageQty == 0){
+                            pageQty = 1
+                        }
+
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Berhasil menampilkan daftar log',
+                            itemperpage: itemperpage,
+                            pages: pageQty
+                        });
+                    })
+                    .catch(function (err) {
+                        return next(err);
+                    });
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (dateto) {
+                db.dbs.any('SELECT * FROM sms.logs WHERE create_at :: DATE BETWEEN DATE $3 AND $3 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,dateto])
+                .then(function (data) {
+                    db.dbs.any('SELECT COUNT(*) FROM sms.logs WHERE create_at :: DATE BETWEEN DATE $3 AND $3 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,dateto])
+                    .then(function (dataQty) {
+                        let count = dataQty[0].count;
+                        var pageQty = (count / itemperpage).toFixed(0);
+                        if(pageQty == 0){
+                            pageQty = 1
+                        }
+
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Berhasil menampilkan daftar log',
+                            itemperpage: itemperpage,
+                            pages: pageQty
+                        });
+                    })
+                    .catch(function (err) {
+                        return next(err);
+                    });
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else {
+                db.dbs.any('SELECT * FROM sms.logs ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
+                .then(function (data) {
+                    db.dbs.any('SELECT COUNT(*) FROM sms.logs ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
+                    .then(function (dataQty) {
+                        let count = dataQty[0].count;
+                        var pageQty = (count / itemperpage).toFixed(0);
+                        if(pageQty == 0){
+                            pageQty = 1
+                        }
+
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Berhasil menampilkan daftar log',
+                            itemperpage: itemperpage,
+                            pages: pageQty
+                        });
+                    })
+                    .catch(function (err) {
+                        return next(err);
+                    });
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            }
+
         }
     });
 }
