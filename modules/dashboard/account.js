@@ -502,13 +502,14 @@ function getLogs(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
+            const client = req.query.client;
             const datefrom = req.query.datefrom;
             const dateto = req.query.dateto;
             var page = req.query.page -1;
             var itemperpage = req.query.itemperpage;
 
-            if (datefrom && dateto) {
-                db.dbs.any('SELECT * FROM sms.logs WHERE create_at :: DATE BETWEEN DATE $3 AND $4 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom,dateto])
+            if (client && datefrom && dateto) {
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $4 and a.client_id = $5 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom,dateto,client])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -520,7 +521,99 @@ function getLogs(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any('SELECT COUNT(*) FROM sms.logs WHERE create_at :: DATE BETWEEN DATE $3 AND $4 ORDER BY create_at desc', [page,itemperpage,datefrom,dateto])
+                        db.dbs.any('select count(*) from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $4 and a.client_id = $5', [page,itemperpage,datefrom,dateto,client])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+    
+                            res.status(200)
+                            .json({
+                                status: 'success',
+                                data: data,
+                                message: 'Berhasil menampilkan daftar log',
+                                itemperpage: itemperpage,
+                                pages: pageQty
+                            });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (client && datefrom) {
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 and a.client_id = $4 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom,client])
+                .then(function (data) {
+                    db.dbs.any('select count(*) from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 and a.client_id = $4', [page,itemperpage,datefrom,client])
+                    .then(function (dataQty) {
+                        let count = dataQty[0].count;
+                        var pageQty = (count / itemperpage).toFixed(0);
+                        if(pageQty == 0){
+                            pageQty = 1
+                        }
+
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Berhasil menampilkan daftar log',
+                            itemperpage: itemperpage,
+                            pages: pageQty
+                        });
+                    })
+                    .catch(function (err) {
+                        return next(err);
+                    });
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (client && dateto) {
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 and a.client_id = $4 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,dateto,client])
+                .then(function (data) {
+                    db.dbs.any('select count(*) from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 and a.client_id = $4', [page,itemperpage,dateto,client])
+                    .then(function (dataQty) {
+                        let count = dataQty[0].count;
+                        var pageQty = (count / itemperpage).toFixed(0);
+                        if(pageQty == 0){
+                            pageQty = 1
+                        }
+
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Berhasil menampilkan daftar log',
+                            itemperpage: itemperpage,
+                            pages: pageQty
+                        });
+                    })
+                    .catch(function (err) {
+                        return next(err);
+                    });
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (datefrom && dateto) {
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $4 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom,dateto])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 2,
+                            data: data,
+                            message: 'Data tidak ada',
+                            itemperpage: itemperpage,
+                            pages: 0
+                        });
+                    } else {
+                        db.dbs.any('select count(*) from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $4', [page,itemperpage,datefrom,dateto])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
@@ -546,63 +639,85 @@ function getLogs(req,res,next){
                     return next(err);
                 });
             } else if (datefrom) {
-                db.dbs.any('SELECT * FROM sms.logs WHERE create_at :: DATE BETWEEN DATE $3 AND $3 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom])
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom])
                 .then(function (data) {
-                    db.dbs.any('SELECT COUNT(*) FROM sms.logs WHERE create_at :: DATE BETWEEN DATE $3 AND $3 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom])
-                    .then(function (dataQty) {
-                        let count = dataQty[0].count;
-                        var pageQty = (count / itemperpage).toFixed(0);
-                        if(pageQty == 0){
-                            pageQty = 1
-                        }
-
+                    if (data.length == 0) {
                         res.status(200)
                         .json({
-                            status: 'success',
+                            status: 2,
                             data: data,
-                            message: 'Berhasil menampilkan daftar log',
+                            message: 'Data tidak ada',
                             itemperpage: itemperpage,
-                            pages: pageQty
+                            pages: 0
                         });
-                    })
-                    .catch(function (err) {
-                        return next(err);
-                    });
+                    } else {
+                        db.dbs.any('select count(*) from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3', [page,itemperpage,datefrom])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+    
+                            res.status(200)
+                            .json({
+                                status: 'success',
+                                data: data,
+                                message: 'Berhasil menampilkan daftar log',
+                                itemperpage: itemperpage,
+                                pages: pageQty
+                            });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
                 })
                 .catch(function (err) {
                     return next(err);
                 });
             } else if (dateto) {
-                db.dbs.any('SELECT * FROM sms.logs WHERE create_at :: DATE BETWEEN DATE $3 AND $3 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,dateto])
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,dateto])
                 .then(function (data) {
-                    db.dbs.any('SELECT COUNT(*) FROM sms.logs WHERE create_at :: DATE BETWEEN DATE $3 AND $3 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,dateto])
-                    .then(function (dataQty) {
-                        let count = dataQty[0].count;
-                        var pageQty = (count / itemperpage).toFixed(0);
-                        if(pageQty == 0){
-                            pageQty = 1
-                        }
-
+                    if (data.length == 0) {
                         res.status(200)
                         .json({
-                            status: 'success',
+                            status: 2,
                             data: data,
-                            message: 'Berhasil menampilkan daftar log',
+                            message: 'Data tidak ada',
                             itemperpage: itemperpage,
-                            pages: pageQty
+                            pages: 0
                         });
-                    })
-                    .catch(function (err) {
-                        return next(err);
-                    });
+                    } else {
+                        db.dbs.any('select count(*) from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3', [page,itemperpage,dateto])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+    
+                            res.status(200)
+                            .json({
+                                status: 'success',
+                                data: data,
+                                message: 'Berhasil menampilkan daftar log',
+                                itemperpage: itemperpage,
+                                pages: pageQty
+                            });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
                 })
                 .catch(function (err) {
                     return next(err);
                 });
             } else {
-                db.dbs.any('SELECT * FROM sms.logs ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
                 .then(function (data) {
-                    db.dbs.any('SELECT COUNT(*) FROM sms.logs ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
+                    db.dbs.any('select count(*) from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id', [page,itemperpage])
                     .then(function (dataQty) {
                         let count = dataQty[0].count;
                         var pageQty = (count / itemperpage).toFixed(0);
