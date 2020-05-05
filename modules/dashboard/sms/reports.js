@@ -2,6 +2,7 @@
 
 const db = require('../../../config/db');
 var auth = require('../../shared/auth');
+const excel = require('exceljs');
 
 
 let checkUser = function(token1,token2) {
@@ -846,20 +847,22 @@ function reportCount(req,res,next){
                 
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $2', [status,dateto])
                         .then(function (dataQty) {
-                            let count = dataQty[0].count;
-                            var pageQty = (count / itemperpage).toFixed(0);
-                            if(pageQty == 0){
-                                pageQty = 1
-                            }
-                
-                            res.status(200)
+                            var count = new Number(dataQty[0].count);
+                            if (data.length == 0) {
+                                res.status(200)
                                 .json({
-                                    status: 1,
-                                    data: data,
-                                    message: 'Berhasil menampilkan laporan',
-                                    itemperpage: itemperpage,
-                                    pages: pageQty
+                                    status: 'success',
+                                    data: 0,
+                                    message: 'Mohon maaf laporan dengan data tersebut tidak ada.'
                                 });
+                            } else {
+                                res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: count,
+                                    message: 'Berhasil menampilkan jumlah laporan.'
+                                });
+                            }
                         })
                         .catch(function (err) {
                             return next(err);
@@ -1059,6 +1062,638 @@ function reportCount(req,res,next){
                                     data: count,
                                     message: 'Berhasil menampilkan jumlah laporan.'
                                 });
+                            }
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                   
+            }
+
+            
+        }
+    });
+}
+
+function downloadReportCount(req,res,next){
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+  
+    checkUser(token1,token2).then(function(result){
+        if(result == 0){
+            res.status(401)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            const status = req.query.status;
+            const client = req.query.client;
+            const datefrom = req.query.datefrom;
+            const dateto = req.query.dateto;
+
+            if (status && client && datefrom && dateto) {
+                
+                        db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND m.client_id = $2 AND d.create_at :: DATE BETWEEN DATE $3 AND $4', [status,client,datefrom,dateto])
+                        .then(function (dataQty) {
+                            var count = new Number(dataQty[0].count);
+                            if (data.length == 0) {
+                                res.status(200)
+                                .json({
+                                    status: 'success',
+                                    message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                                });
+                            } else {
+                                const jsonData = JSON.parse(JSON.stringify(data));
+                                let workbook = new excel.Workbook(); //creating workbook
+                                let worksheet = workbook.addWorksheet(client + '_' + status + '_BROADCAST_COUNT_' + datefrom + '_to_' + dateto); //creating worksheet
+                                //  WorkSheet Header
+                                worksheet.columns = [
+                                    { header: 'Jumlah Broadcast', key: count}
+                                ];
+                                // Add Array Rows
+                                worksheet.addRows(jsonData);
+        
+                                const fileName = client + '_' + status + '_BROADCAST_COUNT_' + datefrom + '_to_' + dateto;
+        
+                                res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                                res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+        
+                                return workbook.xlsx.write(res)
+                                    .then(function() {
+                                            res.status(200).end();
+                                    });
+                            }
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                   
+            } else if (status && client && datefrom) {
+                
+                        db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND m.client_id = $2 AND d.create_at :: DATE BETWEEN DATE $3 AND $3', [status,client,datefrom])
+                        .then(function (dataQty) {
+                            var count = new Number(dataQty[0].count);
+                            if (data.length == 0) {
+                                res.status(200)
+                                .json({
+                                    status: 'success',
+                                    message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                                });
+                            } else {
+                                const jsonData = JSON.parse(JSON.stringify(data));
+                                let workbook = new excel.Workbook(); //creating workbook
+                                let worksheet = workbook.addWorksheet(client + '_' + status + '_BROADCAST_COUNT_' + datefrom); //creating worksheet
+                                //  WorkSheet Header
+                                worksheet.columns = [
+                                    { header: 'Jumlah Broadcast', key: count}
+                                ];
+                                // Add Array Rows
+                                worksheet.addRows(jsonData);
+        
+                                const fileName = client + '_' + status + '_BROADCAST_COUNT_' + datefrom;
+        
+                                res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                                res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+        
+                                return workbook.xlsx.write(res)
+                                    .then(function() {
+                                            res.status(200).end();
+                                    });
+                            }
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                   
+            } else if (status && client && dateto) {
+                
+                        db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND m.client_id = $2 AND d.create_at :: DATE BETWEEN DATE $3 AND $3', [status,client,dateto])
+                        .then(function (dataQty) {
+                            var count = new Number(dataQty[0].count);
+                            if (data.length == 0) {
+                                res.status(200)
+                                .json({
+                                    status: 'success',
+                                    message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                                });
+                            } else {
+                                const jsonData = JSON.parse(JSON.stringify(data));
+                                let workbook = new excel.Workbook(); //creating workbook
+                                let worksheet = workbook.addWorksheet(client + '_' + status + '_BROADCAST_COUNT_' + dateto); //creating worksheet
+                                //  WorkSheet Header
+                                worksheet.columns = [
+                                    { header: 'Jumlah Broadcast', key: count}
+                                ];
+                                // Add Array Rows
+                                worksheet.addRows(jsonData);
+        
+                                const fileName = client + '_' + status + '_BROADCAST_COUNT_' + dateto;
+        
+                                res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                                res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+        
+                                return workbook.xlsx.write(res)
+                                    .then(function() {
+                                            res.status(200).end();
+                                    });
+                            }
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    
+            } else if (status && datefrom && dateto) {
+               
+                        db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $3', [status,datefrom,dateto])
+                        .then(function (dataQty) {
+                            var count = new Number(dataQty[0].count);
+                            if (data.length == 0) {
+                                res.status(200)
+                                .json({
+                                    status: 'success',
+                                    message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                                });
+                            } else {
+                                const jsonData = JSON.parse(JSON.stringify(data));
+                                let workbook = new excel.Workbook(); //creating workbook
+                                let worksheet = workbook.addWorksheet(status + '_BROADCAST_COUNT_' + datefrom + '_to_' + dateto); //creating worksheet
+                                //  WorkSheet Header
+                                worksheet.columns = [
+                                    { header: 'Jumlah Broadcast', key: count}
+                                ];
+                                // Add Array Rows
+                                worksheet.addRows(jsonData);
+        
+                                const fileName = status + '_BROADCAST_COUNT_' + datefrom + '_to_' + dateto;
+        
+                                res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                                res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+        
+                                return workbook.xlsx.write(res)
+                                    .then(function() {
+                                            res.status(200).end();
+                                    });
+                            }
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                   
+            } else if (client && datefrom && dateto) {
+               
+                        db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $3', [client,datefrom,dateto])
+                        .then(function (dataQty) {
+                            var count = new Number(dataQty[0].count);
+                            if (data.length == 0) {
+                                res.status(200)
+                                .json({
+                                    status: 'success',
+                                    message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                                });
+                            } else {
+                                const jsonData = JSON.parse(JSON.stringify(data));
+                                let workbook = new excel.Workbook(); //creating workbook
+                                let worksheet = workbook.addWorksheet(client + '_BROADCAST_COUNT_' + datefrom + '_to_' + dateto); //creating worksheet
+                                //  WorkSheet Header
+                                worksheet.columns = [
+                                    { header: 'Jumlah Broadcast', key: count}
+                                ];
+                                // Add Array Rows
+                                worksheet.addRows(jsonData);
+        
+                                const fileName = client + '_BROADCAST_COUNT_' + datefrom + '_to_' + dateto;
+        
+                                res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                                res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+        
+                                return workbook.xlsx.write(res)
+                                    .then(function() {
+                                            res.status(200).end();
+                                    });
+                            }
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    
+            } else if (status && client) {
+                
+                        db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND m.client_id = $2', [status,client])
+                        .then(function (dataQty) {
+                            var count = new Number(dataQty[0].count);
+                            if (data.length == 0) {
+                                res.status(200)
+                                .json({
+                                    status: 'success',
+                                    message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                                });
+                            } else {
+                                const jsonData = JSON.parse(JSON.stringify(data));
+                                let workbook = new excel.Workbook(); //creating workbook
+                                let worksheet = workbook.addWorksheet(client + '_' + status + '_BROADCAST_COUNT'); //creating worksheet
+                                //  WorkSheet Header
+                                worksheet.columns = [
+                                    { header: 'Jumlah Broadcast', key: count}
+                                ];
+                                // Add Array Rows
+                                worksheet.addRows(jsonData);
+        
+                                const fileName = client + '_' + status + '_BROADCAST_COUNT';
+        
+                                res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                                res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+        
+                                return workbook.xlsx.write(res)
+                                    .then(function() {
+                                            res.status(200).end();
+                                    });
+                            }
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                   
+            } else if (status && datefrom) {
+                
+                        db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $2', [status,datefrom])
+                        .then(function (dataQty) {
+                            var count = new Number(dataQty[0].count);
+                            if (data.length == 0) {
+                                res.status(200)
+                                .json({
+                                    status: 'success',
+                                    message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                                });
+                            } else {
+                                const jsonData = JSON.parse(JSON.stringify(data));
+                                let workbook = new excel.Workbook(); //creating workbook
+                                let worksheet = workbook.addWorksheet(status + '_BROADCAST_COUNT_' + datefrom); //creating worksheet
+                                //  WorkSheet Header
+                                worksheet.columns = [
+                                    { header: 'Jumlah Broadcast', key: count}
+                                ];
+                                // Add Array Rows
+                                worksheet.addRows(jsonData);
+        
+                                const fileName = status + '_BROADCAST_COUNT_' + datefrom;
+        
+                                res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                                res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+        
+                                return workbook.xlsx.write(res)
+                                    .then(function() {
+                                            res.status(200).end();
+                                    });
+                            }
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    
+            } else if (status && dateto) {
+                
+                        db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $2', [status,dateto])
+                        .then(function (dataQty) {
+                            var count = new Number(dataQty[0].count);
+                            if (data.length == 0) {
+                                res.status(200)
+                                .json({
+                                    status: 'success',
+                                    message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                                });
+                            } else {
+                                const jsonData = JSON.parse(JSON.stringify(data));
+                                let workbook = new excel.Workbook(); //creating workbook
+                                let worksheet = workbook.addWorksheet(status + '_BROADCAST_COUNT_' + dateto); //creating worksheet
+                                //  WorkSheet Header
+                                worksheet.columns = [
+                                    { header: 'Jumlah Broadcast', key: count}
+                                ];
+                                // Add Array Rows
+                                worksheet.addRows(jsonData);
+        
+                                const fileName = status + '_BROADCAST_COUNT_' + dateto;
+        
+                                res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                                res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+        
+                                return workbook.xlsx.write(res)
+                                    .then(function() {
+                                            res.status(200).end();
+                                    });
+                            }
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    
+            } else if (client && datefrom) {
+                
+                        db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $2', [client,datefrom])
+                        .then(function (dataQty) {
+                            var count = new Number(dataQty[0].count);
+                            if (data.length == 0) {
+                                res.status(200)
+                                .json({
+                                    status: 'success',
+                                    message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                                });
+                            } else {
+                                const jsonData = JSON.parse(JSON.stringify(data));
+                                let workbook = new excel.Workbook(); //creating workbook
+                                let worksheet = workbook.addWorksheet(client + '_BROADCAST_COUNT_' + datefrom); //creating worksheet
+                                //  WorkSheet Header
+                                worksheet.columns = [
+                                    { header: 'Jumlah Broadcast', key: count}
+                                ];
+                                // Add Array Rows
+                                worksheet.addRows(jsonData);
+        
+                                const fileName = client + '_BROADCAST_COUNT_' + datefrom;
+        
+                                res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                                res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+        
+                                return workbook.xlsx.write(res)
+                                    .then(function() {
+                                            res.status(200).end();
+                                    });
+                            }
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    
+            } else if (client && dateto) {
+               
+                        db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $2', [client,dateto])
+                        .then(function (dataQty) {
+                            var count = new Number(dataQty[0].count);
+                            if (data.length == 0) {
+                                res.status(200)
+                                .json({
+                                    status: 'success',
+                                    message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                                });
+                            } else {
+                                const jsonData = JSON.parse(JSON.stringify(data));
+                                let workbook = new excel.Workbook(); //creating workbook
+                                let worksheet = workbook.addWorksheet(client + '_BROADCAST_COUNT_' + dateto); //creating worksheet
+                                //  WorkSheet Header
+                                worksheet.columns = [
+                                    { header: 'Jumlah Broadcast', key: count}
+                                ];
+                                // Add Array Rows
+                                worksheet.addRows(jsonData);
+        
+                                const fileName = client + '_BROADCAST_COUNT_' + dateto;
+        
+                                res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                                res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+        
+                                return workbook.xlsx.write(res)
+                                    .then(function() {
+                                            res.status(200).end();
+                                    });
+                            }
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    
+            } else if (datefrom && dateto) {
+                
+                        db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE d.create_at :: DATE BETWEEN DATE $1 AND $2', [datefrom,dateto])
+                        .then(function (dataQty) {
+                            var count = new Number(dataQty[0].count);
+                            if (data.length == 0) {
+                                res.status(200)
+                                .json({
+                                    status: 'success',
+                                    message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                                });
+                            } else {
+                                const jsonData = JSON.parse(JSON.stringify(data));
+                                let workbook = new excel.Workbook(); //creating workbook
+                                let worksheet = workbook.addWorksheet('BROADCAST_COUNT_' + datefrom + '_to_' + dateto); //creating worksheet
+                                //  WorkSheet Header
+                                worksheet.columns = [
+                                    { header: 'Jumlah Broadcast', key: count}
+                                ];
+                                // Add Array Rows
+                                worksheet.addRows(jsonData);
+        
+                                const fileName = 'BROADCAST_COUNT_' + datefrom + '_to_' + dateto;
+        
+                                res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                                res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+        
+                                return workbook.xlsx.write(res)
+                                    .then(function() {
+                                            res.status(200).end();
+                                    });
+                            }
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                
+            } else if (status) {
+                
+                        db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1', [status])
+                        .then(function (dataQty) {
+                            var count = new Number(dataQty[0].count);
+                            if (data.length == 0) {
+                                res.status(200)
+                                .json({
+                                    status: 'success',
+                                    message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                                });
+                            } else {
+                                const jsonData = JSON.parse(JSON.stringify(data));
+                                let workbook = new excel.Workbook(); //creating workbook
+                                let worksheet = workbook.addWorksheet(status + '_BROADCAST_COUNT'); //creating worksheet
+                                //  WorkSheet Header
+                                worksheet.columns = [
+                                    { header: 'Jumlah Broadcast', key: count}
+                                ];
+                                // Add Array Rows
+                                worksheet.addRows(jsonData);
+        
+                                const fileName = status + '_BROADCAST_COUNT';
+        
+                                res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                                res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+        
+                                return workbook.xlsx.write(res)
+                                    .then(function() {
+                                            res.status(200).end();
+                                    });
+                            }
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    
+            } else if (client) {
+               
+                        db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $1', [client])
+                        .then(function (dataQty) {
+                            var count = new Number(dataQty[0].count);
+                            if (data.length == 0) {
+                                res.status(200)
+                                .json({
+                                    status: 'success',
+                                    message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                                });
+                            } else {
+                                const jsonData = JSON.parse(JSON.stringify(data));
+                                let workbook = new excel.Workbook(); //creating workbook
+                                let worksheet = workbook.addWorksheet(client + '_BROADCAST_COUNT'); //creating worksheet
+                                //  WorkSheet Header
+                                worksheet.columns = [
+                                    { header: 'Jumlah Broadcast', key: count}
+                                ];
+                                // Add Array Rows
+                                worksheet.addRows(jsonData);
+        
+                                const fileName = client + '_BROADCAST_COUNT';
+        
+                                res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                                res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+        
+                                return workbook.xlsx.write(res)
+                                    .then(function() {
+                                            res.status(200).end();
+                                    });
+                            }
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    
+            } else if (datefrom) {
+                
+                        db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE d.create_at :: DATE BETWEEN DATE $1 AND $1', [datefrom])
+                        .then(function (dataQty) {
+                            var count = new Number(dataQty[0].count);
+                            if (data.length == 0) {
+                                res.status(200)
+                                .json({
+                                    status: 'success',
+                                    message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                                });
+                            } else {
+                                const jsonData = JSON.parse(JSON.stringify(data));
+                                let workbook = new excel.Workbook(); //creating workbook
+                                let worksheet = workbook.addWorksheet('BROADCAST_COUNT_' + datefrom); //creating worksheet
+                                //  WorkSheet Header
+                                worksheet.columns = [
+                                    { header: 'Jumlah Broadcast', key: count}
+                                ];
+                                // Add Array Rows
+                                worksheet.addRows(jsonData);
+        
+                                const fileName = 'BROADCAST_COUNT_' + datefrom;
+        
+                                res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                                res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+        
+                                return workbook.xlsx.write(res)
+                                    .then(function() {
+                                            res.status(200).end();
+                                    });
+                            }
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    
+            } else if (dateto) {
+                
+                        db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE d.create_at :: DATE BETWEEN DATE $1 AND $1', [dateto])
+                        .then(function (dataQty) {
+                            var count = new Number(dataQty[0].count);
+                            if (data.length == 0) {
+                                res.status(200)
+                                .json({
+                                    status: 'success',
+                                    message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                                });
+                            } else {
+                                const jsonData = JSON.parse(JSON.stringify(data));
+                                let workbook = new excel.Workbook(); //creating workbook
+                                let worksheet = workbook.addWorksheet('BROADCAST_COUNT_' + dateto); //creating worksheet
+                                //  WorkSheet Header
+                                worksheet.columns = [
+                                    { header: 'Jumlah Broadcast', key: count}
+                                ];
+                                // Add Array Rows
+                                worksheet.addRows(jsonData);
+        
+                                const fileName = 'BROADCAST_COUNT_' + dateto;
+        
+                                res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                                res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+        
+                                return workbook.xlsx.write(res)
+                                    .then(function() {
+                                            res.status(200).end();
+                                    });
+                            }
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                   
+            } else {
+                
+                        db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id')
+                        .then(function (dataQty) {
+                            var count = new Number(dataQty[0].count);
+                            if (data.length == 0) {
+                                res.status(200)
+                                .json({
+                                    status: 'success',
+                                    message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                                });
+                            } else {
+                                const jsonData = JSON.parse(JSON.stringify(data));
+                                let workbook = new excel.Workbook(); //creating workbook
+                                let worksheet = workbook.addWorksheet('BROADCAST_COUNT'); //creating worksheet
+                                //  WorkSheet Header
+                                worksheet.columns = [
+                                    { header: 'Jumlah Broadcast', key: count}
+                                ];
+                                // Add Array Rows
+                                worksheet.addRows(jsonData);
+        
+                                const fileName = 'BROADCAST_COUNT';
+        
+                                res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                                res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+        
+                                return workbook.xlsx.write(res)
+                                    .then(function() {
+                                            res.status(200).end();
+                                    });
                             }
                         })
                         .catch(function (err) {
@@ -1330,5 +1965,6 @@ module.exports={
     getSmsReport:getSmsReport,
     getSmsDailyTokenUsage:getSmsDailyTokenUsage,
     getSmsTokenTotalUsage:getSmsTokenTotalUsage,
-    reportCount:reportCount
+    reportCount:reportCount,
+    downloadReportCount:downloadReportCount
 }
