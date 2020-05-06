@@ -223,11 +223,76 @@ function getMessageList(req,res,next){
     });
 }
 
+function getMessageByID(req,res,next){
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+
+    checkUser(token1,token2).then(function(result){
+        if(result == 0){
+            res.status(401)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            var client = req.body.client;
+            var id = req.body.id;
+
+            if (client) {
+                db.dbs.any('SELECT * FROM sms.messages WHERE client_id = $1 AND id = $2', [client,id])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 1,
+                            message: 'Data tidak ada'
+                        });
+                    } else {
+                            res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: data,
+                                    message: 'Berhasil menampilkan daftar pesan'
+                                });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else {
+                db.dbs.any('SELECT * FROM sms.messages WHERE id = $1', [id])
+                .then(function (data) {
+                    if (data.length == 0) { 
+                        res.status(200)
+                        .json({
+                            status: 1,
+                            message: 'Data tidak ada'
+                        });
+                    } else {
+                            res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: data,
+                                    message: 'Berhasil menampilkan daftar pesan',
+                                });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            }
+
+        }
+
+    });
+}
+
 
 
 
 module.exports={
     createSms:createSms,
     editSms:editSms,
-    getMessageList:getMessageList
+    getMessageList:getMessageList,
+    getMessageByID:getMessageByID
 }

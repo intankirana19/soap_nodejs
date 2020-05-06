@@ -26,7 +26,7 @@ router.put('/upload', upload.upload);
 //user login
 router.post('/login', auth.checkUser);
 
-//create SMS 
+//create SMS
 router.post('/sms/create', dsms.createSms);
 
 //edit SMS
@@ -35,6 +35,8 @@ router.patch('/sms/edit', dsms.editSms);
 // SMS List
 router.get('/sms/list', dsms.getMessageList);
 
+// sms by id
+router.get('/sms/byid/', dsms.getMessageByID);
 //send SMS
 router.post('/sms', sms.sendSMS);
 
@@ -53,7 +55,7 @@ router.patch('/account/delete', account.deleteAccount);
 
 //Dashboard-Account Roles
 router.get('/account/roleslist', account.getRoles);
-router.get('/account/role', account.accountRole);
+router.get('/account/role/', account.accountRole);
 
 //Dashboard-Logs
 route.get('/account/log', account.getLogs);
