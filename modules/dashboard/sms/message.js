@@ -100,7 +100,7 @@ function editSms(req,res,next){
 
             const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
             const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
-            const q4 = 'SELECT msguid FROM sms.messages WHERE id = $2';
+            const q4 = 'SELECT msguid FROM sms.messages WHERE id = $1';
 
             db.dbs.tx(async t => {
                 await t.none(q1, [text, msgID]);
