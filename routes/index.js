@@ -29,6 +29,9 @@ router.post('/login', auth.checkUser);
 //create SMS 
 router.post('/sms/create', dsms.createSms);
 
+//edit SMS
+router.patch('/sms/edit', dsms.editSms);
+
 // SMS List
 router.get('/sms/list', dsms.getMessageList);
 

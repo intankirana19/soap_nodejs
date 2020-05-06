@@ -79,10 +79,55 @@ function createSms(req,res,next){
     });
 }
 
+function editSms(req,res,next){
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+
+    checkUser(token1,token2).then(function(result){
+        if(result == 0){
+            res.status(401)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            const msgID = req.body.id;
+            const text = req.body.text;
+
+            var clientId = result.client_id;
+
+            const q1 = 'UPDATE sms.messages SET text = $1 WHERE id = $2';
+
+            const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
+            const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
+            const q4 = 'SELECT msguid FROM sms.messages WHERE id = $2';
+
+            db.dbs.tx(async t => {
+                await t.none(q1, [text, msgID]);
+
+                const c = await t.one(q2, [clientId]);
+                const msg = await t.one(q4, [msgID]);
+                const log = "Update Broadcast Message(" + msg.msguid + ")" + " - " + c.sender + " - " + result.username;
+                await t.none(q3, [log, result.id])
+            })
+            .then(() => {
+                res.status(200)
+                .json({
+                    status: 'success',
+                    message: 'Pesan Broadcast berhasil diubah.'
+                });
+            })
+            .catch(error => {
+                return next(error);
+            });
+        }
+    });
+}
+
 function getMessageList(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
-  
+
     checkUser(token1,token2).then(function(result){
         if(result == 0){
             res.status(401)
@@ -183,5 +228,6 @@ function getMessageList(req,res,next){
 
 module.exports={
     createSms:createSms,
+    editSms:editSms,
     getMessageList:getMessageList
 }
