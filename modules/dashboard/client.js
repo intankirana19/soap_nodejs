@@ -58,18 +58,15 @@ function getAllClients(req,res,next){
             var page = req.query.page -1;
             var itemperpage = req.query.itemperpage;
 
-            db.dbs.any('SELECT * FROM sms.clients WHERE is_delete = false ORDER BY update_at desc', [page,itemperpage])
-            .then(function (data) {
-                if (data.length == 0) { 
+            db.dbs.any('SELECT * FROM sms.clients WHERE is_delete = false ORDER BY update_at desc')
+            .then(function (d) {
+                if (d.length == 0) { 
                     res.status(200)
                     .json({
                         status: 'success',
-                        data: data,
-                        message: 'Mohon maaf tidak ada data klien',
-                        itemperpage: itemperpage,
-                        pages: 0
+                        message: 'Mohon maaf tidak ada data klien'
                     });
-                } else if (data.length > 10) {
+                } else if (d.length > 10) {
                     db.dbs.any('SELECT * FROM sms.clients WHERE is_delete = false ORDER BY update_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
                     .then(function (data) {
                         db.dbs.any('SELECT COUNT(*) FROM sms.clients WHERE is_delete = false', [page,itemperpage])
@@ -97,27 +94,20 @@ function getAllClients(req,res,next){
                     .catch(function (err) {
                         return next(err);
                     });
-                } else {
-                    db.dbs.any('SELECT COUNT(*) FROM sms.clients WHERE is_delete = false', [page,itemperpage])
-                    .then(function (dataQty) {
-                        let count = dataQty[0].count;
-                        var pageQty = (count / itemperpage).toFixed(0);
-                        if(pageQty == 0){
-                            pageQty = 1
-                        }
-            
+                } else if (!page && !itemperpage){
                         res.status(200)
                             .json({
                                 status: 'success',
-                                data: data,
+                                data: d,
                                 message: 'Berhasil menampilkan daftar klien',
-                                itemperpage: itemperpage,
-                                pages: pageQty
                             });
-                    })
-                    .catch(function (err) {
-                        return next(err);
-                    });
+                } else {
+                    res.status(200)
+                        .json({
+                            status: 'success',
+                            data: d,
+                            message: 'Berhasil menampilkan daftar klien',
+                        });
                 }
             })
             .catch(function (err) {
