@@ -235,31 +235,8 @@ function getMessageByID(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
-            var client = req.body.client;
             var id = req.body.id;
 
-            if (client) {
-                db.dbs.any('SELECT * FROM sms.messages WHERE client_id = $1 AND id = $2', [client,id])
-                .then(function (data) {
-                    if (data.length == 0) {
-                        res.status(200)
-                        .json({
-                            status: 1,
-                            message: 'Data tidak ada'
-                        });
-                    } else {
-                            res.status(200)
-                                .json({
-                                    status: 'success',
-                                    data: data,
-                                    message: 'Berhasil menampilkan daftar pesan'
-                                });
-                    }
-                })
-                .catch(function (err) {
-                    return next(err);
-                });
-            } else {
                 db.dbs.any('SELECT * FROM sms.messages WHERE id = $1', [id])
                 .then(function (data) {
                     if (data.length == 0) { 
@@ -273,18 +250,13 @@ function getMessageByID(req,res,next){
                                 .json({
                                     status: 'success',
                                     data: data,
-                                    message: 'Berhasil menampilkan daftar pesan',
+                                    message: 'Berhasil menampilkan pesan',
                                 });
                     }
                 })
                 .catch(function (err) {
                     return next(err);
                 });
-            }
-
-        }
-
-    });
 }
 
 
