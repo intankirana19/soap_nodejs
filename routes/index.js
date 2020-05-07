@@ -91,6 +91,7 @@ router.post('/otp/topupclienttoken', otpToken.topUpClientOtpToken);
 router.get('/otp/downloadotpreport', otpReport.downloadOtpReport);
 router.get('/otp/downloaddailyusage', otpReport.downloadOtpDailyTokenUsage);
 router.get('/otp/downloadtotalusage', otpReport.downloadOtpTokenTotalUsage);
+router.get('/otp/downloadreportcount', otpReport.downloadReportCount);
 
 // Download SMS Reports
 router.get('/sms/downloadsmsreport', smsReport.downloadReport);
