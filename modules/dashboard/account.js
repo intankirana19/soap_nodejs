@@ -471,7 +471,7 @@ function accountRole(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
-            var roleId = req.body.role_id;
+            var roleId = req.params.role_id;
 
             db.dbs.one('SELECT * FROM sms.roles WHERE id = $1', [roleId])
             .then(function (data) {

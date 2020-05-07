@@ -62,6 +62,7 @@ route.get('/account/log', account.getLogs);
 
 //Dashboard-Clients
 router.get('/client/list', client.getAllClients);
+router.get('/client/', client.getClient);
 router.post('/client/add', client.addClient);
 router.patch('/client/edit', client.editClient);
 router.patch('/client/activate', client.activateClient);
@@ -80,7 +81,7 @@ router.get('/sms/getclienttoken', smsToken.getClientSmsToken);
 router.post('/sms/topupclienttoken', smsToken.topUpClientSmsToken);
 router.get('/sms/dailyusage', smsReport.getSmsDailyTokenUsage);
 router.get('/sms/totalusage', smsReport.getSmsTokenTotalUsage);
-
+router.get('/sms/topuphistory', smsToken.getTopUpHistory);
 //Dashboard-otp
 router.get('/otp/getreports', otpReport.getOtpReport);
 router.get('/otp/reportcount', otpReport.reportCount);

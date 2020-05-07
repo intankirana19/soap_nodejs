@@ -235,7 +235,7 @@ function getMessageByID(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
-            var id = req.body.id;
+            var id = req.params.id;
 
                 db.dbs.any('SELECT * FROM sms.messages WHERE id = $1', [id])
                 .then(function (data) {

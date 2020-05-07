@@ -118,6 +118,45 @@ function getAllClients(req,res,next){
     });
 }
 
+function getClient(req,res,next){
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+  
+    checkUser(token1,token2).then(function(result){
+        if(result == 0){
+            res.status(401)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            const id = req.params.id;
+
+            db.dbs.any('SELECT * FROM sms.clients WHERE id = $1 AND is_delete = false', [id])
+            .then(function (d) {
+                if (d.length == 0) { 
+                    res.status(200)
+                    .json({
+                        status: 'success',
+                        message: 'Mohon maaf tidak ada data klien'
+                    });
+                } else {
+                    res.status(200)
+                        .json({
+                            status: 'success',
+                            data: d,
+                            message: 'Berhasil menampilkan data klien',
+                        });
+                }
+            })
+            .catch(function (err) {
+                return next(err);
+            });
+        }
+
+    });
+}
+
 function addClient(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
@@ -395,6 +434,7 @@ function deleteClient(req,res,next){
 
 module.exports = {
     getAllClients:getAllClients,
+    getClient:getClient,
     addClient:addClient,
     editClient:editClient,
     activateClient:activateClient,
