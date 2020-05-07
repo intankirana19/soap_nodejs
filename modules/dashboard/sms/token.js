@@ -100,7 +100,7 @@ function downloadAllClientSmsToken(req,res,next){
                 } else {
                     const jsonData = JSON.parse(JSON.stringify(data));
                     let workbook = new excel.Workbook(); //creating workbook
-                    let worksheet = workbook.addWorksheet('CLIENT_TOKEN_LIST'); //creating worksheet
+                    let worksheet = workbook.addWorksheet('CLIENT_BROADCAST_TOKEN_LIST'); //creating worksheet
                     //  WorkSheet Header
                     worksheet.columns = [
                         { header: 'ID Client', key: 'client_id'},
@@ -111,7 +111,7 @@ function downloadAllClientSmsToken(req,res,next){
                     // Add Array Rows
                     worksheet.addRows(jsonData);
 
-                    const fileName = 'CLIENT_TOKEN_LIST';
+                    const fileName = 'CLIENT_BROADCAST_TOKEN_LIST';
 
                     res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
