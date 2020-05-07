@@ -229,50 +229,11 @@ function topUpClientSmsToken(req,res,next){
     });
 }
 
-// function addClientSmsToken(req,res,next){
-//     const token1 = req.header('authorization');
-//     const token2 = req.cookies['token'];
-  
-//     checkUser(token1,token2).then(function(result){
-//         if(result == 0){
-//             res.status(401)
-//             .json({
-//                 status: 'error',
-//                 message: 'Not Authorized, Please RE-LOGIN'
-//             });
-//         }else{
-//             var clientId = result.client_id;
-
-//             db.dbs.one('SELECT amount FROM sms.tokens t left join sms.clients c on t.client_id = c.id WHERE c.id = ' + clientId)
-//             .then(function (dataToken) {
-//                 var tokenQty = new Number(dataToken.amount);
-//                 var amount = new Number(req.body.amount);
-//                 var totalAmount = tokenQty + amount;
-//                 db.dbs.none('UPDATE sms.tokens SET amount = $1 WHERE client_id = $2', [totalAmount,clientId])
-//                 .then(function (data) {
-    
-//                     res.status(200)
-//                     .json({
-//                         status: 'success',
-//                         message: 'Berhasil menambahkan token.'
-//                     });
-//                 })
-//                 .catch(function (err) {
-//                     return next(err);
-//                 });
-//             })
-//             .catch(function (err) {
-//                 return next(err);
-//             });
-
-//         }
-//     });
-// }
 
 function getTopUpHistory(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
-  
+
     checkUser(token1,token2).then(function(result){
         if(result == 0){
             res.status(401)
@@ -303,7 +264,7 @@ function getTopUpHistory(req,res,next){
                         if(pageQty == 0){
                             pageQty = 1
                         }
-            
+
                         res.status(200)
                             .json({
                                 status: 'success',
@@ -325,7 +286,6 @@ function getTopUpHistory(req,res,next){
 
     });
 
-    
 }
 
 function topupRequest(req,res,next){

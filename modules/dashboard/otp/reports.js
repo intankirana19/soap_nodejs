@@ -1730,13 +1730,13 @@ function getOtpDailyTokenUsage(req,res,next){
             var page = req.query.page -1;
             var itemperpage = req.query.itemperpage;
 
-            const q1 = 'SELECT DATE_TRUNC("day", sent_date) AS time, TO_CHAR(sent_date :: DATE, "dd-mm-yyyy") AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND sender = $5 AND r.status = "SENT" GROUP BY time,date,client ORDER BY time LIMIT $2 OFFSET $1 * $2';
+            const q1 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND sender = $5 AND r.status = "SENT" GROUP BY date,client ORDER BY date LIMIT $2 OFFSET $1 * $2';
             const q1c = 'SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND sender = $5 AND r.status = "SENT"';
             
-            const q2 = 'SELECT DATE_TRUNC("day", sent_date) AS time, TO_CHAR(sent_date :: DATE, "dd-mm-yyyy") AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND r.status = "SENT" GROUP BY time,date,client ORDER BY time LIMIT $2 OFFSET $1 * $2';
+            const q2 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND r.status = "SENT" GROUP BY date,client ORDER BY date LIMIT $2 OFFSET $1 * $2';
             const q2c = 'SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND r.status = "SENT"';
             
-            const q3 = 'SELECT DATE_TRUNC("day", sent_date) AS time, TO_CHAR(sent_date :: DATE, "dd-mm-yyyy") AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.status = "SENT" GROUP BY time,date,client ORDER BY time LIMIT $2 OFFSET $1 * $2';
+            const q3 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.status = "SENT" GROUP BY date,client ORDER BY date LIMIT $2 OFFSET $1 * $2';
             const q3c = 'SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND r.status = "SENT"';
 
             if (client && datefrom && dateto) {
