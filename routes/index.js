@@ -78,6 +78,7 @@ router.get('/sms/reportcount', smsReport.reportCount);
 router.get('/sms/gettokenlist', smsToken.getAllClientSmsToken);
 router.get('/sms/getclienttoken', smsToken.getClientSmsToken);
 router.post('/sms/topupclienttoken', smsToken.topUpClientSmsToken);
+router.get('/sms/dailyusage', smsReport.getSmsDailyTokenUsage);
 
 //Dashboard-otp
 router.get('/otp/getreports', otpReport.getOtpReport);
@@ -88,11 +89,15 @@ router.post('/otp/topupclienttoken', otpToken.topUpClientOtpToken);
 
 // Download OTP Reports
 router.get('/otp/downloadotpreport', otpReport.downloadOtpReport);
+router.get('/otp/downloaddailyusage', otpReport.downloadOtpDailyTokenUsage);
+router.get('/otp/downloadtotalusage', otpReport.downloadOtpTokenTotalUsage);
 
 // Download SMS Reports
 router.get('/sms/downloadsmsreport', smsReport.downloadReport);
 router.get('/sms/downloadreportcount', smsReport.downloadReportCount);
 router.get('/sms/downloadclienttoken', smsToken.downloadAllClientSmsToken);
+router.get('/sms/downloaddailyusage', smsReport.downloadSmsDailyTokenUsage);
+router.get('/sms/downloadtotalusage', smsReport.downloadSmsTokenTotalUsage);
 
 // router.post('/report/save', report.saveReport);
 // router.patch('/report/update', report.updateReport);

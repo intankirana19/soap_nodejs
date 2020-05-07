@@ -1724,23 +1724,24 @@ function getOtpDailyTokenUsage(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
+            const status = req.query.status;
             const client = req.query.client;
             const datefrom = req.query.datefrom;
             const dateto = req.query.dateto;
             var page = req.query.page -1;
             var itemperpage = req.query.itemperpage;
 
-            const q1 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND sender = $5 AND r.status = "SENT" GROUP BY date,client ORDER BY date LIMIT $2 OFFSET $1 * $2';
-            const q1c = 'SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND sender = $5 AND r.status = "SENT"';
+            const q1 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND sender = $5 AND r.status = $6 GROUP BY date,client ORDER BY date LIMIT $2 OFFSET $1 * $2';
+            const q1c = 'SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND sender = $5 AND r.status = $6';
             
-            const q2 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND r.status = "SENT" GROUP BY date,client ORDER BY date LIMIT $2 OFFSET $1 * $2';
-            const q2c = 'SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND r.status = "SENT"';
+            const q2 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND r.status = $5 GROUP BY date,client ORDER BY date LIMIT $2 OFFSET $1 * $2';
+            const q2c = 'SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND r.status = $5';
             
-            const q3 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.status = "SENT" GROUP BY date,client ORDER BY date LIMIT $2 OFFSET $1 * $2';
-            const q3c = 'SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND r.status = "SENT"';
+            const q3 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.status = $3 GROUP BY date,client ORDER BY date LIMIT $2 OFFSET $1 * $2';
+            const q3c = 'SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.status = $3';
 
             if (client && datefrom && dateto) {
-                db.dbs.any(q1, [page,itemperpage,datefrom,dateto,client])
+                db.dbs.any(q1, [page,itemperpage,datefrom,dateto,client,status])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -1752,7 +1753,7 @@ function getOtpDailyTokenUsage(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any(q1c, [page,itemperpage,datefrom,dateto,client])
+                        db.dbs.any(q1c, [page,itemperpage,datefrom,dateto,client,status])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
@@ -1778,7 +1779,7 @@ function getOtpDailyTokenUsage(req,res,next){
                     return next(err);
                 });
             } else if (datefrom && dateto) {
-                db.dbs.any(q2, [page,itemperpage,datefrom,dateto])
+                db.dbs.any(q2, [page,itemperpage,datefrom,dateto,status])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -1790,7 +1791,7 @@ function getOtpDailyTokenUsage(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any(q2c, [page,itemperpage,datefrom,dateto])
+                        db.dbs.any(q2c, [page,itemperpage,datefrom,dateto,status])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
@@ -1816,7 +1817,7 @@ function getOtpDailyTokenUsage(req,res,next){
                     return next(err);
                 });
             } else {
-                db.dbs.any(q3, [page,itemperpage])
+                db.dbs.any(q3, [page,itemperpage,status])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -1828,7 +1829,7 @@ function getOtpDailyTokenUsage(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any(q3c, [page,itemperpage])
+                        db.dbs.any(q3c, [page,itemperpage,status])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
@@ -1860,6 +1861,147 @@ function getOtpDailyTokenUsage(req,res,next){
     });
 }
 
+function downloadOtpDailyTokenUsage(req,res,next){
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+  
+    checkUser(token1,token2).then(function(result){
+        if(result == 0){
+            res.status(401)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            const status = req.query.status;
+            const client = req.query.client;
+            const datefrom = req.query.datefrom;
+            const dateto = req.query.dateto;
+
+            const q1 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $1 AND $2 AND sender = $3 AND r.status = $4 GROUP BY date,client ORDER BY date';
+
+            const q2 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $1 AND $2 AND r.status = $3 GROUP BY date,client ORDER BY date';
+
+            const q3 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.status = $1 GROUP BY date,client ORDER BY date';
+
+            if (client && datefrom && dateto) {
+                db.dbs.any(q1, [datefrom,dateto,client,status])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet(client + '_OTP_DAILY_USAGE_' + datefrom + '_to_' + dateto); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'date'},
+                            { header: 'Client', key: 'client'},
+                            { header: 'Pemakaian OTP', key: 'otp_usage'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = client + '_OTP_DAILY_USAGE_' + datefrom + '_to_' + dateto;
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (datefrom && dateto) {
+                db.dbs.any(q2, [datefrom,dateto,status])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('OTP_DAILY_USAGE_' + datefrom + '_to_' + dateto); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'date'},
+                            { header: 'Client', key: 'client'},
+                            { header: 'Pemakaian OTP', key: 'otp_usage'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = 'OTP_DAILY_USAGE_' + datefrom + '_to_' + dateto;
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else {
+                db.dbs.any(q3, [status])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('OTP_DAILY_USAGE'); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'date'},
+                            { header: 'Client', key: 'client'},
+                            { header: 'Pemakaian OTP', key: 'otp_usage'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = 'OTP_DAILY_USAGE';
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            }
+
+
+        }
+    });
+}
+
 function getOtpTokenTotalUsage(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
@@ -1872,18 +2014,19 @@ function getOtpTokenTotalUsage(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
+            const status = req.query.status;
             const client = req.query.client;
             const datefrom = req.query.datefrom;
             const dateto = req.query.dateto;
 
-            const q1 = 'SELECT COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE cast(sent_date AS date) :: DATE BETWEEN DATE $1 AND $2 AND sender = $3 AND r.status = "SENT"';
+            const q1 = 'SELECT sender, COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE cast(sent_date AS date) :: DATE BETWEEN DATE $1 AND $2 AND sender = $3 AND r.status = $4';
             
-            const q2 = 'SELECT COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE cast(sent_date AS date) :: DATE BETWEEN DATE $1 AND $2 AND r.status = "SENT"';
+            const q2 = 'SELECT sender, COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE cast(sent_date AS date) :: DATE BETWEEN DATE $1 AND $2 AND r.status = $3';
             
-            const q3 = 'SELECT COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE r.status = "SENT"';
+            const q3 = 'SELECT sender, COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE r.status = $1';
 
             if (client && datefrom && dateto) {
-                db.dbs.any(q1, [datefrom,dateto,client])
+                db.dbs.any(q1, [datefrom,dateto,client,status])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -1906,7 +2049,7 @@ function getOtpTokenTotalUsage(req,res,next){
                     return next(err);
                 });
             } else if (datefrom && dateto) {
-                db.dbs.any(q2, [datefrom,dateto])
+                db.dbs.any(q2, [datefrom,dateto,status])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -1928,7 +2071,7 @@ function getOtpTokenTotalUsage(req,res,next){
                     return next(err);
                 });
             } else {
-                db.dbs.any(q3)
+                db.dbs.any(q3, [status])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -1958,11 +2101,151 @@ function getOtpTokenTotalUsage(req,res,next){
     });
 }
 
+function downloadOtpTokenTotalUsage(req,res,next){
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+  
+    checkUser(token1,token2).then(function(result){
+        if(result == 0){
+            res.status(401)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            const status = req.query.status;
+            const client = req.query.client;
+            const datefrom = req.query.datefrom;
+            const dateto = req.query.dateto;
+
+            const q1 = 'SELECT sender,COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE cast(sent_date AS date) :: DATE BETWEEN DATE $1 AND $2 AND sender = $3 AND r.status = $4';
+            
+            const q2 = 'SELECT sender,COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE cast(sent_date AS date) :: DATE BETWEEN DATE $1 AND $2 AND r.status = $3';
+            
+            const q3 = 'SELECT sender,COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE r.status = $1';
+
+            if (client && datefrom && dateto) {
+                db.dbs.any(q1, [datefrom,dateto,client,status])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet(client + '_OTP_TOTAL_USAGE_' + datefrom + '_to_' + dateto); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Client', key: 'sender'},
+                            { header: 'Pemakaian OTP', key: 'total_usage'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = client + '_OTP_TOTAL_USAGE_' + datefrom + '_to_' + dateto;
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (datefrom && dateto) {
+                db.dbs.any(q2, [datefrom,dateto,status])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('OTP_TOTAL_USAGE_' + datefrom + '_to_' + dateto); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Client', key: 'sender'},
+                            { header: 'Pemakaian OTP', key: 'total_usage'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = 'OTP_TOTAL_USAGE_' + datefrom + '_to_' + dateto;
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else {
+                db.dbs.any(q3, [status])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('OTP_TOTAL_USAGE'); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Client', key: 'sender'},
+                            { header: 'Pemakaian OTP', key: 'total_usage'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = 'OTP_TOTAL_USAGE';
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            }
+
+
+        }
+    });
+}
+
 
 module.exports={
     getOtpReport:getOtpReport,
     getOtpDailyTokenUsage:getOtpDailyTokenUsage,
     getOtpTokenTotalUsage:getOtpTokenTotalUsage,
     downloadOtpReport:downloadOtpReport,
-    reportCount:reportCount
+    reportCount:reportCount,
+    downloadOtpDailyTokenUsage:downloadOtpDailyTokenUsage,
+    downloadOtpTokenTotalUsage:downloadOtpTokenTotalUsage
 }

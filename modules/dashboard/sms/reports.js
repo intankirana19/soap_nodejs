@@ -2358,7 +2358,7 @@ function downloadReportCount(req,res,next){
 function getSmsDailyTokenUsage(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
-  
+
     checkUser(token1,token2).then(function(result){
         if(result == 0){
             res.status(401)
@@ -2367,25 +2367,26 @@ function getSmsDailyTokenUsage(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
+            const status = req.query.status;
             const client = req.query.client;
             const datefrom = req.query.datefrom;
             const dateto = req.query.dateto;
             var page = req.query.page -1;
             var itemperpage = req.query.itemperpage;
 
-            const q1 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = "SUCCESS" AND r.update_at :: DATE BETWEEN DATE $3 AND $4 AND m.client_id = $5 GROUP BY date,sender ORDER BY date LIMIT $2 OFFSET $1 * $2';
-            const q1c = 'SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = "SUCCESS" AND r.update_at :: DATE BETWEEN DATE $3 AND $4 AND m.client_id = $5';
-            
-            const q2 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = "SUCCESS" AND r.update_at :: DATE BETWEEN DATE $3 AND $4 GROUP BY date,sender ORDER BY date LIMIT $2 OFFSET $1 * $2';
-            const q2c = 'SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = "SUCCESS" AND r.update_at :: DATE BETWEEN DATE $3 AND $4';
-            
-            const q3 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = "SUCCESS" GROUP BY date,sender ORDER BY date LIMIT $2 OFFSET $1 * $2';
-            const q3c = 'SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = "SUCCESS"';
+            const q1 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $6 AND r.update_at :: DATE BETWEEN DATE $3 AND $4 AND m.client_id = $5 GROUP BY date,sender ORDER BY date LIMIT $2 OFFSET $1 * $2';
+            const q1c = 'SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $6 AND r.update_at :: DATE BETWEEN DATE $3 AND $4 AND m.client_id = $5';
+
+            const q2 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $5 AND r.update_at :: DATE BETWEEN DATE $3 AND $4 GROUP BY date,sender ORDER BY date LIMIT $2 OFFSET $1 * $2';
+            const q2c = 'SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $5 AND r.update_at :: DATE BETWEEN DATE $3 AND $4';
+
+            const q3 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $3 GROUP BY date,sender ORDER BY date LIMIT $2 OFFSET $1 * $2';
+            const q3c = 'SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $3';
 
             if (client && datefrom && dateto) {
-                db.dbs.any(q1, [page,itemperpage,datefrom,dateto,client])
+                db.dbs.any(q1, [page,itemperpage,datefrom,dateto,client,status])
                 .then(function (data) {
-                    if (data.length == 0) { 
+                    if (data.length == 0) {
                         res.status(200)
                         .json({
                             status: 2,
@@ -2395,14 +2396,14 @@ function getSmsDailyTokenUsage(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any(q1c, [page,itemperpage,datefrom,dateto,client])
+                        db.dbs.any(q1c, [page,itemperpage,datefrom,dateto,client,status])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
                             if(pageQty == 0){
                                 pageQty = 1
                             }
-                
+
                             res.status(200)
                                 .json({
                                     status: 1,
@@ -2421,7 +2422,7 @@ function getSmsDailyTokenUsage(req,res,next){
                     return next(err);
                 });
             } else if (datefrom && dateto) {
-                db.dbs.any(q2, [page,itemperpage,datefrom,dateto])
+                db.dbs.any(q2, [page,itemperpage,datefrom,dateto,status])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -2433,14 +2434,14 @@ function getSmsDailyTokenUsage(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any(q2c, [page,itemperpage,datefrom,dateto])
+                        db.dbs.any(q2c, [page,itemperpage,datefrom,dateto,status])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
                             if(pageQty == 0){
                                 pageQty = 1
                             }
-                
+
                             res.status(200)
                                 .json({
                                     status: 1,
@@ -2459,7 +2460,7 @@ function getSmsDailyTokenUsage(req,res,next){
                     return next(err);
                 });
             } else {
-                db.dbs.any(q3, [page,itemperpage])
+                db.dbs.any(q3, [page,itemperpage,status])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -2471,14 +2472,14 @@ function getSmsDailyTokenUsage(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any(q3c, [page,itemperpage])
+                        db.dbs.any(q3c, [page,itemperpage,status])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
                             if(pageQty == 0){
                                 pageQty = 1
                             }
-                
+
                             res.status(200)
                                 .json({
                                     status: 1,
@@ -2503,10 +2504,151 @@ function getSmsDailyTokenUsage(req,res,next){
     });
 }
 
+function downloadSmsDailyTokenUsage(req,res,next){
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+
+    checkUser(token1,token2).then(function(result){
+        if(result == 0){
+            res.status(401)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            const status = req.query.status;
+            const client = req.query.client;
+            const datefrom = req.query.datefrom;
+            const dateto = req.query.dateto;
+
+            const q1 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $4 AND r.update_at :: DATE BETWEEN DATE $1 AND $2 AND m.client_id = $3 GROUP BY date,sender ORDER BY date';
+
+            const q2 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $3 AND r.update_at :: DATE BETWEEN DATE $1 AND $2 GROUP BY date,sender ORDER BY date';
+
+            const q3 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $1 GROUP BY date,sender ORDER BY date';
+
+            if (client && datefrom && dateto) {
+                db.dbs.any(q1, [datefrom,dateto,client,status])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_DAILY_USAGE_' + datefrom + '_to_' + dateto); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'date'},
+                            { header: 'Client', key: 'client'},
+                            { header: 'Pemakaian Broadcast', key: 'total_usage'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = client + '_BROADCAST_DAILY_USAGE_' + datefrom + '_to_' + dateto;
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (datefrom && dateto) {
+                db.dbs.any(q2, [datefrom,dateto,status])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('BROADCAST_DAILY_USAGE_' + datefrom + '_to_' + dateto); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'date'},
+                            { header: 'Client', key: 'client'},
+                            { header: 'Pemakaian Broadcast', key: 'total_usage'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = 'BROADCAST_DAILY_USAGE_' + datefrom + '_to_' + dateto;
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else {
+                db.dbs.any(q3, [status])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('BROADCAST_DAILY_USAGE'); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'date'},
+                            { header: 'Client', key: 'client'},
+                            { header: 'Pemakaian Broadcast', key: 'total_usage'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = 'BROADCAST_DAILY_USAGE';
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            }
+
+
+        }
+    });
+}
+
 function getSmsTokenTotalUsage(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
-  
+
     checkUser(token1,token2).then(function(result){
         if(result == 0){
             res.status(401)
@@ -2518,19 +2660,19 @@ function getSmsTokenTotalUsage(req,res,next){
             const client = req.query.client;
             const datefrom = req.query.datefrom;
             const dateto = req.query.dateto;
-            var page = req.query.page -1;
-            var itemperpage = req.query.itemperpage;
+            // var page = req.query.page -1;
+            // var itemperpage = req.query.itemperpage;
 
-            const q1 = 'SELECT c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = "SUCCESS" AND r.update_at :: DATE BETWEEN DATE $1 AND $2 AND m.client_id = $3';
-            
-            const q2 = 'SELECT c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = "SUCCESS" AND r.update_at :: DATE BETWEEN DATE $1 AND $2';
-            
-            const q3 = 'SELECT c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = "SUCCESS"';
+            const q1 = 'SELECT c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $4 AND r.update_at :: DATE BETWEEN DATE $1 AND $2 AND m.client_id = $3';
+
+            const q2 = 'SELECT c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $3 AND r.update_at :: DATE BETWEEN DATE $1 AND $2';
+
+            const q3 = 'SELECT c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $1';
 
             if (client && datefrom && dateto) {
-                db.dbs.any(q1, [datefrom,dateto,client])
+                db.dbs.any(q1, [datefrom,dateto,client,status])
                 .then(function (data) {
-                    if (data.length == 0) { 
+                    if (data.length == 0) {
                         res.status(200)
                         .json({
                             status: 2,
@@ -2543,8 +2685,8 @@ function getSmsTokenTotalUsage(req,res,next){
                                     status: 1,
                                     data: data,
                                     message: 'Berhasil menampilkan total pemakaian token Broadcast',
-                                    itemperpage: itemperpage,
-                                    pages: pageQty
+                                    // itemperpage: itemperpage,
+                                    // pages: pageQty
                                 });
                     }
                 })
@@ -2552,7 +2694,7 @@ function getSmsTokenTotalUsage(req,res,next){
                     return next(err);
                 });
             } else if (datefrom && dateto) {
-                db.dbs.any(q2, [page,itemperpage,datefrom,dateto])
+                db.dbs.any(q2, [datefrom,dateto,status])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -2575,7 +2717,7 @@ function getSmsTokenTotalUsage(req,res,next){
                     return next(err);
                 });
             } else {
-                db.dbs.any(q3, [page,itemperpage])
+                db.dbs.any(q3, [status])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -2592,6 +2734,144 @@ function getSmsTokenTotalUsage(req,res,next){
                                     data: data,
                                     message: 'Berhasil menampilkan total pemakaian token Broadcast'
                                 });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            }
+
+
+        }
+    });
+}
+
+function downloadSmsTokenTotalUsage(req,res,next){
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+
+    checkUser(token1,token2).then(function(result){
+        if(result == 0){
+            res.status(401)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            const status = req.query.status;
+            const client = req.query.client;
+            const datefrom = req.query.datefrom;
+            const dateto = req.query.dateto;
+
+            const q1 = 'SELECT c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $4 AND r.update_at :: DATE BETWEEN DATE $1 AND $2 AND m.client_id = $3';
+
+            const q2 = 'SELECT c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $3 AND r.update_at :: DATE BETWEEN DATE $1 AND $2';
+
+            const q3 = 'SELECT c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $1';
+
+            if (client && datefrom && dateto) {
+                db.dbs.any(q1, [datefrom,dateto,client,status])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_TOTAL_USAGE_' + datefrom + '_to_' + dateto); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Client', key: 'client'},
+                            { header: 'Pemakaian Broadcast', key: 'total_usage'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = client + '_BROADCAST_TOTAL_USAGE_' + datefrom + '_to_' + dateto;
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (datefrom && dateto) {
+                db.dbs.any(q2, [datefrom,dateto,status])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('BROADCAST_TOTAL_USAGE_' + datefrom + '_to_' + dateto); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Client', key: 'client'},
+                            { header: 'Pemakaian Broadcast', key: 'total_usage'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = 'BROADCAST_TOTAL_USAGE_' + datefrom + '_to_' + dateto;
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else {
+                db.dbs.any(q3, [status])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('BROADCAST_TOTAL_USAGE'); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Client', key: 'client'},
+                            { header: 'Pemakaian Broadcast', key: 'total_usage'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = 'BROADCAST_TOTAL_USAGE';
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
                     }
                 })
                 .catch(function (err) {
@@ -2611,5 +2891,7 @@ module.exports={
     getSmsTokenTotalUsage:getSmsTokenTotalUsage,
     reportCount:reportCount,
     downloadReport:downloadReport,
-    downloadReportCount:downloadReportCount
+    downloadReportCount:downloadReportCount,
+    downloadSmsDailyTokenUsage:downloadSmsDailyTokenUsage,
+    downloadSmsTokenTotalUsage:downloadSmsTokenTotalUsage
 }
