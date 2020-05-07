@@ -651,6 +651,654 @@ function getSmsReport(req,res,next){
     });
 }
 
+function downloadReport(req,res){
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+  
+    checkUser(token1,token2).then(function(result){
+        if(result == 0){
+            res.status(401)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            const status = req.query.status;
+            const client = req.query.client;
+            const datefrom = req.query.datefrom;
+            const dateto = req.query.dateto;
+
+            if (status && client && datefrom && dateto) {
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND m.client_id = $2 AND d.create_at :: DATE BETWEEN DATE $3 AND $4 ORDER BY d.create_at desc', [status,client,datefrom,dateto])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_' + status + '_LIST_' + datefrom + '_to_' + dateto); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Pengirim', key: 'sender'},
+                            { header: 'Penerima', key: 'msisdn'},
+                            { header: 'Status', key: 'status'},
+                            { header: 'Status_Message', key: 'message'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = client + '_BROADCAST_' + status + '_LIST_' + datefrom + '_to_' + dateto;
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (status && client && datefrom) {
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND m.client_id = $2 AND d.create_at :: DATE BETWEEN DATE $3 AND $3 ORDER BY d.create_at desc', [status,client,datefrom])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('BROADCAST_' + status + '_LIST_' + datefrom + '_to_' + dateto); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Pengirim', key: 'sender'},
+                            { header: 'Penerima', key: 'msisdn'},
+                            { header: 'Status', key: 'status'},
+                            { header: 'Status_Message', key: 'message'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = 'BROADCAST_' + status + '_LIST_' + datefrom + '_to_' + dateto;
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (status && client && dateto) {
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND m.client_id = $2 AND d.create_at :: DATE BETWEEN DATE $3 AND $3 ORDER BY d.create_at desc', [status,client,dateto])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_' + status + '_LIST_' + dateto + '_to_' + dateto); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Pengirim', key: 'sender'},
+                            { header: 'Penerima', key: 'msisdn'},
+                            { header: 'Status', key: 'status'},
+                            { header: 'Status_Message', key: 'message'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = client + '_BROADCAST_' + status + '_LIST_' + dateto + '_to_' + dateto;
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (status && datefrom && dateto) {
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $3 ORDER BY d.create_at desc', [status,datefrom,dateto])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('BROADCAST_' + status + '_LIST_' + datefrom + '_to_' + dateto); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Pengirim', key: 'sender'},
+                            { header: 'Penerima', key: 'msisdn'},
+                            { header: 'Status', key: 'status'},
+                            { header: 'Status_Message', key: 'message'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = 'BROADCAST_' + status + '_LIST_' + datefrom + '_to_' + dateto;
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (client && datefrom && dateto) {
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $3 ORDER BY d.create_at desc', [client,datefrom,dateto])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_LIST_' + dateto + '_to_' + dateto); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Pengirim', key: 'sender'},
+                            { header: 'Penerima', key: 'msisdn'},
+                            { header: 'Status', key: 'status'},
+                            { header: 'Status_Message', key: 'message'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = client + '_BROADCAST_LIST_' + dateto + '_to_' + dateto;
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (status && client) {
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND m.client_id = $2 ORDER BY d.create_at desc', [status,client])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_' + status + '_LIST'); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Pengirim', key: 'sender'},
+                            { header: 'Penerima', key: 'msisdn'},
+                            { header: 'Status', key: 'status'},
+                            { header: 'Status_Message', key: 'message'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = client + '_BROADCAST_' + status + '_LIST';
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (status && datefrom) {
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $2 ORDER BY d.create_at desc', [status,datefrom])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('BROADCAST_' + status + '_LIST_' + datefrom + '_to_' + datefrom); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Pengirim', key: 'sender'},
+                            { header: 'Penerima', key: 'msisdn'},
+                            { header: 'Status', key: 'status'},
+                            { header: 'Status_Message', key: 'message'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = 'BROADCAST_' + status + '_LIST_' + datefrom + '_to_' + datefrom;
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (status && dateto) {
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $2 ORDER BY d.create_at desc', [status,dateto])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('BROADCAST_' + status + '_LIST_' + dateto + '_to_' + dateto); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Pengirim', key: 'sender'},
+                            { header: 'Penerima', key: 'msisdn'},
+                            { header: 'Status', key: 'status'},
+                            { header: 'Status_Message', key: 'message'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = 'BROADCAST_' + status + '_LIST_' + dateto + '_to_' + dateto;
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (client && datefrom) {
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $2 ORDER BY d.create_at desc', [client,datefrom])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_LIST_' + datefrom + '_to_' + datefrom); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Pengirim', key: 'sender'},
+                            { header: 'Penerima', key: 'msisdn'},
+                            { header: 'Status', key: 'status'},
+                            { header: 'Status_Message', key: 'message'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = client + '_BROADCAST_LIST_' + datefrom + '_to_' + datefrom;
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (client && dateto) {
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $2 ORDER BY d.create_at desc', [client,dateto])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_LIST_' + dateto + '_to_' + dateto); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Pengirim', key: 'sender'},
+                            { header: 'Penerima', key: 'msisdn'},
+                            { header: 'Status', key: 'status'},
+                            { header: 'Status_Message', key: 'message'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = client + '_BROADCAST_LIST_' + dateto + '_to_' + dateto;
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (datefrom && dateto) {
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE d.create_at :: DATE BETWEEN DATE $1 AND $2 ORDER BY d.create_at desc', [datefrom,dateto])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('BROADCAST_LIST_' + datefrom + '_to_' + dateto); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Pengirim', key: 'sender'},
+                            { header: 'Penerima', key: 'msisdn'},
+                            { header: 'Status', key: 'status'},
+                            { header: 'Status_Message', key: 'message'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = 'BROADCAST_LIST_' + datefrom + '_to_' + dateto;
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (status) {
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 ORDER BY d.create_at desc', [status])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('BROADCAST_' + status + '_LIST'); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Pengirim', key: 'sender'},
+                            { header: 'Penerima', key: 'msisdn'},
+                            { header: 'Status', key: 'status'},
+                            { header: 'Status_Message', key: 'message'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = 'BROADCAST_' + status + '_LIST';
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (client) {
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $1 ORDER BY d.create_at desc LIMIT $2 OFFSET $1 * $2', [client])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_LIST'); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Pengirim', key: 'sender'},
+                            { header: 'Penerima', key: 'msisdn'},
+                            { header: 'Status', key: 'status'},
+                            { header: 'Status_Message', key: 'message'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = client + '_BROADCAST_LIST';
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (datefrom) {
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE d.create_at :: DATE BETWEEN DATE $1 AND $1 ORDER BY d.create_at desc', [datefrom])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('BROADCAST_LIST_' + datefrom); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Pengirim', key: 'sender'},
+                            { header: 'Penerima', key: 'msisdn'},
+                            { header: 'Status', key: 'status'},
+                            { header: 'Status_Message', key: 'message'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = 'BROADCAST_LIST_' + datefrom;
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (dateto) {
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE d.create_at :: DATE BETWEEN DATE $1 AND $1 ORDER BY d.create_at desc', [dateto])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('BROADCAST_LIST_' + dateto); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Pengirim', key: 'sender'},
+                            { header: 'Penerima', key: 'msisdn'},
+                            { header: 'Status', key: 'status'},
+                            { header: 'Status_Message', key: 'message'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = 'BROADCAST_LIST_' + dateto;
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else {
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id ORDER BY d.create_at desc')
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('BROADCAST_LIST'); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Pengirim', key: 'sender'},
+                            { header: 'Penerima', key: 'msisdn'},
+                            { header: 'Status', key: 'status'},
+                            { header: 'Status_Message', key: 'message'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = 'BROADCAST_LIST';
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            }
+
+            
+        }
+    });
+}
+
 function reportCount(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
@@ -1956,15 +2604,12 @@ function getSmsTokenTotalUsage(req,res,next){
     });
 }
 
-function downloadReport(req,res){
-
-}
-
 
 module.exports={
     getSmsReport:getSmsReport,
     getSmsDailyTokenUsage:getSmsDailyTokenUsage,
     getSmsTokenTotalUsage:getSmsTokenTotalUsage,
     reportCount:reportCount,
+    downloadReport:downloadReport,
     downloadReportCount:downloadReportCount
 }

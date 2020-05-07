@@ -5,6 +5,8 @@ var auth = require('../../shared/auth');
 
 const cron = require('node-cron');
 
+const excel = require('exceljs');
+
 
 let checkUser = function(token1,token2) {
     return new Promise(function(resolve, reject) {
@@ -65,6 +67,60 @@ function getAllClientSmsToken(req,res,next){
                     .catch(function (err) {
                         return next(err);
                     });
+                }
+            })
+            .catch(function (err) {
+                return next(err);
+            });
+        }
+    });
+}
+
+function downloadAllClientSmsToken(req,res,next){
+
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+  
+    checkUser(token1,token2).then(function(result){
+        if(result == 0){
+            res.status(401)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            db.dbs.any('SELECT t.id,amount,t.client_id,c.sender as client,t.create_at,t.update_at FROM sms.tokens t left join sms.clients c on t.client_id = c.id order by update_at desc')
+            .then(function (data) {
+                if (data.length == 0) {
+                    res.status(200)
+                    .json({
+                        status: 'success',
+                        message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                    });
+                } else {
+                    const jsonData = JSON.parse(JSON.stringify(data));
+                    let workbook = new excel.Workbook(); //creating workbook
+                    let worksheet = workbook.addWorksheet('CLIENT_TOKEN_LIST'); //creating worksheet
+                    //  WorkSheet Header
+                    worksheet.columns = [
+                        { header: 'ID Client', key: 'client_id'},
+                        { header: 'Client', key: 'client'},
+                        { header: 'Token Broadcast', key: 'amount'},
+                        { header: 'Terakhir Update/ Top Up/ Reset', key: 'update_at'}
+                    ];
+                    // Add Array Rows
+                    worksheet.addRows(jsonData);
+
+                    const fileName = 'CLIENT_TOKEN_LIST';
+
+                    res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                    res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                    return workbook.xlsx.write(res)
+                        .then(function() {
+                                res.status(200).end();
+                        });
                 }
             })
             .catch(function (err) {
@@ -311,5 +367,6 @@ module.exports={
     getAllClientSmsToken:getAllClientSmsToken,
     getClientSmsToken:getClientSmsToken,
     topUpClientSmsToken:topUpClientSmsToken,
-    getTopUpHistory:getTopUpHistory
+    getTopUpHistory:getTopUpHistory,
+    downloadAllClientSmsToken:downloadAllClientSmsToken
 }
