@@ -1321,7 +1321,7 @@ function reportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND m.client_id = $2 AND d.create_at :: DATE BETWEEN DATE $3 AND $4', [status,client,datefrom,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1346,7 +1346,7 @@ function reportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND m.client_id = $2 AND d.create_at :: DATE BETWEEN DATE $3 AND $3', [status,client,datefrom])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1371,7 +1371,7 @@ function reportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND m.client_id = $2 AND d.create_at :: DATE BETWEEN DATE $3 AND $3', [status,client,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1396,7 +1396,7 @@ function reportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $3', [status,datefrom,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1421,7 +1421,7 @@ function reportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $3', [client,datefrom,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1446,7 +1446,7 @@ function reportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND m.client_id = $2', [status,client])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1471,7 +1471,7 @@ function reportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $2', [status,datefrom])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1496,7 +1496,7 @@ function reportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $2', [status,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1521,7 +1521,7 @@ function reportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $2', [client,datefrom])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1546,7 +1546,7 @@ function reportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $2', [client,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1571,7 +1571,7 @@ function reportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE d.create_at :: DATE BETWEEN DATE $1 AND $2', [datefrom,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1596,7 +1596,7 @@ function reportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1', [status])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1621,7 +1621,7 @@ function reportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $1', [client])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1646,7 +1646,7 @@ function reportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE d.create_at :: DATE BETWEEN DATE $1 AND $1', [datefrom])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1671,7 +1671,7 @@ function reportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE d.create_at :: DATE BETWEEN DATE $1 AND $1', [dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1696,7 +1696,7 @@ function reportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id')
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1745,7 +1745,7 @@ function downloadReportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND m.client_id = $2 AND d.create_at :: DATE BETWEEN DATE $3 AND $4', [status,client,datefrom,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                            if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1783,7 +1783,7 @@ function downloadReportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND m.client_id = $2 AND d.create_at :: DATE BETWEEN DATE $3 AND $3', [status,client,datefrom])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1821,7 +1821,7 @@ function downloadReportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND m.client_id = $2 AND d.create_at :: DATE BETWEEN DATE $3 AND $3', [status,client,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1859,7 +1859,7 @@ function downloadReportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $3', [status,datefrom,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1897,7 +1897,7 @@ function downloadReportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $3', [client,datefrom,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1935,7 +1935,7 @@ function downloadReportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND m.client_id = $2', [status,client])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -1973,7 +1973,7 @@ function downloadReportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $2', [status,datefrom])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -2011,7 +2011,7 @@ function downloadReportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $2', [status,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -2049,7 +2049,7 @@ function downloadReportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $2', [client,datefrom])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -2087,7 +2087,7 @@ function downloadReportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $1 AND d.create_at :: DATE BETWEEN DATE $2 AND $2', [client,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -2125,7 +2125,7 @@ function downloadReportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE d.create_at :: DATE BETWEEN DATE $1 AND $2', [datefrom,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -2163,7 +2163,7 @@ function downloadReportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1', [status])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -2201,7 +2201,7 @@ function downloadReportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $1', [client])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -2239,7 +2239,7 @@ function downloadReportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE d.create_at :: DATE BETWEEN DATE $1 AND $1', [datefrom])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -2277,7 +2277,7 @@ function downloadReportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE d.create_at :: DATE BETWEEN DATE $1 AND $1', [dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
@@ -2315,7 +2315,7 @@ function downloadReportCount(req,res,next){
                         db.dbs.any('SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id')
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
-                            if (data.length == 0) {
+                             if (dataQty.length == 0) {
                                 res.status(200)
                                 .json({
                                     status: 'success',
