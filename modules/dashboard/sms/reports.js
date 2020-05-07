@@ -2663,11 +2663,11 @@ function getSmsTokenTotalUsage(req,res,next){
             // var page = req.query.page -1;
             // var itemperpage = req.query.itemperpage;
 
-            const q1 = 'SELECT c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $4 AND r.update_at :: DATE BETWEEN DATE $1 AND $2 AND m.client_id = $3';
+            const q1 = 'SELECT m.client_id,c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $4 AND r.update_at :: DATE BETWEEN DATE $1 AND $2 AND m.client_id = $3';
 
-            const q2 = 'SELECT c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $3 AND r.update_at :: DATE BETWEEN DATE $1 AND $2';
+            const q2 = 'SELECT m.client_id,c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $3 AND r.update_at :: DATE BETWEEN DATE $1 AND $2';
 
-            const q3 = 'SELECT c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $1';
+            const q3 = 'SELECT m.client_id,c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $1';
 
             if (client && datefrom && dateto) {
                 db.dbs.any(q1, [datefrom,dateto,client,status])
