@@ -60,7 +60,7 @@ router.get('/account/clientroleslist', account.clientRoleList);
 router.get('/account/role/', account.accountRole);
 
 //Dashboard-Logs
-route.get('/account/log', account.getLogs);
+router.get('/account/log', account.getLogs);
 
 //Dashboard-Clients
 router.get('/client/list', client.getAllClients);
