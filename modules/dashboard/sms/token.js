@@ -590,7 +590,7 @@ function downloadTopUpHistory(req,res,next){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_TOP_UP_HISTORY_' + datefrom + '_to_' + dateto); //creating worksheet
+                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_TOP_UP_HISTORY_' + datefrom + '_to_' + dateto); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'UID', key: 'uid'},
@@ -601,7 +601,7 @@ function downloadTopUpHistory(req,res,next){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
     
-                        const fileName = client + '_TOP_UP_HISTORY_' + datefrom + '_to_' + dateto;
+                        const fileName = client + '_BROADCAST_TOP_UP_HISTORY_' + datefrom + '_to_' + dateto;
     
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -628,7 +628,7 @@ function downloadTopUpHistory(req,res,next){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_TOP_UP_HISTORY_' + datefrom); //creating worksheet
+                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_TOP_UP_HISTORY_' + datefrom); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'UID', key: 'uid'},
@@ -639,7 +639,7 @@ function downloadTopUpHistory(req,res,next){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
     
-                        const fileName = client + '_TOP_UP_HISTORY_' + datefrom;
+                        const fileName = client + '_BROADCAST_TOP_UP_HISTORY_' + datefrom;
     
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -666,7 +666,7 @@ function downloadTopUpHistory(req,res,next){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_TOP_UP_HISTORY_' + dateto); //creating worksheet
+                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_TOP_UP_HISTORY_' + dateto); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'UID', key: 'uid'},
@@ -677,7 +677,7 @@ function downloadTopUpHistory(req,res,next){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
     
-                        const fileName = client + '_TOP_UP_HISTORY_' + dateto;
+                        const fileName = client + '_BROADCAST_TOP_UP_HISTORY_' + dateto;
     
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

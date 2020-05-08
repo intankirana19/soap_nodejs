@@ -76,7 +76,7 @@ function getAllClients(req,res,next){
                             if(pageQty == 0){
                                 pageQty = 1
                             }
-                
+
                             res.status(200)
                                 .json({
                                     status: 'success',
@@ -262,14 +262,30 @@ function editClient(req,res,next){
             const email = req.body.email;
             const pic = req.body.pic;
             const sender = req.body.sender;
-            
+
+            const type = req.body.type;
+
             const q1 = 'UPDATE sms.clients SET cltuid = $2, name = $3, phone = $4, email = $5, pic = $6, sender = $7 WHERE id = $1';
-            
+
             const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
             const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
 
+            const q4 = 'UPDATE sms.tokens SET is_active =$1 WHERE client_id = $2';
+            const q5 = 'UPDATE otp.tokens SET is_active =$1 WHERE cltuid = $2';
+
             db.dbs.tx(async t => {
                 await t.none(q1, [id,alias,name,phone,email,pic,sender]);
+
+                if (type === 1) {
+                    await t.none(q4, [true,id]);
+                    await t.none(q5, [true,alias]);
+                } else if (type === 2) {
+                    await t.none(q4, [true,id]);
+                    await t.none(q5, [false,alias]);
+                } else {
+                    await t.none(q4, [false,id]);
+                    await t.none(q5, [true,alias]);
+                }
 
                 const c = await t.one(q2, [result.client_id])
                 const log = "Edit Client (" + id + ") " + " - " + c.sender + " - " + result.username;
@@ -285,19 +301,6 @@ function editClient(req,res,next){
             .catch(error => {
                 return next(error);
             });
-        
-            // db.dbs.none(q1, [id,alias,name,phone,email,pic,sender])
-            // .then(function (data) {
-    
-            //     res.status(200)
-            //     .json({
-            //         status: 'success',
-            //         message: 'Data klien berhasil diubah.'
-            //     });
-            // })
-            // .catch(function (err) {
-            //     return next(err);
-            // });
         }
     });
 }

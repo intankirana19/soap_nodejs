@@ -54,46 +54,87 @@ function getAllAccounts(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
+            const client = req.query.client;
             var page = req.query.page -1;
             var itemperpage = req.query.itemperpage;
 
-            db.dbs.any('SELECT * FROM sms.accounts WHERE is_delete = false ORDER BY update_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
-            .then(function (data) {
-                if (data.length == 0) { 
-                    res.status(200)
-                    .json({
-                        status: 'success',
-                        data: data,
-                        message: 'Mohon maaf tidak ada data account',
-                        itemperpage: itemperpage,
-                        pages: 0
-                    });
-                } else {
-                    db.dbs.any('SELECT COUNT(*) FROM sms.accounts WHERE is_delete = false', [page,itemperpage])
-                    .then(function (dataQty) {
-                        let count = dataQty[0].count;
-                        var pageQty = (count / itemperpage).toFixed(0);
-                        if(pageQty == 0){
-                            pageQty = 1
-                        }
-            
+            if (client) {
+                db.dbs.any('SELECT a.id,a.client_id,a.role_id,a.username,a.job_position,r.name,c.sender,a.email,a.is_active,a.create_at,a.update_at FROM sms.accounts a inner join sms.clients c on a.client_id = c.id inner join sms.roles r on a.role_id = r.id WHERE a.is_delete = false AND client_id = $3 ORDER BY a.update_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client])
+                .then(function (data) {
+                    if (data.length == 0) {
                         res.status(200)
-                            .json({
-                                status: 'success',
-                                data: data,
-                                message: 'Berhasil menampilkan daftar akun',
-                                itemperpage: itemperpage,
-                                pages: pageQty
-                            });
-                    })
-                    .catch(function (err) {
-                        return next(err);
-                    });
-                }
-            })
-            .catch(function (err) {
-                return next(err);
-            });
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Mohon maaf tidak ada data account',
+                            itemperpage: itemperpage,
+                            pages: 0
+                        });
+                    } else {
+                        db.dbs.any('SELECT COUNT(*) FROM sms.accounts WHERE is_delete = false AND client_id = $3', [page,itemperpage,client])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+                            res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: data,
+                                    message: 'Berhasil menampilkan daftar akun',
+                                    itemperpage: itemperpage,
+                                    pages: pageQty
+                                });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else {
+                db.dbs.any('SELECT a.id,a.client_id,a.role_id,a.username,a.job_position,r.name,c.sender,a.email,a.is_active,a.create_at,a.update_at FROM sms.accounts a inner join sms.clients c on a.client_id = c.id inner join sms.roles r on a.role_id = r.id WHERE a.is_delete = false ORDER BY a.update_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Mohon maaf tidak ada data account',
+                            itemperpage: itemperpage,
+                            pages: 0
+                        });
+                    } else {
+                        db.dbs.any('SELECT COUNT(*) FROM sms.accounts WHERE is_delete = false', [page,itemperpage])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+                
+                            res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: data,
+                                    message: 'Berhasil menampilkan daftar akun',
+                                    itemperpage: itemperpage,
+                                    pages: pageQty
+                                });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            }
+
         }
 
     });
@@ -162,7 +203,7 @@ function createAccount(req,res,next){
 function editAccount(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
-  
+
     checkUser(token1,token2).then(function(result){
         if(result == 0){
             res.status(401)
@@ -364,7 +405,7 @@ function createRole(req,res,next){
             const type = req.body.type;
 
             const q1 = 'INSERT INTO sms.roles (name, desc, is_internal) VALUES ($1, $2, $3)';
-            
+
             const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
             const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
 
@@ -426,6 +467,34 @@ function editRole(req,res,next){
             })
             .catch(error => {
                 return next(error);
+            });
+        }
+    });
+}
+
+function clientRoleList(req,res,next){
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+
+    checkUser(token1,token2).then(function(result){
+        if(result == 0){
+            res.status(401)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            db.dbs.any('SELECT * FROM sms.roles WHERE is_internal = false')
+            .then(function (data) {
+                res.status(200)
+                .json({
+                    status: 'success',
+                    data: data,
+                    message: 'Berhasil menampilkan daftar role'
+                });
+            })
+            .catch(function (err) {
+                return next(err);
             });
         }
     });
@@ -757,6 +826,7 @@ module.exports = {
     createRole:createRole,
     editRole:editRole,
     getRoles:getRoles,
+    clientRoleList:clientRoleList,
     accountRole:accountRole,
     getLogs:getLogs
 }

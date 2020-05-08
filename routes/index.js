@@ -55,6 +55,7 @@ router.patch('/account/delete', account.deleteAccount);
 
 //Dashboard-Account Roles
 router.get('/account/roleslist', account.getRoles);
+router.get('/account/clientroleslist', account.clientRoleList);
 router.get('/account/role/', account.accountRole);
 
 //Dashboard-Logs
@@ -90,6 +91,7 @@ router.get('/otp/getclienttoken', otpToken.getClientOtpToken);
 router.post('/otp/topupclienttoken', otpToken.topUpClientOtpToken);
 router.get('/otp/dailyusage', otpReport.getOtpDailyTokenUsage);
 router.get('/otp/totalusage', otpReport.getOtpTokenTotalUsage);
+router.get('/otp/topuphistory', otpToken.getTopUpHistory);
 
 // Download OTP Reports
 router.get('/otp/downloadotpreport', otpReport.downloadOtpReport);
@@ -97,6 +99,8 @@ router.get('/otp/downloaddailyusage', otpReport.downloadOtpDailyTokenUsage);
 router.get('/otp/downloadtotalusage', otpReport.downloadOtpTokenTotalUsage);
 router.get('/otp/downloadreportcount', otpReport.downloadReportCount);
 router.get('/otp/downloadclienttoken', otpToken.downloadAllClientOtpToken);
+router.get('/otp/downloadtopuphistory', otpToken.downloadTopUpHistory);
+
 
 // Download SMS Reports
 router.get('/sms/downloadsmsreport', smsReport.downloadReport);
