@@ -52,6 +52,7 @@ router.post('/account/create', account.createAccount);
 router.patch('/account/edit', account.editAccount);
 router.patch('/account/activate', account.activateAccount);
 router.patch('/account/delete', account.deleteAccount);
+router.patch('/account/changepassword', account.changePassword);
 
 //Dashboard-Account Roles
 router.get('/account/roleslist', account.getRoles);
