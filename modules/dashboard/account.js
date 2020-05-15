@@ -95,7 +95,7 @@ function getAllAccounts(req,res,next){
                 .catch(function (err) {
                     return next(err);
                 });
-            } else {
+            } else if (page && itemperpage) {
                 db.dbs.any('SELECT a.id,a.client_id,a.role_id,a.username,a.job_position,r.name,c.sender,a.email,a.is_active,a.create_at,a.update_at FROM sms.accounts a inner join sms.clients c on a.client_id = c.id inner join sms.roles r on a.role_id = r.id WHERE a.is_delete = false ORDER BY a.update_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
                 .then(function (data) {
                     if (data.length == 0) {
@@ -133,7 +133,31 @@ function getAllAccounts(req,res,next){
                 .catch(function (err) {
                     return next(err);
                 });
+            } else {
+                db.dbs.any('SELECT a.id,a.client_id,a.role_id,a.username,a.job_position,r.name,c.sender,a.email,a.is_active,a.create_at,a.update_at FROM sms.accounts a inner join sms.clients c on a.client_id = c.id inner join sms.roles r on a.role_id = r.id WHERE a.is_delete = false ORDER BY a.update_at desc')
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Mohon maaf tidak ada data account',
+                        });
+                    } else {
+                            res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: data,
+                                    message: 'Berhasil menampilkan daftar akun',
+                                });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
             }
+
+        }
 
         }
 
