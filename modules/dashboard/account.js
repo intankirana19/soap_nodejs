@@ -115,7 +115,7 @@ function getAllAccounts(req,res,next){
                             if(pageQty == 0){
                                 pageQty = 1
                             }
-                
+
                             res.status(200)
                                 .json({
                                     status: 'success',
@@ -156,8 +156,6 @@ function getAllAccounts(req,res,next){
                     return next(err);
                 });
             }
-
-        }
 
         }
 
