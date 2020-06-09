@@ -39,37 +39,70 @@ const jwt = require('jsonwebtoken');
         return dec;
     }
 
-    function checkUser(req,res){
+    function checkUser(req,res,next){
         var password = encrypt(req.body.password);
-        db.dbs.one('select * from sms.accounts where username = $1 and password = $2', [req.body.username, password])
-        .then(function (data) {
-            if(data.length !=0){
+        const email = req.body.email;
+
+        const q1 = 'select * from sms.accounts where email = $1 and password = $2';
+
+        const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
+        
+        const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
+
+        db.dbs.tx(async t => {
+            const data = await t.one(q1, [email, password]);
+            
+            if (data.is_active === false || data.is_delete === true) {
+                res.status(400)
+                .json({
+                    status: 1,
+                    message: 'Akun telah dinon-aktifkan'
+                })  
+            } else if(data.length !=0){
                 const token = jwt.sign({
                     data: data
                 }, jwtKey, { expiresIn: '24h' });
-            
-                res.cookie('token', token, { maxAge: 86400000, httpOnly: true });
+                console.log(data)
+                const c = await t.one(q2, [data.client_id]);
+                const log = "Log In" + " - " + c.sender + " - " + data.username;
+                await t.none(q3, [log, data.id]);
+                res.cookie('token', token, { maxAge: 3600000, httpOnly: true });
                 res.status(200)
                 .json({
                     status: 'success',
                     token: token
-                }).end();
+                })
                 
-            }else{
-                res.status(400)
+            } else{
+                console.log('fdafdaf')
+                // res.status(400)
+                // .json({
+                //     status: 2,
+                //     message: 'Invalid Username or Password'
+                // })  
+            }
+        })
+        .then(() => {
+
+            
+
+        })
+        .catch(error => {            
+            if(error.code===0){
+            res.status(400)
                 .json({
-                    status: 'error',
+                    status: 2,
                     message: 'Invalid Username or Password'
                 })  
             }
-        })
+        });
 
     }
 
     function verifyToken(token1,token2){
         var tokenOne = jwt.verify(token1, jwtKey, (err, verifiedJwt) => {
             
-
+            console.log(err)
             if(err){
                 const data = {
                     code : 0,
@@ -77,46 +110,48 @@ const jwt = require('jsonwebtoken');
                 }
                 return data;
             }else{
-                if(verifiedJwt.data.role_id == 1 || verifiedJwt.data.role_id == 2 ){
+                // if(verifiedJwt.data.role_id == 1 || verifiedJwt.data.role_id == 2 ){
                     const data = {
                         code : 1,
                         user : verifiedJwt
                     }
                     return data;
-                }else{
-                    const data = {
-                        code : 0,
-                        user : ''
-                    }
-                    return data;
-                }
+                // }else{
+                //     const data = {
+                //         code : 0,
+                //         user : ''
+                //     }
+                //     return data;
+                // }
                 
             }
         });
-        var tokenTwo = jwt.verify(token2, jwtKey, (err, verifiedJwt) => {
-            if(err){
-                const data = {
-                    code : 0,
-                    user : ''
-                }
-                return data;
-            }else{
-                if(verifiedJwt.data.role_id == 1 || verifiedJwt.data.role_id == 2 ){
-                    const data = {
-                        code : 1,
-                        user : verifiedJwt
-                    }
-                    return data;
-                }else{
-                    const data = {
-                        code : 0,
-                        user : ''
-                    }
-                    return data;
-                }
-            }
-        });
-        if(tokenOne.code == 1 && tokenTwo.code == 1){
+        // var tokenTwo = jwt.verify(token2, jwtKey, (err, verifiedJwt) => {
+        //     if(err){
+        //         const data = {
+        //             code : 0,
+        //             user : ''
+        //         }
+        //         return data;
+        //     }else{
+        //         if(verifiedJwt.data.role_id == 1 || verifiedJwt.data.role_id == 2 ){
+        //             const data = {
+        //                 code : 1,
+        //                 user : verifiedJwt
+        //             }
+        //             return data;
+        //         }else{
+        //             const data = {
+        //                 code : 0,
+        //                 user : ''
+        //             }
+        //             return data;
+        //         }
+        //     }
+        // });
+        // if(tokenOne.code == 1 && tokenTwo.code == 1){
+        console.log(tokenOne)
+        if(tokenOne.code == 1){
             return tokenOne;
         }else{
             return 0;
