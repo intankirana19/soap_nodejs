@@ -5,9 +5,9 @@ var auth = require('../../shared/auth');
 const excel = require('exceljs');
 
 
-let checkUser = function(token1,token2) {
+let checkUser = function(token1) {
     return new Promise(function(resolve, reject) {
-        const checkToken = auth.verifyToken(token1,token2);
+        const checkToken = auth.verifyToken(token1);
         console.log(checkToken)
         if (checkToken.code == 1) {
             resolve(checkToken.user.data);
@@ -21,7 +21,7 @@ function getSmsReport(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -655,7 +655,7 @@ function downloadReport(req,res){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -1303,7 +1303,7 @@ function reportCount(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -1727,7 +1727,7 @@ function downloadReportCount(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -2359,7 +2359,7 @@ function getSmsDailyTokenUsage(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
 
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -2508,7 +2508,7 @@ function downloadSmsDailyTokenUsage(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
 
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -2649,7 +2649,7 @@ function getSmsTokenTotalUsage(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
 
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -2750,7 +2750,7 @@ function downloadSmsTokenTotalUsage(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
 
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({

@@ -30,9 +30,9 @@ var auth = require('../shared/auth');
         return cip;
     };
 
-let checkUser = function(token1,token2) {
+let checkUser = function(token1) {
     return new Promise(function(resolve, reject) {
-        const checkToken = auth.verifyToken(token1,token2);
+        const checkToken = auth.verifyToken(token1);
         console.log(checkToken)
         if (checkToken.code == 1) {
             resolve(checkToken.user.data);
@@ -45,7 +45,7 @@ let checkUser = function(token1,token2) {
 function getAllAccounts(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         console.log('result',result)
         if(result == 0){
             res.status(401)
@@ -166,7 +166,7 @@ function createAccount(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -226,7 +226,7 @@ function editAccount(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
 
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -284,7 +284,7 @@ function changePassword(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
 
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -325,7 +325,7 @@ function activateAccount(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -402,7 +402,7 @@ function deleteAccount(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -455,7 +455,7 @@ function createRole(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -496,7 +496,7 @@ function editRole(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -539,7 +539,7 @@ function clientRoleList(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
 
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -567,7 +567,7 @@ function getRoles(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -595,7 +595,7 @@ function accountRole(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -626,7 +626,7 @@ function getLogs(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({

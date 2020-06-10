@@ -4,9 +4,9 @@ const db = require('../../config/db');
 var auth = require('../shared/auth');
 
 
-let checkUser = function(token1,token2) {
+let checkUser = function(token1) {
     return new Promise(function(resolve, reject) {
-        const checkToken = auth.verifyToken(token1,token2);
+        const checkToken = auth.verifyToken(token1);
         console.log(checkToken)
         if (checkToken.code == 1) {
             resolve(checkToken.user.data);
@@ -20,7 +20,7 @@ function getList(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -58,7 +58,7 @@ function add(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -98,7 +98,7 @@ function edit(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({

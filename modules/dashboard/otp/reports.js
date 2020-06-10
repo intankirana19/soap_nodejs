@@ -5,9 +5,9 @@ var auth = require('../../shared/auth');
 const excel = require('exceljs');
 
 
-let checkUser = function(token1,token2) {
+let checkUser = function(token1) {
     return new Promise(function(resolve, reject) {
-        const checkToken = auth.verifyToken(token1,token2);
+        const checkToken = auth.verifyToken(token1);
         console.log(checkToken)
         if (checkToken.code == 1) {
             resolve(checkToken.user.data);
@@ -21,7 +21,7 @@ function getOtpReport(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if (result == 0) {
             res.status(401)
             .json({
@@ -655,7 +655,7 @@ function reportCount(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if (result == 0) {
             res.status(401)
             .json({
@@ -1075,7 +1075,7 @@ function downloadReportCount(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if (result == 0) {
             res.status(401)
             .json({
@@ -1703,7 +1703,7 @@ function downloadOtpReport(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
 
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if (result == 0) {
             res.status(401)
             .json({
@@ -2350,7 +2350,7 @@ function getOtpDailyTokenUsage(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -2499,7 +2499,7 @@ function downloadOtpDailyTokenUsage(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -2640,7 +2640,7 @@ function getOtpTokenTotalUsage(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -2739,7 +2739,7 @@ function downloadOtpTokenTotalUsage(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({

@@ -57,7 +57,7 @@ router.patch('/account/changepassword', account.changePassword);
 // //Dashboard-Account Roles
 router.get('/account/roleslist', account.getRoles);
 router.get('/account/clientroleslist', account.clientRoleList);
-router.get('/account/role/', account.accountRole);
+router.get('/account/role/:role_id', account.accountRole);
 
 //Dashboard-Logs
 router.get('/account/log', account.getLogs);
