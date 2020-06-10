@@ -36,7 +36,7 @@ router.patch('/sms/edit', dsms.editSms);
 router.get('/sms/list', dsms.getMessageList);
 
 // sms by id
-router.get('/sms/byid/', dsms.getMessageByID);
+router.get('/sms/byid/:id', dsms.getMessageByID);
 //send SMS
 router.post('/sms', sms.sendSMS);
 
@@ -64,7 +64,7 @@ router.get('/account/log', account.getLogs);
 
 //Dashboard-Clients
 router.get('/client/list', client.getAllClients);
-// router.get('/client/', client.getClient);
+router.get('/client/:id', client.getClient);
 router.post('/client/add', client.addClient);
 router.patch('/client/edit', client.editClient);
 router.patch('/client/activate', client.activateClient);
