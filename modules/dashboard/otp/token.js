@@ -161,7 +161,7 @@ function topUpClientOtpToken(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -227,7 +227,7 @@ function getTopUpHistory(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
@@ -558,7 +558,7 @@ function downloadTopUpHistory(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
-    checkUser(token1,token2).then(function(result){
+    checkUser(token1).then(function(result){
         if(result == 0){
             res.status(401)
             .json({
