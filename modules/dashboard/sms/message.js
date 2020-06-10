@@ -22,7 +22,7 @@ function createSms(req,res,next){
   
     checkUser(token1,token2).then(function(result){
         if(result == 0){
-            res.status(400)
+            res.status(401)
             .json({
                 status: 'error',
                 message: 'Not Authorized, Please RE-LOGIN'
@@ -79,13 +79,58 @@ function createSms(req,res,next){
     });
 }
 
+function editSms(req,res,next){
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+
+    checkUser(token1,token2).then(function(result){
+        if(result == 0){
+            res.status(401)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            const msgID = req.body.id;
+            const text = req.body.text;
+
+            var clientId = result.client_id;
+
+            const q1 = 'UPDATE sms.messages SET text = $1 WHERE id = $2';
+
+            const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
+            const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
+            const q4 = 'SELECT msguid FROM sms.messages WHERE id = $1';
+
+            db.dbs.tx(async t => {
+                await t.none(q1, [text, msgID]);
+
+                const c = await t.one(q2, [clientId]);
+                const msg = await t.one(q4, [msgID]);
+                const log = "Update Broadcast Message(" + msg.msguid + ")" + " - " + c.sender + " - " + result.username;
+                await t.none(q3, [log, result.id])
+            })
+            .then(() => {
+                res.status(200)
+                .json({
+                    status: 'success',
+                    message: 'Pesan Broadcast berhasil diubah.'
+                });
+            })
+            .catch(error => {
+                return next(error);
+            });
+        }
+    });
+}
+
 function getMessageList(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
-  
+
     checkUser(token1,token2).then(function(result){
         if(result == 0){
-            res.status(400)
+            res.status(401)
             .json({
                 status: 'error',
                 message: 'Not Authorized, Please RE-LOGIN'
@@ -178,10 +223,50 @@ function getMessageList(req,res,next){
     });
 }
 
+function getMessageByID(req,res,next){
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+
+    checkUser(token1,token2).then(function(result){
+        if(result == 0){
+            res.status(401)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            var id = req.params.id;
+
+                db.dbs.any('SELECT * FROM sms.messages WHERE id = $1', [id])
+                .then(function (data) {
+                    if (data.length == 0) { 
+                        res.status(200)
+                        .json({
+                            status: 1,
+                            message: 'Data tidak ada'
+                        });
+                    } else {
+                            res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: data,
+                                    message: 'Berhasil menampilkan pesan',
+                                });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+        }
+    });
+}
+
 
 
 
 module.exports={
     createSms:createSms,
-    getMessageList:getMessageList
+    editSms:editSms,
+    getMessageList:getMessageList,
+    getMessageByID:getMessageByID
 }

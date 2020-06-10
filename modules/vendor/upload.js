@@ -22,7 +22,7 @@ function upload(req,res){
 
     checkUser(token1,token2).then(function(result){
         if(result == 0){
-            res.status(400)
+            res.status(401)
             .json({
                 status: 'error',
                 message: 'Not Authorized, Please RE-LOGIN'

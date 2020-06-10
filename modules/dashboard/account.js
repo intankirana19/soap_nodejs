@@ -48,59 +48,115 @@ function getAllAccounts(req,res,next){
     checkUser(token1,token2).then(function(result){
         console.log('result',result)
         if(result == 0){
-            res.status(400)
+            res.status(401)
             .json({
                 status: 'error',
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
+            const client = req.query.client;
             var page = req.query.page -1;
             var itemperpage = req.query.itemperpage;
-            var total = 100;
-            db.dbs.any('SELECT * FROM sms.accounts WHERE is_delete = false ')
-            .then(function (data) {
-                console.log('totalnya:',data.length)
-                var total = data.length;
-            
-            db.dbs.any('SELECT * FROM sms.accounts AS a INNER JOIN sms.roles AS b ON a.role_id = b.id WHERE a.is_delete = false ORDER BY a.update_at desc LIMIT $2 OFFSET $1 * $2  ', [page,itemperpage])
-            .then(function (data) {
-                if (data.length == 0) { 
-                    res.status(200)
-                    .json({
-                        status: 'success',
-                        data: data,
-                        message: 'Mohon maaf tidak ada data account',
-                        itemperpage: itemperpage,
-                        pages: 1
-                    });
-                } else {
-                    db.dbs.any('SELECT COUNT(*) FROM sms.accounts WHERE is_delete = false', [page,itemperpage])
-                    .then(function (dataQty) {
-                        let count = dataQty[0].count;
-                        var pageQty = (count / itemperpage).toFixed(0);
-                        if(pageQty == 0){
-                            pageQty = 1
-                        }
-            
+
+            if (client) {
+                db.dbs.any('SELECT a.id,a.client_id,a.role_id,a.username,a.job_position,r.name,c.sender,a.email,a.is_active,a.create_at,a.update_at FROM sms.accounts a inner join sms.clients c on a.client_id = c.id inner join sms.roles r on a.role_id = r.id WHERE a.is_delete = false AND client_id = $3 ORDER BY a.update_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client])
+                .then(function (data) {
+                    if (data.length == 0) {
                         res.status(200)
-                            .json({
-                                status: 'success',
-                                data: data,
-                                total: total,
-                                message: 'Berhasil menampilkan daftar akun',
-                                itemperpage: itemperpage,
-                                pages: pageQty
-                            });
-                    })
-                    .catch(function (err) {
-                        return next(err);
-                    });
-                }
-            })
-            .catch(function (err) {
-                return next(err);
-            });
-        });
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Mohon maaf tidak ada data account',
+                            itemperpage: itemperpage,
+                            pages: 0
+                        });
+                    } else {
+                        db.dbs.any('SELECT COUNT(*) FROM sms.accounts WHERE is_delete = false AND client_id = $3', [page,itemperpage,client])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+                            res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: data,
+                                    message: 'Berhasil menampilkan daftar akun',
+                                    itemperpage: itemperpage,
+                                    pages: pageQty
+                                });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (page && itemperpage) {
+                db.dbs.any('SELECT a.id,a.client_id,a.role_id,a.username,a.job_position,r.name,c.sender,a.email,a.is_active,a.create_at,a.update_at FROM sms.accounts a inner join sms.clients c on a.client_id = c.id inner join sms.roles r on a.role_id = r.id WHERE a.is_delete = false ORDER BY a.update_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Mohon maaf tidak ada data account',
+                            itemperpage: itemperpage,
+                            pages: 0
+                        });
+                    } else {
+                        db.dbs.any('SELECT COUNT(*) FROM sms.accounts WHERE is_delete = false', [page,itemperpage])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+
+                            res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: data,
+                                    message: 'Berhasil menampilkan daftar akun',
+                                    itemperpage: itemperpage,
+                                    pages: pageQty
+                                });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else {
+                db.dbs.any('SELECT a.id,a.client_id,a.role_id,a.username,a.job_position,r.name,c.sender,a.email,a.is_active,a.create_at,a.update_at FROM sms.accounts a inner join sms.clients c on a.client_id = c.id inner join sms.roles r on a.role_id = r.id WHERE a.is_delete = false ORDER BY a.update_at desc')
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Mohon maaf tidak ada data account',
+                        });
+                    } else {
+                            res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: data,
+                                    message: 'Berhasil menampilkan daftar akun',
+                                });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            }
+
         }
 
     });
@@ -112,7 +168,7 @@ function createAccount(req,res,next){
   
     checkUser(token1,token2).then(function(result){
         if(result == 0){
-            res.status(400)
+            res.status(401)
             .json({
                 status: 'error',
                 message: 'Not Authorized, Please RE-LOGIN'
@@ -169,10 +225,10 @@ function createAccount(req,res,next){
 function editAccount(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
-  
+
     checkUser(token1,token2).then(function(result){
         if(result == 0){
-            res.status(400)
+            res.status(401)
             .json({
                 status: 'error',
                 message: 'Not Authorized, Please RE-LOGIN'
@@ -224,13 +280,54 @@ function editAccount(req,res,next){
     });
 }
 
+function changePassword(req,res,next){
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+
+    checkUser(token1,token2).then(function(result){
+        if(result == 0){
+            res.status(401)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            const id = req.body.id;
+            var pass = encrypt(req.body.password);
+
+            const q1 = 'UPDATE sms.accounts SET password = $1 WHERE id = $2';
+
+            const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
+            const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
+
+            db.dbs.tx(async t => {
+                await t.none(q1, [pass,id]);
+
+                const c = await t.one(q2, [result.client_id])
+                const log = "Change Password (" + id + ") " + " - " + c.sender + " - " + result.username;
+                await t.none(q3, [log, result.id])
+            })
+            .then(() => {
+                res.status(200)
+                .json({
+                    status: 'success',
+                    message: 'Password berhasil diubah.'
+                });
+            })
+            .catch(error => {
+                return next(error);
+            });
+        }
+    });
+}
+
 function activateAccount(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
     checkUser(token1,token2).then(function(result){
         if(result == 0){
-            res.status(400)
+            res.status(401)
             .json({
                 status: 'error',
                 message: 'Not Authorized, Please RE-LOGIN'
@@ -307,7 +404,7 @@ function deleteAccount(req,res,next){
   
     checkUser(token1,token2).then(function(result){
         if(result == 0){
-            res.status(400)
+            res.status(401)
             .json({
                 status: 'error',
                 message: 'Not Authorized, Please RE-LOGIN'
@@ -360,7 +457,7 @@ function createRole(req,res,next){
   
     checkUser(token1,token2).then(function(result){
         if(result == 0){
-            res.status(400)
+            res.status(401)
             .json({
                 status: 'error',
                 message: 'Not Authorized, Please RE-LOGIN'
@@ -371,7 +468,7 @@ function createRole(req,res,next){
             const type = req.body.type;
 
             const q1 = 'INSERT INTO sms.roles (name, desc, is_internal) VALUES ($1, $2, $3)';
-            
+
             const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
             const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
 
@@ -401,7 +498,7 @@ function editRole(req,res,next){
   
     checkUser(token1,token2).then(function(result){
         if(result == 0){
-            res.status(400)
+            res.status(401)
             .json({
                 status: 'error',
                 message: 'Not Authorized, Please RE-LOGIN'
@@ -438,13 +535,41 @@ function editRole(req,res,next){
     });
 }
 
+function clientRoleList(req,res,next){
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+
+    checkUser(token1,token2).then(function(result){
+        if(result == 0){
+            res.status(401)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            db.dbs.any('SELECT * FROM sms.roles WHERE is_internal = false')
+            .then(function (data) {
+                res.status(200)
+                .json({
+                    status: 'success',
+                    data: data,
+                    message: 'Berhasil menampilkan daftar role'
+                });
+            })
+            .catch(function (err) {
+                return next(err);
+            });
+        }
+    });
+}
+
 function getRoles(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
     checkUser(token1,token2).then(function(result){
         if(result == 0){
-            res.status(400)
+            res.status(401)
             .json({
                 status: 'error',
                 message: 'Not Authorized, Please RE-LOGIN'
@@ -472,13 +597,13 @@ function accountRole(req,res,next){
   
     checkUser(token1,token2).then(function(result){
         if(result == 0){
-            res.status(400)
+            res.status(401)
             .json({
                 status: 'error',
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
-            var roleId = req.body.role_id;
+            var roleId = req.params.role_id;
 
             db.dbs.one('SELECT * FROM sms.roles WHERE id = $1', [roleId])
             .then(function (data) {
@@ -503,27 +628,253 @@ function getLogs(req,res,next){
   
     checkUser(token1,token2).then(function(result){
         if(result == 0){
-            res.status(400)
+            res.status(401)
             .json({
                 status: 'error',
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
+            const client = req.query.client;
+            const datefrom = req.query.datefrom;
+            const dateto = req.query.dateto;
             var page = req.query.page -1;
             var itemperpage = req.query.itemperpage;
 
-            db.dbs.any('SELECT * FROM sms.logs ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
-            .then(function (data) {
-                res.status(200)
-                .json({
-                    status: 'success',
-                    data: data,
-                    message: 'Berhasil menampilkan daftar log'
+            if (client && datefrom && dateto) {
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $4 and a.client_id = $5 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom,dateto,client])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 2,
+                            data: data,
+                            message: 'Data tidak ada',
+                            itemperpage: itemperpage,
+                            pages: 0
+                        });
+                    } else {
+                        db.dbs.any('select count(*) from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $4 and a.client_id = $5', [page,itemperpage,datefrom,dateto,client])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+    
+                            res.status(200)
+                            .json({
+                                status: 'success',
+                                data: data,
+                                message: 'Berhasil menampilkan daftar log',
+                                itemperpage: itemperpage,
+                                pages: pageQty
+                            });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
                 });
-            })
-            .catch(function (err) {
-                return next(err);
-            });
+            } else if (client && datefrom) {
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 and a.client_id = $4 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom,client])
+                .then(function (data) {
+                    db.dbs.any('select count(*) from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 and a.client_id = $4', [page,itemperpage,datefrom,client])
+                    .then(function (dataQty) {
+                        let count = dataQty[0].count;
+                        var pageQty = (count / itemperpage).toFixed(0);
+                        if(pageQty == 0){
+                            pageQty = 1
+                        }
+
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Berhasil menampilkan daftar log',
+                            itemperpage: itemperpage,
+                            pages: pageQty
+                        });
+                    })
+                    .catch(function (err) {
+                        return next(err);
+                    });
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (client && dateto) {
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 and a.client_id = $4 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,dateto,client])
+                .then(function (data) {
+                    db.dbs.any('select count(*) from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 and a.client_id = $4', [page,itemperpage,dateto,client])
+                    .then(function (dataQty) {
+                        let count = dataQty[0].count;
+                        var pageQty = (count / itemperpage).toFixed(0);
+                        if(pageQty == 0){
+                            pageQty = 1
+                        }
+
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Berhasil menampilkan daftar log',
+                            itemperpage: itemperpage,
+                            pages: pageQty
+                        });
+                    })
+                    .catch(function (err) {
+                        return next(err);
+                    });
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (datefrom && dateto) {
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $4 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom,dateto])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 2,
+                            data: data,
+                            message: 'Data tidak ada',
+                            itemperpage: itemperpage,
+                            pages: 0
+                        });
+                    } else {
+                        db.dbs.any('select count(*) from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $4', [page,itemperpage,datefrom,dateto])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+    
+                            res.status(200)
+                            .json({
+                                status: 'success',
+                                data: data,
+                                message: 'Berhasil menampilkan daftar log',
+                                itemperpage: itemperpage,
+                                pages: pageQty
+                            });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (datefrom) {
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 2,
+                            data: data,
+                            message: 'Data tidak ada',
+                            itemperpage: itemperpage,
+                            pages: 0
+                        });
+                    } else {
+                        db.dbs.any('select count(*) from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3', [page,itemperpage,datefrom])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+    
+                            res.status(200)
+                            .json({
+                                status: 'success',
+                                data: data,
+                                message: 'Berhasil menampilkan daftar log',
+                                itemperpage: itemperpage,
+                                pages: pageQty
+                            });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (dateto) {
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,dateto])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 2,
+                            data: data,
+                            message: 'Data tidak ada',
+                            itemperpage: itemperpage,
+                            pages: 0
+                        });
+                    } else {
+                        db.dbs.any('select count(*) from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3', [page,itemperpage,dateto])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+    
+                            res.status(200)
+                            .json({
+                                status: 'success',
+                                data: data,
+                                message: 'Berhasil menampilkan daftar log',
+                                itemperpage: itemperpage,
+                                pages: pageQty
+                            });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else {
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
+                .then(function (data) {
+                    db.dbs.any('select count(*) from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id', [page,itemperpage])
+                    .then(function (dataQty) {
+                        let count = dataQty[0].count;
+                        var pageQty = (count / itemperpage).toFixed(0);
+                        if(pageQty == 0){
+                            pageQty = 1
+                        }
+
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Berhasil menampilkan daftar log',
+                            itemperpage: itemperpage,
+                            pages: pageQty
+                        });
+                    })
+                    .catch(function (err) {
+                        return next(err);
+                    });
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            }
+
         }
     });
 }
@@ -550,7 +901,9 @@ module.exports = {
     createRole:createRole,
     editRole:editRole,
     getRoles:getRoles,
+    clientRoleList:clientRoleList,
     accountRole:accountRole,
     getLogs:getLogs,
-    getUser:getUser
+    getUser:getUser,
+    changePassword:changePassword
 }

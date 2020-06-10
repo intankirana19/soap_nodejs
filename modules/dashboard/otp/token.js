@@ -27,7 +27,7 @@ function getAllClientOtpToken(req,res,next){
   
     checkUser(token1,token2).then(function(result){
         if(result == 0){
-            res.status(400)
+            res.status(401)
             .json({
                 status: 'error',
                 message: 'Not Authorized, Please RE-LOGIN'
@@ -74,13 +74,65 @@ function getAllClientOtpToken(req,res,next){
     });
 }
 
+function downloadAllClientOtpToken(req,res,next){
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+
+    checkUser(token1,token2).then(function(result){
+        if(result == 0){
+            res.status(401)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            db.dbs.any('SELECT t.id,amount,t.cltuid,c.sender as client,t.create_at,t.update_at FROM otp.tokens t left join sms.clients c on t.cltuid = c.cltuid order by update_at desc')
+            .then(function (data) {
+                if (data.length == 0) {
+                    res.status(200)
+                    .json({
+                        status: 'success',
+                        message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                    });
+                } else {
+                    const jsonData = JSON.parse(JSON.stringify(data));
+                    let workbook = new excel.Workbook(); //creating workbook
+                    let worksheet = workbook.addWorksheet('CLIENT_OTP_TOKEN_LIST'); //creating worksheet
+                    //  WorkSheet Header
+                    worksheet.columns = [
+                        { header: 'Client', key: 'client'},
+                        { header: 'Token Broadcast', key: 'amount'},
+                        { header: 'Terakhir Update/ Top Up/ Reset', key: 'update_at'}
+                    ];
+                    // Add Array Rows
+                    worksheet.addRows(jsonData);
+
+                    const fileName = 'CLIENT_OTP_TOKEN_LIST';
+
+                    res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                    res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                    return workbook.xlsx.write(res)
+                        .then(function() {
+                                res.status(200).end();
+                        });
+                }
+            })
+            .catch(function (err) {
+                return next(err);
+            });
+        }
+    });
+}
+
 function getClientOtpToken(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
     checkUser(token1,token2).then(function(result){
         if(result == 0){
-            res.status(400)
+            res.status(401)
             .json({
                 status: 'error',
                 message: 'Not Authorized, Please RE-LOGIN'
@@ -111,7 +163,7 @@ function topUpClientOtpToken(req,res,next){
   
     checkUser(token1,token2).then(function(result){
         if(result == 0){
-            res.status(400)
+            res.status(401)
             .json({
                 status: 'error',
                 message: 'Not Authorized, Please RE-LOGIN'
@@ -167,65 +219,9 @@ function topUpClientOtpToken(req,res,next){
             .catch(error => {
                 return next(error);
             });
-
-            // db.dbs.none(query, [uid, amount, status, client, by])
-            // .then(function (data) {
-    
-            //     res.status(200)
-            //     .json({
-            //         status: 'success',
-            //         message: 'Top Up Token OTP Berhasil.'
-            //     });
-            // })
-            // .catch(function (err) {
-            //     return next(err);
-            // });
-            
         }
     });
 }
-
-// function addClientOtpToken(req,res,next){
-//     const token1 = req.header('authorization');
-//     const token2 = req.cookies['token'];
-  
-//     checkUser(token1,token2).then(function(result){
-//         if(result == 0){
-//             res.status(400)
-//             .json({
-//                 status: 'error',
-//                 message: 'Not Authorized, Please RE-LOGIN'
-//             });
-//         }else{
-//             var clientId = result.client_id;
-
-//             db.dbs.one('SELECT amount,t.cltuid FROM otp.tokens t left join sms.clients c on t.cltuid = c.cltuid WHERE c.id = ' + clientId)
-//             .then(function (dataClient) {
-//                 var tokenQty = new Number(dataClient.amount);
-//                 var amount = new Number(req.body.amount);
-//                 var totalAmount = tokenQty + amount;
-//                 const client = dataClient.cltuid;
-
-//                 db.dbs.none('UPDATE otp.tokens SET amount = $1 where cltuid = $2', [totalAmount,client])
-//                 .then(function (data) {
-    
-//                     res.status(200)
-//                     .json({
-//                         status: 'success',
-//                         message: 'Berhasil menambahkan token.' 
-//                     });
-//                 })
-//                 .catch(function (err) {
-//                     return next(err);
-//                 });
-//             })
-//             .catch(function (err) {
-//                 return next(err);
-//             });
-
-//         }
-//     });
-// }
 
 function getTopUpHistory(req,res,next){
     const token1 = req.header('authorization');
@@ -233,57 +229,658 @@ function getTopUpHistory(req,res,next){
   
     checkUser(token1,token2).then(function(result){
         if(result == 0){
-            res.status(400)
+            res.status(401)
             .json({
                 status: 'error',
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
+            const client = req.query.client;
+            const datefrom = req.query.datefrom;
+            const dateto = req.query.dateto;
             var page = req.query.page -1;
             var itemperpage = req.query.itemperpage;
 
-            db.dbs.any('SELECT * FROM otp.topups ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
-            .then(function (data) {
-                if (data.length == 0) { 
-                    res.status(200)
-                    .json({
-                        status: 'success',
-                        data: data,
-                        message: 'Data tidak ada',
-                        itemperpage: itemperpage,
-                        pages: 0
-                    });
-                } else {
-                    db.dbs.any('SELECT COUNT(*) FROM otp.topups', [page,itemperpage])
-                    .then(function (dataQty) {
-                        let count = dataQty[0].count;
-                        var pageQty = (count / itemperpage).toFixed(0);
-                        if(pageQty == 0){
-                            pageQty = 1
-                        }
-            
+            if (client && datefrom && dateto) {
+                db.dbs.any('SELECT * FROM otp.topups WHERE cltuid = $3 AND create_at :: DATE BETWEEN $4 AND $5 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client,datefrom,dateto])
+                .then(function (data) {
+                    if (data.length == 0) { 
                         res.status(200)
-                            .json({
-                                status: 'success',
-                                data: data,
-                                message: 'Berhasil menampilkan daftar riwayat topup token OTP',
-                                itemperpage: itemperpage,
-                                pages: pageQty
-                            });
-                    })
-                    .catch(function (err) {
-                        return next(err);
-                    });
-                }
-            })
-            .catch(function (err) {
-                return next(err);
-            });
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Data tidak ada',
+                            itemperpage: itemperpage,
+                            pages: 0
+                        });
+                    } else {
+                        db.dbs.any('SELECT COUNT(*) FROM otp.topups WHERE cltuid = $3 AND create_at :: DATE BETWEEN $4 AND $5 ', [page,itemperpage,client,datefrom,dateto])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+                
+                            res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: data,
+                                    message: 'Berhasil menampilkan daftar riwayat topup token OTP',
+                                    itemperpage: itemperpage,
+                                    pages: pageQty
+                                });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+
+            } else if (client && datefrom) {
+                db.dbs.any('SELECT * FROM otp.topups WHERE cltuid = $3 AND create_at :: DATE BETWEEN $4 AND $4 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client,datefrom])
+                .then(function (data) {
+                    if (data.length == 0) { 
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Data tidak ada',
+                            itemperpage: itemperpage,
+                            pages: 0
+                        });
+                    } else {
+                        db.dbs.any('SELECT COUNT(*) FROM otp.topups WHERE cltuid = $3 AND create_at :: DATE BETWEEN $4 AND $4 ', [page,itemperpage,client,datefrom])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+                
+                            res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: data,
+                                    message: 'Berhasil menampilkan daftar riwayat topup token OTP',
+                                    itemperpage: itemperpage,
+                                    pages: pageQty
+                                });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (client && dateto) {
+                db.dbs.any('SELECT * FROM otp.topups WHERE cltuid = $3 AND create_at :: DATE BETWEEN $4 AND $4 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client,dateto])
+                .then(function (data) {
+                    if (data.length == 0) { 
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Data tidak ada',
+                            itemperpage: itemperpage,
+                            pages: 0
+                        });
+                    } else {
+                        db.dbs.any('SELECT COUNT(*) FROM otp.topups WHERE cltuid = $3 AND create_at :: DATE BETWEEN $4 AND $4 ', [page,itemperpage,client,dateto])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+                
+                            res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: data,
+                                    message: 'Berhasil menampilkan daftar riwayat topup token OTP',
+                                    itemperpage: itemperpage,
+                                    pages: pageQty
+                                });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (datefrom && dateto) {
+                db.dbs.any('SELECT * FROM otp.topups WHERE create_at :: DATE BETWEEN $3 AND $4 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom,dateto])
+                .then(function (data) {
+                    if (data.length == 0) { 
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Data tidak ada',
+                            itemperpage: itemperpage,
+                            pages: 0
+                        });
+                    } else {
+                        db.dbs.any('SELECT COUNT(*) FROM otp.topups WHERE create_at :: DATE BETWEEN $3 AND $4 ', [page,itemperpage,datefrom,dateto])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+                
+                            res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: data,
+                                    message: 'Berhasil menampilkan daftar riwayat topup token OTP',
+                                    itemperpage: itemperpage,
+                                    pages: pageQty
+                                });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (client) {
+                db.dbs.any('SELECT * FROM otp.topups WHERE cltuid = $3 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client])
+                .then(function (data) {
+                    if (data.length == 0) { 
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Data tidak ada',
+                            itemperpage: itemperpage,
+                            pages: 0
+                        });
+                    } else {
+                        db.dbs.any('SELECT COUNT(*) FROM otp.topups WHERE cltuid = $3', [page,itemperpage,client])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+                
+                            res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: data,
+                                    message: 'Berhasil menampilkan daftar riwayat topup token OTP',
+                                    itemperpage: itemperpage,
+                                    pages: pageQty
+                                });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (datefrom) {
+                db.dbs.any('SELECT * FROM otp.topups WHERE create_at :: DATE BETWEEN $3 AND $3 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom])
+                .then(function (data) {
+                    if (data.length == 0) { 
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Data tidak ada',
+                            itemperpage: itemperpage,
+                            pages: 0
+                        });
+                    } else {
+                        db.dbs.any('SELECT COUNT(*) FROM otp.topups WHERE client = $3 AND create_at :: DATE BETWEEN $4 AND $5 ', [page,itemperpage,datefrom])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+                
+                            res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: data,
+                                    message: 'Berhasil menampilkan daftar riwayat topup token OTP',
+                                    itemperpage: itemperpage,
+                                    pages: pageQty
+                                });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (dateto) {
+                db.dbs.any('SELECT * FROM otp.topups WHERE create_at :: DATE BETWEEN $3 AND $3 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,dateto])
+                .then(function (data) {
+                    if (data.length == 0) { 
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Data tidak ada',
+                            itemperpage: itemperpage,
+                            pages: 0
+                        });
+                    } else {
+                        db.dbs.any('SELECT COUNT(*) FROM otp.topups WHERE client = $3 AND create_at :: DATE BETWEEN $4 AND $5 ', [page,itemperpage,dateto])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+                
+                            res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: data,
+                                    message: 'Berhasil menampilkan daftar riwayat topup token OTP',
+                                    itemperpage: itemperpage,
+                                    pages: pageQty
+                                });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else {
+                db.dbs.any('SELECT * FROM otp.topups ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
+                .then(function (data) {
+                    if (data.length == 0) { 
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            data: data,
+                            message: 'Data tidak ada',
+                            itemperpage: itemperpage,
+                            pages: 0
+                        });
+                    } else {
+                        db.dbs.any('SELECT COUNT(*) FROM otp.topups', [page,itemperpage])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+                
+                            res.status(200)
+                                .json({
+                                    status: 'success',
+                                    data: data,
+                                    message: 'Berhasil menampilkan daftar riwayat topup token OTP',
+                                    itemperpage: itemperpage,
+                                    pages: pageQty
+                                });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            }
+
+
         }
 
     });
+}
 
+function downloadTopUpHistory(req,res,next){
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+  
+    checkUser(token1,token2).then(function(result){
+        if(result == 0){
+            res.status(401)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            const client = req.query.client;
+            const datefrom = req.query.datefrom;
+            const dateto = req.query.dateto;
+
+            if (client && datefrom && dateto) {
+                db.dbs.any('SELECT * FROM otp.topups WHERE cltuid = $1 AND create_at :: DATE BETWEEN $2 AND $3 ORDER BY create_at desc', [client,datefrom,dateto])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet(client + '_OTP_TOP_UP_HISTORY_' + datefrom + '_to_' + dateto); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'UID', key: 'uid'},
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Client', key: 'cltuid'},
+                            { header: 'Jumlah Top Up', key: 'amount'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
     
+                        const fileName = client + '_OTP_TOP_UP_HISTORY_' + datefrom + '_to_' + dateto;
+    
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+    
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+
+            } else if (client && datefrom) {
+                db.dbs.any('SELECT * FROM otp.topups WHERE cltuid = $1 AND create_at :: DATE BETWEEN $2 AND $2 ORDER BY create_at desc', [client,datefrom])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet(client + '_OTP_TOP_UP_HISTORY_' + datefrom); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'UID', key: 'uid'},
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Client', key: 'cltuid'},
+                            { header: 'Jumlah Top Up', key: 'amount'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+    
+                        const fileName = client + '_OTP_TOP_UP_HISTORY_' + datefrom;
+    
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+    
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (client && dateto) {
+                db.dbs.any('SELECT * FROM otp.topups WHERE cltuid = $1 AND create_at :: DATE BETWEEN $2 AND $2 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [client,dateto])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet(client + '_OTP_TOP_UP_HISTORY_' + dateto); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'UID', key: 'uid'},
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Client', key: 'cltuid'},
+                            { header: 'Jumlah Top Up', key: 'amount'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+    
+                        const fileName = client + '_OTP_TOP_UP_HISTORY_' + dateto;
+    
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+    
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (datefrom && dateto) {
+                db.dbs.any('SELECT * FROM otp.topups WHERE create_at :: DATE BETWEEN $1 AND $2 ORDER BY create_at desc', [datefrom,dateto])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('OTP_TOP_UP_HISTORY_' + datefrom + '_to_' + dateto); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'UID', key: 'uid'},
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Client', key: 'cltuid'},
+                            { header: 'Jumlah Top Up', key: 'amount'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+    
+                        const fileName = 'OTP_TOP_UP_HISTORY_' + datefrom + '_to_' + dateto;
+    
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+    
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (client) {
+                db.dbs.any('SELECT * FROM otp.topups WHERE cltuid = $1 ORDER BY create_at desc', [client])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet(client + '_OTP_TOP_UP_HISTORY'); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'UID', key: 'uid'},
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Client', key: 'cltuid'},
+                            { header: 'Jumlah Top Up', key: 'amount'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+    
+                        const fileName = client + '_OTP_TOP_UP_HISTORY';
+    
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+    
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (datefrom) {
+                db.dbs.any('SELECT * FROM otp.topups WHERE create_at :: DATE BETWEEN $1 AND $1 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [datefrom])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('OTP_TOP_UP_HISTORY_' + datefrom); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'UID', key: 'uid'},
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Client', key: 'cltuid'},
+                            { header: 'Jumlah Top Up', key: 'amount'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+    
+                        const fileName = 'OTP_TOP_UP_HISTORY_' + datefrom;
+    
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+    
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if (dateto) {
+                db.dbs.any('SELECT * FROM otp.topups WHERE create_at :: DATE BETWEEN $1 AND $1 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [dateto])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('OTP_TOP_UP_HISTORY_' + dateto); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'UID', key: 'uid'},
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Client', key: 'cltuid'},
+                            { header: 'Jumlah Top Up', key: 'amount'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+    
+                        const fileName = 'OTP_TOP_UP_HISTORY_' + dateto;
+    
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+    
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else {
+                db.dbs.any('SELECT * FROM otp.topups ORDER BY create_at desc')
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet('OTP_TOP_UP_HISTORY'); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'UID', key: 'uid'},
+                            { header: 'Tanggal', key: 'create_at'},
+                            { header: 'Client', key: 'cltuid'},
+                            { header: 'Jumlah Top Up', key: 'amount'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+    
+                        const fileName = 'OTP_TOP_UP_HISTORY';
+    
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+    
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            }
+
+
+        }
+
+    });
 }
 
 
@@ -328,5 +925,7 @@ module.exports={
     getClientOtpToken:getClientOtpToken,
     topupRequest:topupRequest,
     topUpClientOtpToken:topUpClientOtpToken,
-    getTopUpHistory:getTopUpHistory
+    getTopUpHistory:getTopUpHistory,
+    downloadAllClientOtpToken:downloadAllClientOtpToken,
+    downloadTopUpHistory:downloadTopUpHistory
 }

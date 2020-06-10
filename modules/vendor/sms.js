@@ -23,7 +23,7 @@ function sendSMS(req,res,next){
 
   checkUser(token1,token2).then(function(result){
       if(result == 0){
-          res.status(400)
+          res.status(401)
           .json({
               status: 'error',
               message: 'Not Authorized, Please RE-LOGIN'
@@ -240,9 +240,12 @@ function checkToken(req,res,next){
   const token1 = req.header('authorization');
   const token2 = req.cookies['token'];
 
+  console.log('token1', token1);
+  console.log('token2',token2);
   checkUser(token1,token2).then(function(result){
+
       if(result == 0){
-          res.status(400)
+          res.status(401)
           .json({
               status: 'error',
               message: 'Not Authorized, Please RE-LOGIN'
