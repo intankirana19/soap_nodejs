@@ -56,12 +56,12 @@ router.patch('/account/delete', account.deleteAccount);
 router.patch('/account/changepassword', account.changePassword);
 
 // //Dashboard-Account Roles
-router.get('/account/roleslist', account.getRoles);
+router.get('/role/roleslist', account.getRoles);
 router.get('/account/clientroleslist', account.clientRoleList);
 router.get('/account/role/:role_id', account.accountRole);
 
 //Dashboard-Logs
-router.get('/account/log', account.getLogs);
+router.get('/acc/log', account.getLogs);
 
 //Dashboard-Clients
 router.get('/client/list', client.getAllClients);
