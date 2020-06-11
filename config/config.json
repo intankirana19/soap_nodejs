@@ -28,8 +28,8 @@
         "pg_host": "localhost",
         "pg_port": 5432,
         "pg_db": "mitrabiz_new",
-        "pg_user": "postgres",
-        "pg_password": "password",
+        "pg_user": "budi",
+        "pg_password": "",
         "api_user" : "yptrial",
         "api_password": "DADI15dL"
     },
@@ -44,8 +44,8 @@
         "pg_host": "127.0.0.1",
         "pg_port": 5432,
         "pg_db": "mitrabiz_new",
-        "pg_user": "mitrabiz-prod",
-        "pg_password": "mitrabiz-prod-1234",
+        "pg_user": "brainworxdb",
+        "pg_password": "Brainworx2020",
         "api_user" : "yptrial",
         "api_password": "DADI15dL"
     }
