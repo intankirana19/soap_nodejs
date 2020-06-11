@@ -65,6 +65,7 @@ router.get('/account/log', account.getLogs);
 
 //Dashboard-Clients
 router.get('/client/list', client.getAllClients);
+router.get('/client/otplist', client.otpClientList);
 router.get('/client/:id', client.getClient);
 router.post('/client/add', client.addClient);
 router.patch('/client/edit', client.editClient);

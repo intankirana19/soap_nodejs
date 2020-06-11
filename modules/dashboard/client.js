@@ -139,6 +139,53 @@ function getAllClients(req,res,next){
     });
 }
 
+function otpClientList(req,res,next){
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+  
+    checkUser(token1).then(function(result){
+
+        if(result == 0){
+            res.status(400)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            db.dbs.any('SELECT * FROM sms.clients WHERE is_delete = false ')
+            .then(function (data) {
+                console.log('totalnya:',data.length)
+                var total = data.length;
+
+            db.dbs.any('SELECT distinct o.sender AS otp_sender FROM sms.clients c LEFT JOIN otp.messages o ON c.cltuid = o.cltuid')
+            .then(function (data) {
+                if (data.length == 0) { 
+                    res.status(200)
+                    .json({
+                        status: 'success',
+                        data: data,
+                        message: 'Mohon maaf tidak ada data klien'
+                    });
+                } else {
+
+                        res.status(200)
+                            .json({
+                                status: 'success',
+                                data: data,
+                                message: 'Berhasil menampilkan daftar klien'
+                            });
+                }
+            })
+            .catch(function (err) {
+                console.log('error',err)
+                return next(err);
+            });
+        })
+        }
+
+    });
+}
+
 function getClient(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
@@ -450,5 +497,6 @@ module.exports = {
     addClient:addClient,
     editClient:editClient,
     activateClient:activateClient,
-    deleteClient:deleteClient
+    deleteClient:deleteClient,
+    otpClientList:otpClientList
 }
