@@ -48,6 +48,7 @@ router.post('/otp/token', otp.checkToken);
 
 // //Dashboard-Account
 router.get('/account/list', account.getAllAccounts);
+router.get('/account/:accid', account.getAccount);
 router.post('/account/create', account.createAccount);
 router.patch('/account/edit', account.editAccount);
 router.patch('/account/activate', account.activateAccount);

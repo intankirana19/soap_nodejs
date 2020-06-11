@@ -651,7 +651,7 @@ function getSmsReport(req,res,next){
     });
 }
 
-function downloadReport(req,res){
+function downloadReport(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
   
@@ -680,7 +680,7 @@ function downloadReport(req,res){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_' + status + '_LIST_' + datefrom + '_to_' + dateto); //creating worksheet
+                        let worksheet = workbook.addWorksheet('BROADCAST_' + status + '_LIST_' + datefrom + '_to_' + dateto); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'Tanggal', key: 'create_at'},
@@ -692,7 +692,7 @@ function downloadReport(req,res){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
 
-                        const fileName = client + '_BROADCAST_' + status + '_LIST_' + datefrom + '_to_' + dateto;
+                        const fileName = 'BROADCAST_' + status + '_LIST_' + datefrom + '_to_' + dateto;
 
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -719,7 +719,7 @@ function downloadReport(req,res){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet('BROADCAST_' + status + '_LIST_' + datefrom + '_to_' + dateto); //creating worksheet
+                        let worksheet = workbook.addWorksheet('BROADCAST_' + status + '_LIST_' + datefrom); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'Tanggal', key: 'create_at'},
@@ -731,7 +731,7 @@ function downloadReport(req,res){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
 
-                        const fileName = 'BROADCAST_' + status + '_LIST_' + datefrom + '_to_' + dateto;
+                        const fileName = 'BROADCAST_' + status + '_LIST_' + datefrom;
 
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -758,7 +758,7 @@ function downloadReport(req,res){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_' + status + '_LIST_' + dateto + '_to_' + dateto); //creating worksheet
+                        let worksheet = workbook.addWorksheet('BROADCAST_' + status + '_LIST_' + dateto); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'Tanggal', key: 'create_at'},
@@ -770,7 +770,7 @@ function downloadReport(req,res){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
 
-                        const fileName = client + '_BROADCAST_' + status + '_LIST_' + dateto + '_to_' + dateto;
+                        const fileName = 'BROADCAST_' + status + '_LIST_' + dateto;
 
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -797,7 +797,7 @@ function downloadReport(req,res){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet('BROADCAST_' + status + '_LIST_' + datefrom + '_to_' + dateto); //creating worksheet
+                        let worksheet = workbook.addWorksheet('BROADCAST_' + status + '_LIST_' + datefrom); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'Tanggal', key: 'create_at'},
@@ -809,7 +809,7 @@ function downloadReport(req,res){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
 
-                        const fileName = 'BROADCAST_' + status + '_LIST_' + datefrom + '_to_' + dateto;
+                        const fileName = 'BROADCAST_' + status + '_LIST_' + datefrom;
 
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -836,7 +836,7 @@ function downloadReport(req,res){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_LIST_' + dateto + '_to_' + dateto); //creating worksheet
+                        let worksheet = workbook.addWorksheet('BROADCAST_LIST_' + datefrom + '_to_' + dateto); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'Tanggal', key: 'create_at'},
@@ -848,7 +848,7 @@ function downloadReport(req,res){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
 
-                        const fileName = client + '_BROADCAST_LIST_' + dateto + '_to_' + dateto;
+                        const fileName = 'BROADCAST_LIST_' + datefrom + '_to_' + dateto;
 
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -875,7 +875,7 @@ function downloadReport(req,res){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_' + status + '_LIST'); //creating worksheet
+                        let worksheet = workbook.addWorksheet('BROADCAST_' + status + '_LIST'); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'Tanggal', key: 'create_at'},
@@ -887,7 +887,7 @@ function downloadReport(req,res){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
 
-                        const fileName = client + '_BROADCAST_' + status + '_LIST';
+                        const fileName = 'BROADCAST_' + status + '_LIST';
 
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -914,7 +914,7 @@ function downloadReport(req,res){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet('BROADCAST_' + status + '_LIST_' + datefrom + '_to_' + datefrom); //creating worksheet
+                        let worksheet = workbook.addWorksheet('BROADCAST_' + status + '_LIST_' + datefrom); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'Tanggal', key: 'create_at'},
@@ -926,7 +926,7 @@ function downloadReport(req,res){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
 
-                        const fileName = 'BROADCAST_' + status + '_LIST_' + datefrom + '_to_' + datefrom;
+                        const fileName = 'BROADCAST_' + status + '_LIST_' + datefrom;
 
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -953,7 +953,7 @@ function downloadReport(req,res){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet('BROADCAST_' + status + '_LIST_' + dateto + '_to_' + dateto); //creating worksheet
+                        let worksheet = workbook.addWorksheet('BROADCAST_' + status + '_LIST_' + dateto); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'Tanggal', key: 'create_at'},
@@ -965,7 +965,7 @@ function downloadReport(req,res){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
 
-                        const fileName = 'BROADCAST_' + status + '_LIST_' + dateto + '_to_' + dateto;
+                        const fileName = 'BROADCAST_' + status + '_LIST_' + dateto;
 
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -992,7 +992,7 @@ function downloadReport(req,res){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_LIST_' + datefrom + '_to_' + datefrom); //creating worksheet
+                        let worksheet = workbook.addWorksheet('BROADCAST_LIST_' + datefrom); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'Tanggal', key: 'create_at'},
@@ -1004,7 +1004,7 @@ function downloadReport(req,res){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
 
-                        const fileName = client + '_BROADCAST_LIST_' + datefrom + '_to_' + datefrom;
+                        const fileName = 'BROADCAST_LIST_' + datefrom;
 
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1031,7 +1031,7 @@ function downloadReport(req,res){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_LIST_' + dateto + '_to_' + dateto); //creating worksheet
+                        let worksheet = workbook.addWorksheet('BROADCAST_LIST_' + dateto); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'Tanggal', key: 'create_at'},
@@ -1043,7 +1043,7 @@ function downloadReport(req,res){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
 
-                        const fileName = client + '_BROADCAST_LIST_' + dateto + '_to_' + dateto;
+                        const fileName = 'BROADCAST_LIST_' + dateto;
 
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1148,7 +1148,7 @@ function downloadReport(req,res){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_LIST'); //creating worksheet
+                        let worksheet = workbook.addWorksheet('BROADCAST_LIST'); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'Tanggal', key: 'create_at'},
@@ -1160,7 +1160,7 @@ function downloadReport(req,res){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
 
-                        const fileName = client + '_BROADCAST_LIST';
+                        const fileName = 'BROADCAST_LIST';
 
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -2374,14 +2374,14 @@ function getSmsDailyTokenUsage(req,res,next){
             var page = req.query.page -1;
             var itemperpage = req.query.itemperpage;
 
-            const q1 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $6 AND r.update_at :: DATE BETWEEN DATE $3 AND $4 AND m.client_id = $5 GROUP BY date,sender ORDER BY date LIMIT $2 OFFSET $1 * $2';
-            const q1c = 'SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $6 AND r.update_at :: DATE BETWEEN DATE $3 AND $4 AND m.client_id = $5';
+            const q1 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $6 AND r.update_at :: DATE BETWEEN DATE $3 AND $4 AND m.client_id = $5 GROUP BY date,sender ORDER BY date LIMIT $2 OFFSET $1 * $2';
+            const q1c = 'SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $6 AND r.update_at :: DATE BETWEEN DATE $3 AND $4 AND m.client_id = $5';
 
-            const q2 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $5 AND r.update_at :: DATE BETWEEN DATE $3 AND $4 GROUP BY date,sender ORDER BY date LIMIT $2 OFFSET $1 * $2';
-            const q2c = 'SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $5 AND r.update_at :: DATE BETWEEN DATE $3 AND $4';
+            const q2 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $5 AND r.update_at :: DATE BETWEEN DATE $3 AND $4 GROUP BY date,sender ORDER BY date LIMIT $2 OFFSET $1 * $2';
+            const q2c = 'SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $5 AND r.update_at :: DATE BETWEEN DATE $3 AND $4';
 
-            const q3 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $3 GROUP BY date,sender ORDER BY date LIMIT $2 OFFSET $1 * $2';
-            const q3c = 'SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $3';
+            const q3 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 GROUP BY date,sender ORDER BY date LIMIT $2 OFFSET $1 * $2';
+            const q3c = 'SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3';
 
             if (client && datefrom && dateto) {
                 db.dbs.any(q1, [page,itemperpage,datefrom,dateto,client,status])
@@ -2521,11 +2521,11 @@ function downloadSmsDailyTokenUsage(req,res,next){
             const datefrom = req.query.datefrom;
             const dateto = req.query.dateto;
 
-            const q1 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $4 AND r.update_at :: DATE BETWEEN DATE $1 AND $2 AND m.client_id = $3 GROUP BY date,sender ORDER BY date';
+            const q1 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $4 AND r.update_at :: DATE BETWEEN DATE $1 AND $2 AND m.client_id = $3 GROUP BY date,sender ORDER BY date';
 
-            const q2 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $3 AND r.update_at :: DATE BETWEEN DATE $1 AND $2 GROUP BY date,sender ORDER BY date';
+            const q2 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 AND r.update_at :: DATE BETWEEN DATE $1 AND $2 GROUP BY date,sender ORDER BY date';
 
-            const q3 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $1 GROUP BY date,sender ORDER BY date';
+            const q3 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1 GROUP BY date,sender ORDER BY date';
 
             if (client && datefrom && dateto) {
                 db.dbs.any(q1, [datefrom,dateto,client,status])
@@ -2657,18 +2657,20 @@ function getSmsTokenTotalUsage(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
+            const status = req.query.status;
             const client = req.query.client;
             const datefrom = req.query.datefrom;
             const dateto = req.query.dateto;
             // var page = req.query.page -1;
             // var itemperpage = req.query.itemperpage;
 
-            const q1 = 'SELECT m.client_id,c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $4 AND r.update_at :: DATE BETWEEN DATE $1 AND $2 AND m.client_id = $3';
+            const q1 = 'SELECT c.id AS client_id,c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $4 AND r.update_at :: DATE BETWEEN DATE $1 AND $2 AND m.client_id = $3 GROUP BY c.id,c.sender';
 
-            const q2 = 'SELECT m.client_id,c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $3 AND r.update_at :: DATE BETWEEN DATE $1 AND $2';
+            const q2 = 'SELECT c.id AS client_id,c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 AND r.update_at :: DATE BETWEEN DATE $1 AND $2  GROUP BY c.id,c.sender';
 
-            const q3 = 'SELECT m.client_id,c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $1';
+            const q3 = 'SELECT c.id AS client_id,c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1  GROUP BY c.id,c.sender';
 
+            const q4 = 'SELECT c.id AS client_id,c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $1  GROUP BY c.id,c.sender';
             if (client && datefrom && dateto) {
                 db.dbs.any(q1, [datefrom,dateto,client,status])
                 .then(function (data) {
@@ -2695,6 +2697,29 @@ function getSmsTokenTotalUsage(req,res,next){
                 });
             } else if (datefrom && dateto) {
                 db.dbs.any(q2, [datefrom,dateto,status])
+                .then(function (data) {
+                    if (data.length == 0) { 
+                        res.status(200)
+                        .json({
+                            status: 2,
+                            data: data,
+                            message: 'Data tidak ada'
+                        });
+                    } else {
+                
+                            res.status(200)
+                                .json({
+                                    status: 1,
+                                    data: data,
+                                    message: 'Berhasil menampilkan total pemakaian token Broadcast'
+                                });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if(client) {
+                db.dbs.any(q4, [client])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -2763,12 +2788,13 @@ function downloadSmsTokenTotalUsage(req,res,next){
             const datefrom = req.query.datefrom;
             const dateto = req.query.dateto;
 
-            const q1 = 'SELECT c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $4 AND r.update_at :: DATE BETWEEN DATE $1 AND $2 AND m.client_id = $3';
+            const q1 = 'SELECT c.id AS client_id,c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $4 AND r.update_at :: DATE BETWEEN DATE $1 AND $2 AND m.client_id = $3 GROUP BY c.id,c.sender';
 
-            const q2 = 'SELECT c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $3 AND r.update_at :: DATE BETWEEN DATE $1 AND $2';
+            const q2 = 'SELECT c.id AS client_id,c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 AND r.update_at :: DATE BETWEEN DATE $1 AND $2  GROUP BY c.id,c.sender';
 
-            const q3 = 'SELECT c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients ON m.client_id = c.id WHERE r.status = $1';
+            const q3 = 'SELECT c.id AS client_id,c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $1  GROUP BY c.id,c.sender';
 
+            const q4 = 'SELECT c.id AS client_id,c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $1  GROUP BY c.id,c.sender';
             if (client && datefrom && dateto) {
                 db.dbs.any(q1, [datefrom,dateto,client,status])
                 .then(function (data) {
@@ -2827,6 +2853,42 @@ function downloadSmsTokenTotalUsage(req,res,next){
                         worksheet.addRows(jsonData);
 
                         const fileName = 'BROADCAST_TOTAL_USAGE_' + datefrom + '_to_' + dateto;
+
+                        res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
+                        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+
+                        return workbook.xlsx.write(res)
+                            .then(function() {
+                                    res.status(200).end();
+                            });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
+            } else if(client) {
+                db.dbs.any(q4, [client])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 'success',
+                            message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
+                        });
+                    } else {
+                        const jsonData = JSON.parse(JSON.stringify(data));
+                        let workbook = new excel.Workbook(); //creating workbook
+                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_TOTAL_USAGE_'); //creating worksheet
+                        //  WorkSheet Header
+                        worksheet.columns = [
+                            { header: 'Client', key: 'client'},
+                            { header: 'Pemakaian Broadcast', key: 'total_usage'}
+                        ];
+                        // Add Array Rows
+                        worksheet.addRows(jsonData);
+
+                        const fileName = client + '_BROADCAST_TOTAL_USAGE_';
 
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

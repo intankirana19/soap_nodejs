@@ -162,6 +162,36 @@ function getAllAccounts(req,res,next){
     });
 }
 
+function getAccount(req,res,next){
+    const token1 = req.header('authorization');
+    const token2 = req.cookies['token'];
+  
+    checkUser(token1).then(function(result){
+        if(result == 0){
+            res.status(401)
+            .json({
+                status: 'error',
+                message: 'Not Authorized, Please RE-LOGIN'
+            });
+        }else{
+            var accid = req.params.accid;
+
+            db.dbs.one('select a.id, username, a.password, job_position, role_id, r.name AS role, client_id, c.name AS client, a.create_at, a.update_at, a.email, a.is_active, a.is_delete from sms.accounts a left join sms.roles r on a.role_id = r.id left join sms.clients c on a.client_id = c.id WHERE a.id = $1', [accid])
+            .then(function (data) {
+                res.status(200)
+                .json({
+                    status: 'success',
+                    data: data,
+                    message: 'Berhasil menampilkan account'
+                });
+            })
+            .catch(function (err) {
+                return next(err);
+            });
+        }
+    });
+}
+
 function createAccount(req,res,next){
     const token1 = req.header('authorization');
     const token2 = req.cookies['token'];
@@ -846,6 +876,44 @@ function getLogs(req,res,next){
                 .catch(function (err) {
                     return next(err);
                 });
+            } else if (client) {
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where a.client_id = $3 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client])
+                .then(function (data) {
+                    if (data.length == 0) {
+                        res.status(200)
+                        .json({
+                            status: 2,
+                            data: data,
+                            message: 'Data tidak ada',
+                            itemperpage: itemperpage,
+                            pages: 0
+                        });
+                    } else {
+                        db.dbs.any('select count(*) from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where a.client_id = $3 ', [page,itemperpage,client])
+                        .then(function (dataQty) {
+                            let count = dataQty[0].count;
+                            var pageQty = (count / itemperpage).toFixed(0);
+                            if(pageQty == 0){
+                                pageQty = 1
+                            }
+    
+                            res.status(200)
+                            .json({
+                                status: 'success',
+                                data: data,
+                                message: 'Berhasil menampilkan daftar log',
+                                itemperpage: itemperpage,
+                                pages: pageQty
+                            });
+                        })
+                        .catch(function (err) {
+                            return next(err);
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    return next(err);
+                });
             } else {
                 db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
                 .then(function (data) {
@@ -894,6 +962,7 @@ function getUser(req,res,next){
 
 module.exports = {
     getAllAccounts:getAllAccounts,
+    getAccount:getAccount,
     createAccount:createAccount,
     editAccount:editAccount,
     activateAccount:activateAccount,

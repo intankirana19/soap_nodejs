@@ -249,7 +249,7 @@ function getTopUpHistory(req,res,next){
             var itemperpage = req.query.itemperpage;
 
             if(client && datefrom && dateto){
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $5 ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client,datefrom,dateto])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $5 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client,datefrom,dateto])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -261,7 +261,7 @@ function getTopUpHistory(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any('SELECT COUNT(*) FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $5 ORDER BY t.create_at desc', [page,itemperpage,client,datefrom,dateto])
+                        db.dbs.any('SELECT COUNT(*) FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $5 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [page,itemperpage,client,datefrom,dateto])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
@@ -287,7 +287,7 @@ function getTopUpHistory(req,res,next){
                     return next(err);
                 });
             } else if(client && datefrom){
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $4 ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client,datefrom])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $4 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client,datefrom])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -299,7 +299,7 @@ function getTopUpHistory(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any('SELECT COUNT(*) FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $4 ORDER BY t.create_at desc', [page,itemperpage,client,datefrom])
+                        db.dbs.any('SELECT COUNT(*) FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $4 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [page,itemperpage,client,datefrom])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
@@ -325,7 +325,7 @@ function getTopUpHistory(req,res,next){
                     return next(err);
                 });
             } else if(client && dateto){
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $4 ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client,dateto])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $4 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client,dateto])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -337,7 +337,7 @@ function getTopUpHistory(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any('SELECT COUNT(*) FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $4 ORDER BY t.create_at desc', [page,itemperpage,client,dateto])
+                        db.dbs.any('SELECT COUNT(*) FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $4 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [page,itemperpage,client,dateto])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
@@ -363,7 +363,7 @@ function getTopUpHistory(req,res,next){
                     return next(err);
                 });
             } if(datefrom && dateto){
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $4 ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom,dateto])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $4 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom,dateto])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -375,7 +375,7 @@ function getTopUpHistory(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any('SELECT COUNT(*) FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $4 ORDER BY t.create_at desc', [page,itemperpage,datefrom,dateto])
+                        db.dbs.any('SELECT COUNT(*) FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $4 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [page,itemperpage,datefrom,dateto])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
@@ -401,7 +401,7 @@ function getTopUpHistory(req,res,next){
                     return next(err);
                 });
             } else if(client){
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -413,7 +413,7 @@ function getTopUpHistory(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any('SELECT COUNT(*) FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 ORDER BY t.create_at desc', [page,itemperpage,client])
+                        db.dbs.any('SELECT COUNT(*) FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [page,itemperpage,client])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
@@ -439,7 +439,7 @@ function getTopUpHistory(req,res,next){
                     return next(err);
                 });
             } else if(datefrom){
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $3 ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $3 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -451,7 +451,7 @@ function getTopUpHistory(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any('SELECT COUNT(*) FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $3 ORDER BY t.create_at desc', [page,itemperpage,datefrom])
+                        db.dbs.any('SELECT COUNT(*) FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $3 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [page,itemperpage,datefrom])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
@@ -477,7 +477,7 @@ function getTopUpHistory(req,res,next){
                     return next(err);
                 });
             } else if(dateto){
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $3 ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,dateto])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $3 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,dateto])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -489,7 +489,7 @@ function getTopUpHistory(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any('SELECT COUNT(*) FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $3 ORDER BY t.create_at desc', [page,itemperpage,dateto])
+                        db.dbs.any('SELECT COUNT(*) FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $3 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [page,itemperpage,dateto])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
@@ -515,7 +515,7 @@ function getTopUpHistory(req,res,next){
                     return next(err);
                 });
             } else {
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -527,14 +527,14 @@ function getTopUpHistory(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any('SELECT COUNT(*) FROM sms.topups t inner join sms.clients c on t.client_id = c.id ORDER BY t.create_at desc', [page,itemperpage])
+                        db.dbs.any('SELECT COUNT(*) FROM sms.topups t inner join sms.clients c on t.client_id = c.id group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [page,itemperpage])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
                             if(pageQty == 0){
                                 pageQty = 1
                             }
-    
+
                             res.status(200)
                                 .json({
                                     status: 'success',
@@ -575,11 +575,9 @@ function downloadTopUpHistory(req,res,next){
             const client = req.query.client;
             const datefrom = req.query.datefrom;
             const dateto = req.query.dateto;
-            var page = req.query.page -1;
-            var itemperpage = req.query.itemperpage;
 
             if(client && datefrom && dateto){
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $5 ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client,datefrom,dateto])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $1 and t.create_at :: date between $2 and $3 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [client,datefrom,dateto])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -590,7 +588,7 @@ function downloadTopUpHistory(req,res,next){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_TOP_UP_HISTORY_' + datefrom + '_to_' + dateto); //creating worksheet
+                        let worksheet = workbook.addWorksheet('BROADCAST_TOP_UP_HISTORY_' + datefrom + '_to_' + dateto); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'UID', key: 'uid'},
@@ -601,7 +599,7 @@ function downloadTopUpHistory(req,res,next){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
     
-                        const fileName = client + '_BROADCAST_TOP_UP_HISTORY_' + datefrom + '_to_' + dateto;
+                        const fileName = 'BROADCAST_TOP_UP_HISTORY_' + datefrom + '_to_' + dateto;
     
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -617,7 +615,7 @@ function downloadTopUpHistory(req,res,next){
                     return next(err);
                 });
             } else if(client && datefrom){
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $4 ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client,datefrom])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $1 and t.create_at :: date between $2 and $2 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [client,datefrom])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -628,7 +626,7 @@ function downloadTopUpHistory(req,res,next){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_TOP_UP_HISTORY_' + datefrom); //creating worksheet
+                        let worksheet = workbook.addWorksheet('BROADCAST_TOP_UP_HISTORY_' + datefrom); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'UID', key: 'uid'},
@@ -639,7 +637,7 @@ function downloadTopUpHistory(req,res,next){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
     
-                        const fileName = client + '_BROADCAST_TOP_UP_HISTORY_' + datefrom;
+                        const fileName = 'BROADCAST_TOP_UP_HISTORY_' + datefrom;
     
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -655,7 +653,7 @@ function downloadTopUpHistory(req,res,next){
                     return next(err);
                 });
             } else if(client && dateto){
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $4 ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client,dateto])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $1 and t.create_at :: date between $2 and $2 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [client,dateto])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -666,7 +664,7 @@ function downloadTopUpHistory(req,res,next){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_BROADCAST_TOP_UP_HISTORY_' + dateto); //creating worksheet
+                        let worksheet = workbook.addWorksheet('BROADCAST_TOP_UP_HISTORY_' + dateto); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'UID', key: 'uid'},
@@ -677,7 +675,7 @@ function downloadTopUpHistory(req,res,next){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
     
-                        const fileName = client + '_BROADCAST_TOP_UP_HISTORY_' + dateto;
+                        const fileName = 'BROADCAST_TOP_UP_HISTORY_' + dateto;
     
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -693,7 +691,7 @@ function downloadTopUpHistory(req,res,next){
                     return next(err);
                 });
             } if(datefrom && dateto){
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $4 ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom,dateto])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $1 and $2 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [datefrom,dateto])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -731,7 +729,7 @@ function downloadTopUpHistory(req,res,next){
                     return next(err);
                 });
             } else if(client){
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $1 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [client])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -742,7 +740,7 @@ function downloadTopUpHistory(req,res,next){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_TOP_UP_HISTORY'); //creating worksheet
+                        let worksheet = workbook.addWorksheet('TOP_UP_HISTORY'); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'UID', key: 'uid'},
@@ -753,7 +751,7 @@ function downloadTopUpHistory(req,res,next){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
     
-                        const fileName = client + '_TOP_UP_HISTORY';
+                        const fileName = 'TOP_UP_HISTORY';
     
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -769,7 +767,7 @@ function downloadTopUpHistory(req,res,next){
                     return next(err);
                 });
             } else if(datefrom){
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $3 ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $1 and $1 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [datefrom])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -807,7 +805,7 @@ function downloadTopUpHistory(req,res,next){
                     return next(err);
                 });
             } else if(dateto){
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $3 ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,dateto])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $1 and $1 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [dateto])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -845,7 +843,7 @@ function downloadTopUpHistory(req,res,next){
                     return next(err);
                 });
             } else {
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id group by t.create_at, t.id, c.sender ORDER BY t.create_at desc')
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
