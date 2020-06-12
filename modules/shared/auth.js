@@ -99,7 +99,7 @@ const jwt = require('jsonwebtoken');
 
     }
 
-    function verifyToken(token1,token2){
+    function verifyToken(token1){
         var tokenOne = jwt.verify(token1, jwtKey, (err, verifiedJwt) => {
             
             console.log(err)

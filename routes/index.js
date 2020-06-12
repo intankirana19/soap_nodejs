@@ -21,7 +21,8 @@ var otpToken = require('../modules/dashboard/otp/token');
 router.get('/ping', index.check_db);
 
 //upload
-router.put('/upload', upload.upload);
+router.post('/upload', upload.upload);
+router.post('/schedule/multiple', upload.scheduleMultiple);
 
 //user login
 router.post('/login', auth.checkUser);
