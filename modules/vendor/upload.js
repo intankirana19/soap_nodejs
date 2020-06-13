@@ -229,17 +229,6 @@ function sendMultiple(req,res, next){
                                                     var tokenRemain = tkn - 1;
                                                     await t1.none('UPDATE sms.tokens SET amount = $1 WHERE client_id = $2',[tokenRemain, result.client_id]);
     
-                                                })
-                                                .then(() => {
-                                                    Fs.unlinkSync(path);
-                                                    res.status(200)
-                                                    .json({
-                                                        status: 'success',
-                                                        message: `Processing broadcast to ${phoneNumber.length} receipients`
-                                                    });
-                                                })
-                                                .catch(error => {
-                                                    return next(error);
                                                 });
                                             } else {
                                                 db.dbs.tx(async t1 => {
@@ -253,17 +242,6 @@ function sendMultiple(req,res, next){
     
                                                     await t1.none('insert into sms.reports (rptuid, msgid, msisdn, status, message, dispatch_id) values ($1, $2, $3, $4, $5, $6)', [rptuid, resp.msgid, phoneNumber[i], resp.status, resp.message, dispatch]);
     
-                                                })
-                                                .then(() => {
-                                                    Fs.unlinkSync(path);
-                                                    res.status(200)
-                                                    .json({
-                                                        status: 'success',
-                                                        message: `Processing broadcast to ${phoneNumber.length} receipients`
-                                                    });
-                                                })
-                                                .catch(error => {
-                                                    return next(error);
                                                 });
                                             }
                                         }
@@ -272,6 +250,17 @@ function sendMultiple(req,res, next){
 
                             }
 
+                        })
+                        .then(() => {
+                            Fs.unlinkSync(path);
+                            res.status(200)
+                            .json({
+                                status: 'success',
+                                message: `Processing broadcast to ${phoneNumber.length} receipients`
+                            });
+                        })
+                        .catch(error => {
+                            return next(error);
                         });
 
                     });

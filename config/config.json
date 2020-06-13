@@ -28,8 +28,8 @@
         "pg_host": "localhost",
         "pg_port": 5432,
         "pg_db": "mitrabiz_new",
-        "pg_user": "budi",
-        "pg_password": "",
+        "pg_user": "postgres",
+        "pg_password": "password",
         "api_user" : "yptrial",
         "api_password": "DADI15dL"
     },
