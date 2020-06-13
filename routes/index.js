@@ -23,6 +23,7 @@ router.get('/ping', index.check_db);
 //upload
 router.post('/upload', upload.upload);
 router.post('/schedule/multiple', upload.scheduleMultiple);
+router.post('/sms/multiple', upload.sendMultiple);
 
 //user login
 router.post('/login', auth.checkUser);
