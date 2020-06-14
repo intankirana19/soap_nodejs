@@ -39,8 +39,13 @@ router.get('/sms/list', dsms.getMessageList);
 
 // sms by id
 router.get('/sms/byid/:id', dsms.getMessageByID);
+
 //send SMS
 router.post('/sms', sms.sendSMS);
+
+// schedule single SMS
+router.post('/schedule/single', sms.scheduleSMS);
+
 
 // // check MD Media SMS Token
 router.post('/sms/token', sms.checkToken);
