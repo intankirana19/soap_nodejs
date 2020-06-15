@@ -6,6 +6,7 @@
 
 var app = require('../app');
 var debug = require('debug')('mitrabiz-api:server');
+var http = require('http');
 const config = require('../config/configuration');
 /**
  * Get port from environment and store in Express.

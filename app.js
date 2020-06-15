@@ -87,8 +87,9 @@ function getSchedule(){
   console.log('today:', dateTime, 'tomorrow:',dateTime2)
   db.dbs.any('select * from sms.schedules where send_date between $1 and $2 and status = $3', [dateTime, dateTime2, 1])
     .then(function (data) {
+      
       if(data.length == 0){
-        setTimeout(function(){getSchedule(); }, 60000);
+        setTimeout(function(){getSchedule(); }, 3000);
       }else{
         tasking = data;
         getCloses();
@@ -114,9 +115,10 @@ function getCloses(){
   //send waktu terdekat untuk dijalankan
   theJobs(tasking[index])
 }
-
+var success = [];
+var failed = [];
 function theJobs(dataToSend){
-
+//console.log(dataToSend)
 var date = dataToSend.send_date;
 var res = date.split("-", 3);
 var year = res[0];
@@ -132,22 +134,23 @@ var rule = new schedule.RecurrenceRule();
 rule.hour = hour;
 rule.minute = minute;
 console.log(rule)
-var success = [];
-var failed = [];
+
 var j = schedule.scheduleJob(rule, function(){
   console.log('Broadcast scheduler is running!');
   //ganti request ke URL untuk send multiple
   //data untuk dikirim ada di dataToSend
   //request.post({url: sendmultiple,headers: {'Authorization': token}, form: dataTosend}, function optionalCallback(err, httpResponse, body) {
   //ini request sample :
+    
     db.dbs.one('insert into sms.dispatches (message_id) values ($1) RETURNING id', [dataToSend.id], a => a.id)
     .then(function (dispatch) {
       const msisdnString = dataToSend.msisdn;
+      
       const msisdn = msisdnString.split(',');
-
+      console.log(msisdn.length)
+      
       for (i = 0; i < msisdn.length; i++) {
-        success.push[i];
-        // console.log('msisdn', msisdn.length);
+        //console.log('msisdn', msisdn.length);
         const singleMsisdn = msisdn[i];
         db.dbs.one('SELECT amount FROM sms.tokens WHERE client_id = $1',[dataToSend.client_id])
         .then(function (token) {
@@ -178,14 +181,14 @@ var j = schedule.scheduleJob(rule, function(){
               };
 
             // request.post({url: global.gConfig.api_reg+'sendsms.json',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
-            request.post({url: 'http://localhost:5000/sms',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
+            request.post({url: 'http://localhost:5000/sendsms.json',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
                     if (err) {
                       console.log(err)
                     } else {
                         const resp = JSON.parse(body);
                         // console.log(resp);
                         if (resp.code === 1) {
-                            // success.push(i);
+                            success.push(i);
                             const d = new Date();
                             var r = ((1 + (Math.floor(Math.random() * 2))) * 100000 + (Math.floor(Math.random() * 100000))).toString();
                             var date = ("0" + d.getDate()).slice(-2).toString();
@@ -218,10 +221,13 @@ var j = schedule.scheduleJob(rule, function(){
       }
     })
     .then(() => {
-      console.log('success', success.length);
-      console.log('failed', failed.length);
-      after(dataToSend.id,dataToSend.client_id,success.length);
-      setTimeout(function(){getSchedule(); }, 3000);
+      setTimeout(function(){
+        console.log('success', success.length); 
+        console.log('failed', failed.length); 
+        after(dataToSend.id,dataToSend.client_id,success.length);
+      }, 4000);
+      
+      setTimeout(function(){getSchedule(); }, 5000);
     });
 
   // request.get({url: 'http://localhost:3000/ping'}, function optionalCallback(err, httpResponse, body) {
@@ -233,12 +239,14 @@ var j = schedule.scheduleJob(rule, function(){
   //     setTimeout(function(){getSchedule(); }, 3000);
 
   //   }
+
   // });
 });
 
 }
 
 function after (schedule,client_id,s) {
+  console.log('after')
   db.dbs.one('SELECT amount FROM sms.tokens WHERE client_id = $1',[client_id])
   .then(function (token) {
       const tkn = parseInt(token.amount);
