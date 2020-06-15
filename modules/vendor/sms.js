@@ -34,7 +34,7 @@ function sendSMS(req,res,next){
         const tkn = token.amount;
 
         if (tkn === 0) {
-          res.status(400)
+          res.status(200)
           .json({
               status: 3,
               message: 'Token habis. Silahkan Top Up.'
