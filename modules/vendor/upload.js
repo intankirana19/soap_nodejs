@@ -163,6 +163,105 @@ function sendMultiple(req,res, next){
                     .on('end', function (data) {
                         // console.log(phoneNumber);
 
+
+                        db.dbs.tx(async t => {
+                            var msg_id = req.body.msg_id;
+
+                            const client = t.one('select sender from sms.clients where id = $1', [result.client_id]);
+
+                            const message = t.one('select text from sms.messages where id = $1', [msg_id]);
+
+                            const batch = t.one('insert into sms.phone_batches (client_id) values ($1) RETURNING id', [result.client_id], b => b.id);
+
+                            const dispatch = t.one('insert into sms.dispatches (message_id) values ($1) RETURNING id', [msg_id], a => a.id);
+
+                            const token = await t.one('SELECT amount FROM sms.tokens WHERE client_id = $1',[result.client_id]);
+                            const tkn = parseInt(token.amount);
+
+                            if (tkn > 1) {
+                                const log = "Send Multiple Broadcast" + " - " + client.sender + " - " + result.username;
+                                t.none('INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)', [log, result.id]);
+                            }
+
+                            if (tkn < phoneNumber.length) {
+                                res.status(200)
+                                        .json({
+                                            status: 3,
+                                            message: 'Token tidak cukup. Silahkan Top Up.'
+                                        });
+                            } else {
+                                for (i = 0; i < phoneNumber.length; i++) {
+
+                                    t.none('insert into sms.phone_containers (phone,client_id,batch_id) values ($1,$2,$3)', [phoneNumber[i], result.client_id, batch]);
+    
+                                    if (tkn <= 0) {
+                                        res.status(200)
+                                        .json({
+                                            status: 2,
+                                            message: 'Token Habis. Silahkan Top Up.'
+                                        });
+                                    } else {
+                                        let user64 = auth.smsUser();
+                                        if(global.gConfig.config_id == 'local' || global.gConfig.config_id == 'development'){
+                                            var sender = 'MD Media';
+                                        } else if(global.gConfig.config_id == 'production'){
+                                            var sender = client.sender;
+                                        }
+    
+                                        var formData = {
+                                            sender : sender,
+                                            message: message.text,
+                                            msisdn: phoneNumber[i],
+                                        };
+    
+                                        request.post({url: global.gConfig.api_reg+'sendsms.json',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
+                                        // request.post({url: 'http://localhost:5000/sms',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
+                                            if (err) {
+                                                res.status(400)
+                                                    .json({
+                                                        status: 'error',
+                                                        message: err
+                                                    });
+                                            } else {
+                                                const resp = JSON.parse(body);
+                                                console.log(resp);
+                                                if (resp.code === 1) {
+                                                    success.push(i);
+                                                } else {
+                                                    failed.push(i);
+                                                }
+                                                const d = new Date();
+                                                var r = ((1 + (Math.floor(Math.random() * 2))) * 100000 + (Math.floor(Math.random() * 100000))).toString();
+                                                var date = ("0" + d.getDate()).slice(-2).toString();
+                                                var month = ("0" + (d.getMonth() + 1)).slice(-2).toString();
+                                                var ddmm = date + month;
+                                                var rptuid = ddmm + r;
+    
+                                                db.dbs.none('insert into sms.reports (rptuid, msgid, msisdn, status, message, dispatch_id) values ($1, $2, $3, $4, $5, $6)', [rptuid, resp.msgid, phoneNumber[i], resp.status, resp.message, dispatch]);
+                                            }
+                                        });
+                                    }
+    
+                                }
+                            }
+
+                        })
+                        .then(() => {
+                            console.log('receipients', phoneNumber.length);
+                            console.log('success', success.length);
+                            console.log('failed', failed.length);
+                            Fs.unlinkSync(path);
+                            after(result.client_id,phoneNumber.length,success.length,failed.length,res,next);
+                            // res.status(200)
+                            // .json({
+                            //     status: 'success',
+                            //     message: `Processing broadcast to ${phoneNumber.length} receipients`
+                            // });
+                        })
+                        .catch(error => {
+                            return next(error);
+                        });
+
                         // var msg_id = req.body.msg_id;
                         // db.dbs.one('select sender from sms.clients where id = $1', [result.client_id])
                         // .then(function (client) {
@@ -180,7 +279,7 @@ function sendMultiple(req,res, next){
                         //                             const tkn = parseInt(token.amount);
 
                         //                             if (tkn === 0) {
-                        //                                 res.status(400)
+                        //                                 res.status(200)
                         //                                 .json({
                         //                                     status: 'failed',
                         //                                     message: 'Token Habis. Silahkan Top Up.'
@@ -248,104 +347,6 @@ function sendMultiple(req,res, next){
                         //         });
                         //     });
                         // });
-
-                        db.dbs.tx(async t => {
-                            var msg_id = req.body.msg_id;
-
-                            const client = t.one('select sender from sms.clients where id = $1', [result.client_id]);
-
-                            const message = t.one('select text from sms.messages where id = $1', [msg_id]);
-
-                            const batch = t.one('insert into sms.phone_batches (client_id) values ($1) RETURNING id', [result.client_id], b => b.id);
-
-                            const dispatch = t.one('insert into sms.dispatches (message_id) values ($1) RETURNING id', [msg_id], a => a.id);
-
-                            const token = await t.one('SELECT amount FROM sms.tokens WHERE client_id = $1',[result.client_id]);
-                            const tkn = parseInt(token.amount);
-
-                            if (tkn > 1) {
-                                const log = "Send Multiple Broadcast" + " - " + client.sender + " - " + result.username;
-                                t.none('INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)', [log, result.id]);
-                            }
-
-                            if (tkn < phoneNumber.length) {
-                                res.status(400)
-                                        .json({
-                                            status: 3,
-                                            message: 'Token tidak cukup. Silahkan Top Up.'
-                                        });
-                            } else {
-                                for (i = 0; i < phoneNumber.length; i++) {
-
-                                    t.none('insert into sms.phone_containers (phone,client_id,batch_id) values ($1,$2,$3)', [phoneNumber[i], result.client_id, batch]);
-    
-                                    if (tkn <= 0) {
-                                        res.status(400)
-                                        .json({
-                                            status: 2,
-                                            message: 'Token Habis. Silahkan Top Up.'
-                                        });
-                                    } else {
-                                        let user64 = auth.smsUser();
-                                        if(global.gConfig.config_id == 'local' || global.gConfig.config_id == 'development'){
-                                            var sender = 'MD Media';
-                                        } else if(global.gConfig.config_id == 'production'){
-                                            var sender = client.sender;
-                                        }
-    
-                                        var formData = {
-                                            sender : sender,
-                                            message: message.text,
-                                            msisdn: phoneNumber[i],
-                                        };
-    
-                                        request.post({url: global.gConfig.api_reg+'sendsms.json',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
-                                        // request.post({url: 'http://localhost:5000/sms',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
-                                            if (err) {
-                                                res.status(400)
-                                                    .json({
-                                                        status: 'error',
-                                                        message: err
-                                                    });
-                                            } else {
-                                                const resp = JSON.parse(body);
-                                                console.log(resp);
-                                                if (resp.code === 1) {
-                                                    success.push(i);
-                                                } else {
-                                                    failed.push(i);
-                                                }
-                                                const d = new Date();
-                                                var r = ((1 + (Math.floor(Math.random() * 2))) * 100000 + (Math.floor(Math.random() * 100000))).toString();
-                                                var date = ("0" + d.getDate()).slice(-2).toString();
-                                                var month = ("0" + (d.getMonth() + 1)).slice(-2).toString();
-                                                var ddmm = date + month;
-                                                var rptuid = ddmm + r;
-    
-                                                db.dbs.none('insert into sms.reports (rptuid, msgid, msisdn, status, message, dispatch_id) values ($1, $2, $3, $4, $5, $6)', [rptuid, resp.msgid, phoneNumber[i], resp.status, resp.message, dispatch]);
-                                            }
-                                        });
-                                    }
-    
-                                }
-                            }
-
-                        })
-                        .then(() => {
-                            console.log('receipients', phoneNumber.length);
-                            console.log('success', success.length);
-                            console.log('failed', failed.length);
-                            Fs.unlinkSync(path);
-                            after(result.client_id,phoneNumber.length,success.length,failed.length,res,next);
-                            // res.status(200)
-                            // .json({
-                            //     status: 'success',
-                            //     message: `Processing broadcast to ${phoneNumber.length} receipients`
-                            // });
-                        })
-                        .catch(error => {
-                            return next(error);
-                        });
 
                     });
                 }

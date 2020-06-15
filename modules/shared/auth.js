@@ -53,11 +53,11 @@ const jwt = require('jsonwebtoken');
             const data = await t.one(q1, [email, password]);
             
             if (data.is_active === false || data.is_delete === true) {
-                res.status(400)
+                res.status(200)
                 .json({
                     status: 1,
                     message: 'Akun telah dinon-aktifkan'
-                })  
+                });
             } else if(data.length !=0){
                 const token = jwt.sign({
                     data: data
@@ -75,11 +75,11 @@ const jwt = require('jsonwebtoken');
                 
             } else{
                 console.log('fdafdaf')
-                // res.status(400)
+                // res.status(200)
                 // .json({
                 //     status: 2,
                 //     message: 'Invalid Username or Password'
-                // })  
+                // });
             }
         })
         .then(() => {
@@ -89,11 +89,11 @@ const jwt = require('jsonwebtoken');
         })
         .catch(error => {            
             if(error.code===0){
-            res.status(400)
+            res.status(200)
                 .json({
                     status: 2,
                     message: 'Invalid Username or Password'
-                })  
+                })
             }
         });
 
