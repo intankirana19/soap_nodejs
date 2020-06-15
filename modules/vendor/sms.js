@@ -36,7 +36,7 @@ function sendSMS(req,res,next){
         if (tkn === 0) {
           res.status(400)
           .json({
-              status: 'failed',
+              status: 3,
               message: 'Token habis. Silahkan Top Up.'
           });
         } else {
@@ -62,7 +62,8 @@ function sendSMS(req,res,next){
                   msisdn: msisdn,
               };
   
-              request.post({url: global.gConfig.api_reg+'sendsms.json',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
+              // request.post({url: global.gConfig.api_reg+'sendsms.json',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
+                request.post({url: 'http://localhost:5000/sms',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
                 if (err) {
                   res.status(400)
                         .json({
@@ -95,7 +96,7 @@ function sendSMS(req,res,next){
                     .then(() => {
                       res.status(200)
                       .json({
-                          status: 'success',
+                          status: 1,
                           message: 'Pesan berhasil terkirim.'
                       });
                     })
@@ -120,7 +121,7 @@ function sendSMS(req,res,next){
                     .then(() => {
                       res.status(200)
                       .json({
-                          status: 'failed',
+                          status: 2,
                           message: 'Pesan gagal terkirim.'
                       });
                     })
