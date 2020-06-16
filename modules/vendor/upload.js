@@ -214,7 +214,7 @@ function sendMultiple(req,res, next){
                                             message: 'Token Habis. Silahkan Top Up.'
                                         });
                                     } else {
-                                        t1.none('UPDATE sms.messages SET is_sent = $1 WHERE id = $2',[true, msg_id]);
+                                        t.none('UPDATE sms.messages SET is_sent = $1 WHERE id = $2',[true, msg_id]);
                                         let user64 = auth.smsUser();
                                         if(global.gConfig.config_id == 'local' || global.gConfig.config_id == 'development'){
                                             var sender = 'MD Media';
