@@ -67,37 +67,50 @@ function scheduleMultiple(req,res, next){
                         // console.log(phoneNumber);
                         db.dbs.tx(async t => {
                             var msg_id = req.body.msg_id;
-                            const send_date = req.body.send_date;
+                            const send_date = toString(req.body.send_date);
 
-                            const client = await t.one('select sender from sms.clients where id = $1', [result.client_id]);
+                            const token = await t.one('SELECT amount FROM sms.tokens WHERE client_id = $1',[result.client_id]);
+                            const tkn = parseInt(token.amount);
 
-                            const message = await t.one('select text from sms.messages where id = $1', [msg_id]);
+                            if (tkn < phoneNumber.length) {
+                                res.status(200)
+                                        .json({
+                                            status: 2,
+                                            message: 'Token tidak cukup. Silahkan Top Up.'
+                                        });
+                            } else {
+                                const client = await t.one('select sender from sms.clients where id = $1', [result.client_id]);
 
-                            var d = new Date();
-                            var r = ((1 + (Math.floor(Math.random() * 2))) * 10000 + (Math.floor(Math.random() * 10000))).toString();
-                            var date = ("0" + d.getDate()).slice(-2).toString();
-                            var month = ("0" + (d.getMonth() + 1)).slice(-2).toString();
-                            var mmdd = month + date;
-                            var schuid = "50" + mmdd + r;
+                                const message = await t.one('select text from sms.messages where id = $1', [msg_id]);
 
-                            const phoneString = phoneNumber.toString();
-                            var res = phoneString.replace("{", "");
-                            var res2 = res.replace("}", "");
-                            await t.none('insert into sms.schedules (schuid,message,msisdn,send_date,send_via,status,client_id) values ($1,$2,$3,$4,$5,$6,$7)', [schuid, message.text, res2, send_date, 1, 1, result.client_id]);
-                            const batch = await t.one('insert into sms.phone_batches (client_id) values ($1) RETURNING id', [result.client_id], b => b.id);
-
-                            for (i = 0; i < phoneNumber.length; i++) {
-                                await t.none('insert into sms.phone_containers (phone,client_id,batch_id) values ($1,$2,$3)', [phoneNumber[i], result.client_id, batch]);
+                                var d = new Date();
+                                var r = ((1 + (Math.floor(Math.random() * 2))) * 10000 + (Math.floor(Math.random() * 10000))).toString();
+                                var date = ("0" + d.getDate()).slice(-2).toString();
+                                var month = ("0" + (d.getMonth() + 1)).slice(-2).toString();
+                                var mmdd = month + date;
+                                var schuid = "50" + mmdd + r;
+    
+                                const phoneString = phoneNumber.toString();
+                                var r = phoneString.replace("{", "");
+                                var res2 = r.replace("}", "");
+                                await t.none('insert into sms.schedules (schuid,message,msisdn,send_date,send_via,status,client_id) values ($1,$2,$3,$4,$5,$6,$7)', [schuid, message.text, res2, send_date, 1, 1, result.client_id]);
+                                const batch = await t.one('insert into sms.phone_batches (client_id) values ($1) RETURNING id', [result.client_id], b => b.id);
+    
+                                for (i = 0; i < phoneNumber.length; i++) {
+                                    await t.none('insert into sms.phone_containers (phone,client_id,batch_id) values ($1,$2,$3)', [phoneNumber[i], result.client_id, batch]);
+                                }
+                                await t1.none('UPDATE sms.messages SET is_sent = $1 WHERE id = $2',[true, msg_id]);
+                                const log = "Schedule Multiple Broadcast" + " - " + client.sender + " - " + result.username;
+                                await t.none('INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)', [log, result.id]);
                             }
 
-                            const log = "Schedule Multiple Broadcast" + " - " + client.sender + " - " + result.username;
-                            await t.none('INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)', [log, result.id]);
+
                         })
                         .then(() => {
                             Fs.unlinkSync(path);
                             res.status(200)
                             .json({
-                                status: 'success',
+                                status: 1,
                                 message: `Successfully schedule ${phoneNumber.length} receipients Broadcast`
                             });
                         })
@@ -201,6 +214,7 @@ function sendMultiple(req,res, next){
                                             message: 'Token Habis. Silahkan Top Up.'
                                         });
                                     } else {
+                                        t1.none('UPDATE sms.messages SET is_sent = $1 WHERE id = $2',[true, msg_id]);
                                         let user64 = auth.smsUser();
                                         if(global.gConfig.config_id == 'local' || global.gConfig.config_id == 'development'){
                                             var sender = 'MD Media';

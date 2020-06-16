@@ -89,7 +89,7 @@ function sendSMS(req,res,next){
   
                       var tokenRemain = tkn - 1;
                       await t1.none('UPDATE sms.tokens SET amount = $1 WHERE client_id = $2',[tokenRemain, result.client_id]);
-  
+                      await t1.none('UPDATE sms.messages SET is_sent = $1 WHERE id = $2',[true, msg_id]);
                       const log = "Send Single Message(" + resp.status + ") - " + client.sender + " - " + result.username;
                       await t1.none('INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)', [log, result.id]);
                     })
@@ -231,7 +231,7 @@ function scheduleSMS(req,res,next){
                 var schuid = "50" + mmdd + r;
 
                 await t.none('insert into sms.schedules (schuid,message,msisdn,send_date,send_via,status,client_id) values ($1,$2,$3,$4,$5,$6,$7)', [schuid, message.text, msisdn, send_date, 1, 1, result.client_id]);
-
+                await t.none('UPDATE sms.messages SET is_sent = $1 WHERE id = $2',[true, msg_id]);
                 const log = "Schedule Single Broadcast" + " - " + client.sender + " - " + result.username;
                 await t.none('INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)', [log, result.id]);
               })

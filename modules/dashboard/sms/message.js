@@ -40,13 +40,13 @@ function createSms(req,res,next){
 
             var clientId = result.client_id;
 
-            const q1 = 'INSERT INTO sms.messages (msguid, text, client_id) VALUES ($1, $2, $3)';
+            const q1 = 'INSERT INTO sms.messages (msguid, text, client_id, is_sent) VALUES ($1, $2, $3, $4)';
 
             const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
             const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
 
             db.dbs.tx(async t => {
-                await t.none(q1, [msguid, text, clientId]);
+                await t.none(q1, [msguid, text, clientId, false]);
 
                 const c = await t.one(q2, [result.client_id])
                 const log = "Create Broadcast Message" + " - " + c.sender + " - " + result.username;
