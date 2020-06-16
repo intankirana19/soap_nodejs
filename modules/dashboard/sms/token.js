@@ -21,7 +21,7 @@ let checkUser = function(token1) {
 }
 
 function getAllClientSmsToken(req,res,next){
-    var page = req.query.page -1;
+    var page = req.query.page;
     var itemperpage = req.query.itemperpage;
 
     const token1 = req.header('authorization');
@@ -35,7 +35,7 @@ function getAllClientSmsToken(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
-            db.dbs.any('SELECT t.id,amount,t.client_id,c.sender as client,t.create_at,t.update_at FROM sms.tokens t left join sms.clients c on t.client_id = c.id order by update_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
+            db.dbs.any('SELECT t.id,amount,t.client_id,c.sender as client,t.create_at,t.update_at FROM sms.tokens t left join sms.clients c on t.client_id = c.id order by update_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage])
             .then(function (data) {
                 if (data.length == 0) {
                     res.status(200)
@@ -245,11 +245,11 @@ function getTopUpHistory(req,res,next){
             const client = req.query.client;
             const datefrom = req.query.datefrom;
             const dateto = req.query.dateto;
-            var page = req.query.page -1;
+            var page = req.query.page;
             var itemperpage = req.query.itemperpage;
 
             if(client && datefrom && dateto){
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $5 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client,datefrom,dateto])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $5 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,client,datefrom,dateto])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -287,7 +287,7 @@ function getTopUpHistory(req,res,next){
                     return next(err);
                 });
             } else if(client && datefrom){
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $4 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client,datefrom])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $4 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,client,datefrom])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -325,7 +325,7 @@ function getTopUpHistory(req,res,next){
                     return next(err);
                 });
             } else if(client && dateto){
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $4 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client,dateto])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $4 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,client,dateto])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -363,7 +363,7 @@ function getTopUpHistory(req,res,next){
                     return next(err);
                 });
             } if(datefrom && dateto){
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $4 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom,dateto])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $4 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,datefrom,dateto])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -401,7 +401,7 @@ function getTopUpHistory(req,res,next){
                     return next(err);
                 });
             } else if(client){
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,client])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -439,7 +439,7 @@ function getTopUpHistory(req,res,next){
                     return next(err);
                 });
             } else if(datefrom){
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $3 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $3 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,datefrom])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -477,7 +477,7 @@ function getTopUpHistory(req,res,next){
                     return next(err);
                 });
             } else if(dateto){
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $3 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,dateto])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $3 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,dateto])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -515,7 +515,7 @@ function getTopUpHistory(req,res,next){
                     return next(err);
                 });
             } else {
-                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
+                db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)

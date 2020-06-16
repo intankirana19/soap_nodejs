@@ -56,7 +56,7 @@ function getAllClients(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
-            var page = req.query.page -1;
+            var page = req.query.page;
             var itemperpage = req.query.itemperpage;
             db.dbs.any('SELECT * FROM sms.clients WHERE is_delete = false ')
             .then(function (data) {
@@ -75,7 +75,7 @@ function getAllClients(req,res,next){
                         pages: 0
                     });
                 } else if (data.length > 10) {
-                    db.dbs.any('SELECT a.cltuid, a.name AS company, a.phone, a.email, a.pic, a.sender, a.create_at, a.update_at, a.is_active, a.is_delete, b.name AS rolename, a.id FROM sms.clients AS a LEFT JOIN sms.roles AS b ON a.type = b.id WHERE a.is_delete = false ORDER BY a.update_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
+                    db.dbs.any('SELECT a.cltuid, a.name AS company, a.phone, a.email, a.pic, a.sender, a.create_at, a.update_at, a.is_active, a.is_delete, b.name AS rolename, a.id FROM sms.clients AS a LEFT JOIN sms.roles AS b ON a.type = b.id WHERE a.is_delete = false ORDER BY a.update_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage])
                     .then(function (data) {
                         db.dbs.any('SELECT COUNT(*) FROM sms.clients WHERE is_delete = false', [page,itemperpage])
                         .then(function (dataQty) {

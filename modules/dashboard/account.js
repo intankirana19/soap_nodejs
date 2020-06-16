@@ -55,11 +55,11 @@ function getAllAccounts(req,res,next){
             });
         }else{
             const client = req.query.client;
-            var page = req.query.page -1;
+            var page = req.query.page;
             var itemperpage = req.query.itemperpage;
 
             if (client) {
-                db.dbs.any('SELECT a.id,a.client_id,a.role_id,a.username,a.job_position,r.name,c.sender,a.email,a.is_active,a.create_at,a.update_at FROM sms.accounts a inner join sms.clients c on a.client_id = c.id inner join sms.roles r on a.role_id = r.id WHERE a.is_delete = false AND client_id = $3 ORDER BY a.update_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client])
+                db.dbs.any('SELECT a.id,a.client_id,a.role_id,a.username,a.job_position,r.name,c.sender,a.email,a.is_active,a.create_at,a.update_at FROM sms.accounts a inner join sms.clients c on a.client_id = c.id inner join sms.roles r on a.role_id = r.id WHERE a.is_delete = false AND client_id = $3 ORDER BY a.update_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,client])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -96,7 +96,7 @@ function getAllAccounts(req,res,next){
                     return next(err);
                 });
             } else if (page && itemperpage) {
-                db.dbs.any('SELECT a.id,a.client_id,a.role_id,a.username,a.job_position,r.name,c.sender,a.email,a.is_active,a.create_at,a.update_at FROM sms.accounts a inner join sms.clients c on a.client_id = c.id inner join sms.roles r on a.role_id = r.id WHERE a.is_delete = false ORDER BY a.update_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
+                db.dbs.any('SELECT a.id,a.client_id,a.role_id,a.username,a.job_position,r.name,c.sender,a.email,a.is_active,a.create_at,a.update_at FROM sms.accounts a inner join sms.clients c on a.client_id = c.id inner join sms.roles r on a.role_id = r.id WHERE a.is_delete = false ORDER BY a.update_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -667,11 +667,11 @@ function getLogs(req,res,next){
             const client = req.query.client;
             const datefrom = req.query.datefrom;
             const dateto = req.query.dateto;
-            var page = req.query.page -1;
+            var page = req.query.page;
             var itemperpage = req.query.itemperpage;
 
             if (client && datefrom && dateto) {
-                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $4 and a.client_id = $5 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom,dateto,client])
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $4 and a.client_id = $5 ORDER BY create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,datefrom,dateto,client])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -709,7 +709,7 @@ function getLogs(req,res,next){
                     return next(err);
                 });
             } else if (client && datefrom) {
-                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 and a.client_id = $4 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom,client])
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 and a.client_id = $4 ORDER BY create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,datefrom,client])
                 .then(function (data) {
                     db.dbs.any('select count(*) from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 and a.client_id = $4', [page,itemperpage,datefrom,client])
                     .then(function (dataQty) {
@@ -736,7 +736,7 @@ function getLogs(req,res,next){
                     return next(err);
                 });
             } else if (client && dateto) {
-                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 and a.client_id = $4 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,dateto,client])
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 and a.client_id = $4 ORDER BY create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,dateto,client])
                 .then(function (data) {
                     db.dbs.any('select count(*) from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 and a.client_id = $4', [page,itemperpage,dateto,client])
                     .then(function (dataQty) {
@@ -763,7 +763,7 @@ function getLogs(req,res,next){
                     return next(err);
                 });
             } else if (datefrom && dateto) {
-                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $4 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom,dateto])
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $4 ORDER BY create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,datefrom,dateto])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -801,7 +801,7 @@ function getLogs(req,res,next){
                     return next(err);
                 });
             } else if (datefrom) {
-                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom])
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 ORDER BY create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,datefrom])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -839,7 +839,7 @@ function getLogs(req,res,next){
                     return next(err);
                 });
             } else if (dateto) {
-                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,dateto])
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 ORDER BY create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,dateto])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -877,7 +877,7 @@ function getLogs(req,res,next){
                     return next(err);
                 });
             } else if (client) {
-                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where a.client_id = $3 ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client])
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where a.client_id = $3 ORDER BY create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,client])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -915,7 +915,7 @@ function getLogs(req,res,next){
                     return next(err);
                 });
             } else {
-                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id ORDER BY create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
+                db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id ORDER BY create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage])
                 .then(function (data) {
                     db.dbs.any('select count(*) from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id', [page,itemperpage])
                     .then(function (dataQty) {

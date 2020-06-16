@@ -16,14 +16,13 @@ var smsReport = require('../modules/dashboard/sms/reports');
 var otpReport = require('../modules/dashboard/otp/reports');
 var smsToken = require('../modules/dashboard/sms/token');
 var otpToken = require('../modules/dashboard/otp/token');
+var schedule = require('../modules/dashboard/schedule');
 
 //check DB
 router.get('/ping', index.check_db);
 
 //upload
 router.post('/upload', upload.upload);
-router.post('/schedule/multiple', upload.scheduleMultiple);
-router.post('/sms/multiple', upload.sendMultiple);
 
 //user login
 router.post('/login', auth.checkUser);
@@ -42,12 +41,26 @@ router.get('/sms/byid/:id', dsms.getMessageByID);
 
 //send SMS
 router.post('/sms', sms.sendSMS);
+router.post('/sms/multiple', upload.sendMultiple);
 
-// schedule single SMS
+// schedule
 router.post('/schedule/single', sms.scheduleSMS);
+router.post('/schedule/multiple', upload.scheduleMultiple);
+
+// schedule list
+router.get('/schedulelist', schedule.getSchedule);
+
+// schedule by id
+router.get('/schedulebyid/:id', schedule.getScheduleByID);
+
+// modify schedule
+router.post('/modifyschedule', schedule.changeScheduleTime);
+
+// cancel schedule
+router.post('/cancelschedule', schedule.cancelSchedule);
 
 
-// // check MD Media SMS Token
+// check MD Media SMS Token
 router.post('/sms/token', sms.checkToken);
 
 // check MD Media OTP Token
@@ -64,7 +77,7 @@ router.patch('/account/changepassword', account.changePassword);
 
 // //Dashboard-Account Roles
 router.get('/role/roleslist', account.getRoles);
-router.get('/account/clientroleslist', account.clientRoleList);
+router.get('/clientroleslist', account.clientRoleList);
 router.get('/account/role/:role_id', account.accountRole);
 
 //Dashboard-Logs

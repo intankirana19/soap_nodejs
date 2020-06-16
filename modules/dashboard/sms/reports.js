@@ -33,11 +33,11 @@ function getSmsReport(req,res,next){
             const client = req.query.client;
             const datefrom = req.query.datefrom;
             const dateto = req.query.dateto;
-            var page = req.query.page -1;
+            var page = req.query.page;
             var itemperpage = req.query.itemperpage;
 
             if (status && client && datefrom && dateto) {
-                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 AND m.client_id = $4 AND d.create_at :: DATE BETWEEN DATE $5 AND $6 ORDER BY d.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,status,client,datefrom,dateto])
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 AND m.client_id = $4 AND d.create_at :: DATE BETWEEN DATE $5 AND $6 ORDER BY d.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,client,datefrom,dateto])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -75,7 +75,7 @@ function getSmsReport(req,res,next){
                     return next(err);
                 });
             } else if (status && client && datefrom) {
-                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 AND m.client_id = $4 AND d.create_at :: DATE BETWEEN DATE $5 AND $5 ORDER BY d.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,status,client,datefrom])
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 AND m.client_id = $4 AND d.create_at :: DATE BETWEEN DATE $5 AND $5 ORDER BY d.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,client,datefrom])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -113,7 +113,7 @@ function getSmsReport(req,res,next){
                     return next(err);
                 });
             } else if (status && client && dateto) {
-                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 AND m.client_id = $4 AND d.create_at :: DATE BETWEEN DATE $5 AND $5 ORDER BY d.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,status,client,dateto])
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 AND m.client_id = $4 AND d.create_at :: DATE BETWEEN DATE $5 AND $5 ORDER BY d.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,client,dateto])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -151,7 +151,7 @@ function getSmsReport(req,res,next){
                     return next(err);
                 });
             } else if (status && datefrom && dateto) {
-                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 AND d.create_at :: DATE BETWEEN DATE $4 AND $5 ORDER BY d.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,status,datefrom,dateto])
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 AND d.create_at :: DATE BETWEEN DATE $4 AND $5 ORDER BY d.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,datefrom,dateto])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -189,7 +189,7 @@ function getSmsReport(req,res,next){
                     return next(err);
                 });
             } else if (client && datefrom && dateto) {
-                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $3 AND d.create_at :: DATE BETWEEN DATE $4 AND $5 ORDER BY d.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client,datefrom,dateto])
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $3 AND d.create_at :: DATE BETWEEN DATE $4 AND $5 ORDER BY d.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,client,datefrom,dateto])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -227,7 +227,7 @@ function getSmsReport(req,res,next){
                     return next(err);
                 });
             } else if (status && client) {
-                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 AND m.client_id = $4 ORDER BY d.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,status,client])
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 AND m.client_id = $4 ORDER BY d.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,client])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -265,7 +265,7 @@ function getSmsReport(req,res,next){
                     return next(err);
                 });
             } else if (status && datefrom) {
-                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 AND d.create_at :: DATE BETWEEN DATE $4 AND $4 ORDER BY d.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,status,datefrom])
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 AND d.create_at :: DATE BETWEEN DATE $4 AND $4 ORDER BY d.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,datefrom])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -303,7 +303,7 @@ function getSmsReport(req,res,next){
                     return next(err);
                 });
             } else if (status && dateto) {
-                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 AND d.create_at :: DATE BETWEEN DATE $4 AND $4 ORDER BY d.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,status,dateto])
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 AND d.create_at :: DATE BETWEEN DATE $4 AND $4 ORDER BY d.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,dateto])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -341,7 +341,7 @@ function getSmsReport(req,res,next){
                     return next(err);
                 });
             } else if (client && datefrom) {
-                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $3 AND d.create_at :: DATE BETWEEN DATE $4 AND $4 ORDER BY d.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client,datefrom])
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $3 AND d.create_at :: DATE BETWEEN DATE $4 AND $4 ORDER BY d.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,client,datefrom])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -379,7 +379,7 @@ function getSmsReport(req,res,next){
                     return next(err);
                 });
             } else if (client && dateto) {
-                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $3 AND d.create_at :: DATE BETWEEN DATE $4 AND $4 ORDER BY d.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client,dateto])
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $3 AND d.create_at :: DATE BETWEEN DATE $4 AND $4 ORDER BY d.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,client,dateto])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -417,7 +417,7 @@ function getSmsReport(req,res,next){
                     return next(err);
                 });
             } else if (datefrom && dateto) {
-                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE d.create_at :: DATE BETWEEN DATE $3 AND $4 ORDER BY d.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom,dateto])
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE d.create_at :: DATE BETWEEN DATE $3 AND $4 ORDER BY d.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,datefrom,dateto])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -455,7 +455,7 @@ function getSmsReport(req,res,next){
                     return next(err);
                 });
             } else if (status) {
-                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 ORDER BY d.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,status])
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 ORDER BY d.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -493,7 +493,7 @@ function getSmsReport(req,res,next){
                     return next(err);
                 });
             } else if (client) {
-                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $3 ORDER BY d.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client])
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $3 ORDER BY d.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,client])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -531,7 +531,7 @@ function getSmsReport(req,res,next){
                     return next(err);
                 });
             } else if (datefrom) {
-                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE d.create_at :: DATE BETWEEN DATE $3 AND $3 ORDER BY d.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,datefrom])
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE d.create_at :: DATE BETWEEN DATE $3 AND $3 ORDER BY d.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,datefrom])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -569,7 +569,7 @@ function getSmsReport(req,res,next){
                     return next(err);
                 });
             } else if (dateto) {
-                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE d.create_at :: DATE BETWEEN DATE $3 AND $3 ORDER BY d.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,dateto])
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE d.create_at :: DATE BETWEEN DATE $3 AND $3 ORDER BY d.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,dateto])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -607,7 +607,7 @@ function getSmsReport(req,res,next){
                     return next(err);
                 });
             } else {
-                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id ORDER BY d.create_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id ORDER BY d.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -1137,7 +1137,7 @@ function downloadReport(req,res,next){
                     return next(err);
                 });
             } else if (client) {
-                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $1 ORDER BY d.create_at desc LIMIT $2 OFFSET $1 * $2', [client])
+                db.dbs.any('SELECT d.create_at,c.sender,r.msisdn,m.text,r.status,r.message FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE m.client_id = $1 ORDER BY d.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [client])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -2371,16 +2371,16 @@ function getSmsDailyTokenUsage(req,res,next){
             const client = req.query.client;
             const datefrom = req.query.datefrom;
             const dateto = req.query.dateto;
-            var page = req.query.page -1;
+            var page = req.query.page;
             var itemperpage = req.query.itemperpage;
 
-            const q1 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $6 AND r.update_at :: DATE BETWEEN DATE $3 AND $4 AND m.client_id = $5 GROUP BY date,sender ORDER BY date LIMIT $2 OFFSET $1 * $2';
+            const q1 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $6 AND r.update_at :: DATE BETWEEN DATE $3 AND $4 AND m.client_id = $5 GROUP BY date,sender ORDER BY date LIMIT $2 OFFSET (($1 - 1) * $2)';
             const q1c = 'SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $6 AND r.update_at :: DATE BETWEEN DATE $3 AND $4 AND m.client_id = $5';
 
-            const q2 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $5 AND r.update_at :: DATE BETWEEN DATE $3 AND $4 GROUP BY date,sender ORDER BY date LIMIT $2 OFFSET $1 * $2';
+            const q2 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $5 AND r.update_at :: DATE BETWEEN DATE $3 AND $4 GROUP BY date,sender ORDER BY date LIMIT $2 OFFSET (($1 - 1) * $2)';
             const q2c = 'SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $5 AND r.update_at :: DATE BETWEEN DATE $3 AND $4';
 
-            const q3 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 GROUP BY date,sender ORDER BY date LIMIT $2 OFFSET $1 * $2';
+            const q3 = 'SELECT d.create_at :: DATE AS date, c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3 GROUP BY date,sender ORDER BY date LIMIT $2 OFFSET (($1 - 1) * $2)';
             const q3c = 'SELECT COUNT(*) FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $3';
 
             if (client && datefrom && dateto) {
@@ -2661,7 +2661,7 @@ function getSmsTokenTotalUsage(req,res,next){
             const client = req.query.client;
             const datefrom = req.query.datefrom;
             const dateto = req.query.dateto;
-            // var page = req.query.page -1;
+            // var page = req.query.page;
             // var itemperpage = req.query.itemperpage;
 
             const q1 = 'SELECT c.id AS client_id,c.sender AS client, count(r.id) AS total_usage FROM sms.reports r LEFT JOIN sms.dispatches d ON r.dispatch_id = d.id LEFT JOIN sms.messages m ON d.message_id = m.id LEFT JOIN sms.clients c ON m.client_id = c.id WHERE r.status = $4 AND r.update_at :: DATE BETWEEN DATE $1 AND $2 AND m.client_id = $3 GROUP BY c.id,c.sender';

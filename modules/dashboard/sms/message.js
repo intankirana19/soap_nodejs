@@ -137,11 +137,11 @@ function getMessageList(req,res,next){
             });
         }else{
             const client = req.query.client;
-            var page = req.query.page -1;
+            var page = req.query.page;
             var itemperpage = req.query.itemperpage;
 
             if (client) {
-                db.dbs.any('SELECT * FROM sms.messages WHERE client_id = $3 ORDER BY update_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage,client])
+                db.dbs.any('SELECT * FROM sms.messages WHERE client_id = $3 ORDER BY update_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,client])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
@@ -179,7 +179,7 @@ function getMessageList(req,res,next){
                     return next(err);
                 });
             } else {
-                db.dbs.any('SELECT * FROM sms.messages ORDER BY update_at desc LIMIT $2 OFFSET $1 * $2', [page,itemperpage])
+                db.dbs.any('SELECT * FROM sms.messages ORDER BY update_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage])
                 .then(function (data) {
                     if (data.length == 0) { 
                         res.status(200)
