@@ -67,7 +67,7 @@ function scheduleMultiple(req,res, next){
                         // console.log(phoneNumber);
                         db.dbs.tx(async t => {
                             var msg_id = req.body.msg_id;
-                            const send_date = toString(req.body.send_date);
+                            const send_date = req.body.send_date;
 
                             const token = await t.one('SELECT amount FROM sms.tokens WHERE client_id = $1',[result.client_id]);
                             const tkn = parseInt(token.amount);
