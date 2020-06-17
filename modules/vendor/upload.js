@@ -97,7 +97,7 @@ function scheduleMultiple(req,res, next){
                                 const batch = await t.one('insert into sms.phone_batches (client_id) values ($1) RETURNING id', [result.client_id], b => b.id);
     
                                 for (i = 0; i < phoneNumber.length; i++) {
-                                    await t.none('insert into sms.phone_containers (phone,client_id,batch_id) values ($1,$2,$3)', [phoneNumber[i], result.client_id, batch]);
+                                    await t.none('insert into sms.phone_containers (phone,client_id,batch_id) values ($1,$2,$3)', [number, result.client_id, batch]);
                                 }
                                 await t.none('UPDATE sms.messages SET is_sent = $1 WHERE id = $2',[true, msg_id]);
                                 const log = "Schedule Multiple Broadcast" + " - " + client.sender + " - " + result.username;
@@ -205,7 +205,7 @@ function sendMultiple(req,res, next){
                         //     } else {
                         //         for (i = 0; i < phoneNumber.length; i++) {
 
-                        //             t.none('insert into sms.phone_containers (phone,client_id,batch_id) values ($1,$2,$3)', [phoneNumber[i], result.client_id, batch]);
+                        //             t.none('insert into sms.phone_containers (phone,client_id,batch_id) values ($1,$2,$3)', [number, result.client_id, batch]);
     
                         //             if (tkn <= 0) {
                         //                 res.status(200)
@@ -225,7 +225,7 @@ function sendMultiple(req,res, next){
                         //                 var formData = {
                         //                     sender : sender,
                         //                     message: message.text,
-                        //                     msisdn: phoneNumber[i],
+                        //                     msisdn: number,
                         //                 };
     
                         //                 request.post({url: global.gConfig.api_reg+'sendsms.json',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
@@ -251,7 +251,7 @@ function sendMultiple(req,res, next){
                         //                         var ddmm = date + month;
                         //                         var rptuid = ddmm + r;
     
-                        //                         db.dbs.none('insert into sms.reports (rptuid, msgid, msisdn, status, message, dispatch_id) values ($1, $2, $3, $4, $5, $6)', [rptuid, resp.msgid, phoneNumber[i], resp.status, resp.message, dispatch]);
+                        //                         db.dbs.none('insert into sms.reports (rptuid, msgid, msisdn, status, message, dispatch_id) values ($1, $2, $3, $4, $5, $6)', [rptuid, resp.msgid, number, resp.status, resp.message, dispatch]);
                         //                     }
                         //                 });
                         //             }
@@ -285,11 +285,14 @@ function sendMultiple(req,res, next){
                                 .then(function (batch) {
                                     db.dbs.one('insert into sms.dispatches (message_id) values ($1) RETURNING id', [msg_id], a => a.id)
                                     .then(function (dispatch) {
+
                                         for (i = 0; i < phoneNumber.length; i++) {
+                                            const number = phoneNumber[i];
                                             db.dbs.none('insert into sms.phone_containers (phone,client_id,batch_id) values ($1,$2,$3)', [phoneNumber[i], result.client_id, batch])
                                             .then(function () {
                                                 db.dbs.one('SELECT amount FROM sms.tokens WHERE client_id = $1',[result.client_id])
                                                 .then(function (token) {
+                                                    console.log('number after token', number);
                                                     const tkn = parseInt(token.amount);
 
                                                     if (tkn === 0) {
@@ -310,7 +313,7 @@ function sendMultiple(req,res, next){
                                                         var formData = {
                                                             sender : sender,
                                                             message: message.text,
-                                                            msisdn: phoneNumber[i],
+                                                            msisdn: number,
                                                         };
 
                                                         // request.post({url: global.gConfig.api_reg+'sendsms.json',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
@@ -328,15 +331,14 @@ function sendMultiple(req,res, next){
                                                                 } else {
                                                                     failed.push(i);
                                                                 }
-                                                                console.log(resp);
+                                                                // console.log(resp);
                                                                 const d = new Date();
                                                                 var r = ((1 + (Math.floor(Math.random() * 2))) * 100000 + (Math.floor(Math.random() * 100000))).toString();
                                                                 var date = ("0" + d.getDate()).slice(-2).toString();
                                                                 var month = ("0" + (d.getMonth() + 1)).slice(-2).toString();
                                                                 var ddmm = date + month;
                                                                 var rptuid = ddmm + r;
-
-                                                                db.dbs.none('insert into sms.reports (rptuid, msgid, msisdn, status, message, dispatch_id) values ($1, $2, $3, $4, $5, $6)', [rptuid, resp.msgid, phoneNumber[i], resp.status, resp.message, dispatch]);
+                                                                db.dbs.none('insert into sms.reports (rptuid, msgid, msisdn, status, message, dispatch_id) values ($1, $2, $3, $4, $5, $6)', [rptuid, resp.msgid, number, resp.status, resp.message, dispatch]);
                                                             }
                                                         });
                                                     }
