@@ -55,7 +55,7 @@ const jwt = require('jsonwebtoken');
             if (data.is_active === false || data.is_delete === true) {
                 res.status(200)
                 .json({
-                    status: 1,
+                    status: 3,
                     message: 'Akun telah dinon-aktifkan'
                 });
             } else if(data.length !=0){
@@ -69,7 +69,7 @@ const jwt = require('jsonwebtoken');
                 res.cookie('token', token, { maxAge: 3600000, httpOnly: true });
                 res.status(200)
                 .json({
-                    status: 'success',
+                    status: 1,
                     token: token
                 })
                 

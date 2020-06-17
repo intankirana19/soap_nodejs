@@ -97,7 +97,7 @@ function scheduleMultiple(req,res, next){
                                 const batch = await t.one('insert into sms.phone_batches (client_id) values ($1) RETURNING id', [result.client_id], b => b.id);
     
                                 for (i = 0; i < phoneNumber.length; i++) {
-                                    await t.none('insert into sms.phone_containers (phone,client_id,batch_id) values ($1,$2,$3)', [number, result.client_id, batch]);
+                                    await t.none('insert into sms.phone_containers (phone,client_id,batch_id) values ($1,$2,$3)', [phoneNumber[i], result.client_id, batch]);
                                 }
                                 await t.none('UPDATE sms.messages SET is_sent = $1 WHERE id = $2',[true, msg_id]);
                                 const log = "Schedule Multiple Broadcast" + " - " + client.sender + " - " + result.username;
