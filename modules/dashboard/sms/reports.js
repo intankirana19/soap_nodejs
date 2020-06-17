@@ -1752,9 +1752,9 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
-                                let worksheet = workbook.addWorksheet(client + '_' + status + '_BROADCAST_COUNT_' + datefrom + '_to_' + dateto); //creating worksheet
+                                let worksheet = workbook.addWorksheet(status + '_BROADCAST_COUNT_' + datefrom + '_to_' + dateto); //creating worksheet
                                 //  WorkSheet Header
                                 worksheet.columns = [
                                     { header: 'Jumlah Broadcast', key: count}
@@ -1762,7 +1762,7 @@ function downloadReportCount(req,res,next){
                                 // Add Array Rows
                                 worksheet.addRows(jsonData);
         
-                                const fileName = client + '_' + status + '_BROADCAST_COUNT_' + datefrom + '_to_' + dateto;
+                                const fileName = status + '_BROADCAST_COUNT_' + datefrom + '_to_' + dateto;
         
                                 res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1790,9 +1790,9 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
-                                let worksheet = workbook.addWorksheet(client + '_' + status + '_BROADCAST_COUNT_' + datefrom); //creating worksheet
+                                let worksheet = workbook.addWorksheet(status + '_BROADCAST_COUNT_' + datefrom); //creating worksheet
                                 //  WorkSheet Header
                                 worksheet.columns = [
                                     { header: 'Jumlah Broadcast', key: count}
@@ -1800,7 +1800,7 @@ function downloadReportCount(req,res,next){
                                 // Add Array Rows
                                 worksheet.addRows(jsonData);
         
-                                const fileName = client + '_' + status + '_BROADCAST_COUNT_' + datefrom;
+                                const fileName = status + '_BROADCAST_COUNT_' + datefrom;
         
                                 res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1828,9 +1828,9 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
-                                let worksheet = workbook.addWorksheet(client + '_' + status + '_BROADCAST_COUNT_' + dateto); //creating worksheet
+                                let worksheet = workbook.addWorksheet(status + '_BROADCAST_COUNT_' + dateto); //creating worksheet
                                 //  WorkSheet Header
                                 worksheet.columns = [
                                     { header: 'Jumlah Broadcast', key: count}
@@ -1838,7 +1838,7 @@ function downloadReportCount(req,res,next){
                                 // Add Array Rows
                                 worksheet.addRows(jsonData);
         
-                                const fileName = client + '_' + status + '_BROADCAST_COUNT_' + dateto;
+                                const fileName = status + '_BROADCAST_COUNT_' + dateto;
         
                                 res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1866,7 +1866,7 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
                                 let worksheet = workbook.addWorksheet(status + '_BROADCAST_COUNT_' + datefrom + '_to_' + dateto); //creating worksheet
                                 //  WorkSheet Header
@@ -1904,9 +1904,9 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
-                                let worksheet = workbook.addWorksheet(client + '_BROADCAST_COUNT_' + datefrom + '_to_' + dateto); //creating worksheet
+                                let worksheet = workbook.addWorksheet('BROADCAST_COUNT_' + datefrom + '_to_' + dateto); //creating worksheet
                                 //  WorkSheet Header
                                 worksheet.columns = [
                                     { header: 'Jumlah Broadcast', key: count}
@@ -1914,7 +1914,7 @@ function downloadReportCount(req,res,next){
                                 // Add Array Rows
                                 worksheet.addRows(jsonData);
         
-                                const fileName = client + '_BROADCAST_COUNT_' + datefrom + '_to_' + dateto;
+                                const fileName = 'BROADCAST_COUNT_' + datefrom + '_to_' + dateto;
         
                                 res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1942,9 +1942,9 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
-                                let worksheet = workbook.addWorksheet(client + '_' + status + '_BROADCAST_COUNT'); //creating worksheet
+                                let worksheet = workbook.addWorksheet(status + '_BROADCAST_COUNT'); //creating worksheet
                                 //  WorkSheet Header
                                 worksheet.columns = [
                                     { header: 'Jumlah Broadcast', key: count}
@@ -1952,7 +1952,7 @@ function downloadReportCount(req,res,next){
                                 // Add Array Rows
                                 worksheet.addRows(jsonData);
         
-                                const fileName = client + '_' + status + '_BROADCAST_COUNT';
+                                const fileName = status + '_BROADCAST_COUNT';
         
                                 res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1980,7 +1980,7 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
                                 let worksheet = workbook.addWorksheet(status + '_BROADCAST_COUNT_' + datefrom); //creating worksheet
                                 //  WorkSheet Header
@@ -2018,7 +2018,7 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
                                 let worksheet = workbook.addWorksheet(status + '_BROADCAST_COUNT_' + dateto); //creating worksheet
                                 //  WorkSheet Header
@@ -2056,9 +2056,9 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
-                                let worksheet = workbook.addWorksheet(client + '_BROADCAST_COUNT_' + datefrom); //creating worksheet
+                                let worksheet = workbook.addWorksheet('BROADCAST_COUNT_' + datefrom); //creating worksheet
                                 //  WorkSheet Header
                                 worksheet.columns = [
                                     { header: 'Jumlah Broadcast', key: count}
@@ -2066,7 +2066,7 @@ function downloadReportCount(req,res,next){
                                 // Add Array Rows
                                 worksheet.addRows(jsonData);
         
-                                const fileName = client + '_BROADCAST_COUNT_' + datefrom;
+                                const fileName = 'BROADCAST_COUNT_' + datefrom;
         
                                 res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -2094,9 +2094,9 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
-                                let worksheet = workbook.addWorksheet(client + '_BROADCAST_COUNT_' + dateto); //creating worksheet
+                                let worksheet = workbook.addWorksheet('BROADCAST_COUNT_' + dateto); //creating worksheet
                                 //  WorkSheet Header
                                 worksheet.columns = [
                                     { header: 'Jumlah Broadcast', key: count}
@@ -2104,7 +2104,7 @@ function downloadReportCount(req,res,next){
                                 // Add Array Rows
                                 worksheet.addRows(jsonData);
         
-                                const fileName = client + '_BROADCAST_COUNT_' + dateto;
+                                const fileName = 'BROADCAST_COUNT_' + dateto;
         
                                 res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -2132,7 +2132,7 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
                                 let worksheet = workbook.addWorksheet('BROADCAST_COUNT_' + datefrom + '_to_' + dateto); //creating worksheet
                                 //  WorkSheet Header
@@ -2170,7 +2170,7 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
                                 let worksheet = workbook.addWorksheet(status + '_BROADCAST_COUNT'); //creating worksheet
                                 //  WorkSheet Header
@@ -2208,9 +2208,9 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
-                                let worksheet = workbook.addWorksheet(client + '_BROADCAST_COUNT'); //creating worksheet
+                                let worksheet = workbook.addWorksheet('BROADCAST_COUNT'); //creating worksheet
                                 //  WorkSheet Header
                                 worksheet.columns = [
                                     { header: 'Jumlah Broadcast', key: count}
@@ -2218,7 +2218,7 @@ function downloadReportCount(req,res,next){
                                 // Add Array Rows
                                 worksheet.addRows(jsonData);
         
-                                const fileName = client + '_BROADCAST_COUNT';
+                                const fileName = 'BROADCAST_COUNT';
         
                                 res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -2246,7 +2246,7 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
                                 let worksheet = workbook.addWorksheet('BROADCAST_COUNT_' + datefrom); //creating worksheet
                                 //  WorkSheet Header
@@ -2284,7 +2284,7 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
                                 let worksheet = workbook.addWorksheet('BROADCAST_COUNT_' + dateto); //creating worksheet
                                 //  WorkSheet Header
@@ -2322,7 +2322,7 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
                                 let worksheet = workbook.addWorksheet('BROADCAST_COUNT'); //creating worksheet
                                 //  WorkSheet Header

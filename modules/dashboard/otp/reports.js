@@ -1099,9 +1099,9 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
-                                let worksheet = workbook.addWorksheet(client + '_' + status + '_OTP_COUNT_' + datefrom + '_to_' + dateto); //creating worksheet
+                                let worksheet = workbook.addWorksheet(status + '_OTP_COUNT_' + datefrom + '_to_' + dateto); //creating worksheet
                                 //  WorkSheet Header
                                 worksheet.columns = [
                                     { header: 'Jumlah OTP', key: count}
@@ -1109,7 +1109,7 @@ function downloadReportCount(req,res,next){
                                 // Add Array Rows
                                 worksheet.addRows(jsonData);
         
-                                const fileName = client + '_' + status + '_OTP_COUNT_' + datefrom + '_to_' + dateto;
+                                const fileName = status + '_OTP_COUNT_' + datefrom + '_to_' + dateto;
         
                                 res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1136,9 +1136,9 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
-                                let worksheet = workbook.addWorksheet(client + '_' + status + '_OTP_COUNT_' + datefrom); //creating worksheet
+                                let worksheet = workbook.addWorksheet(status + '_OTP_COUNT_' + datefrom); //creating worksheet
                                 //  WorkSheet Header
                                 worksheet.columns = [
                                     { header: 'Jumlah OTP', key: count}
@@ -1146,7 +1146,7 @@ function downloadReportCount(req,res,next){
                                 // Add Array Rows
                                 worksheet.addRows(jsonData);
         
-                                const fileName = client + '_' + status + '_OTP_COUNT_' + datefrom;
+                                const fileName = status + '_OTP_COUNT_' + datefrom;
         
                                 res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1173,9 +1173,9 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
-                                let worksheet = workbook.addWorksheet(client + '_' + status + '_OTP_COUNT_' + dateto); //creating worksheet
+                                let worksheet = workbook.addWorksheet(status + '_OTP_COUNT_' + dateto); //creating worksheet
                                 //  WorkSheet Header
                                 worksheet.columns = [
                                     { header: 'Jumlah OTP', key: count}
@@ -1183,7 +1183,7 @@ function downloadReportCount(req,res,next){
                                 // Add Array Rows
                                 worksheet.addRows(jsonData);
         
-                                const fileName = client + '_' + status + '_OTP_COUNT_' + dateto;
+                                const fileName = status + '_OTP_COUNT_' + dateto;
         
                                 res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1211,7 +1211,7 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
                                 let worksheet = workbook.addWorksheet(status + '_OTP_COUNT_' + datefrom + '_to_' + dateto); //creating worksheet
                                 //  WorkSheet Header
@@ -1249,9 +1249,9 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
-                                let worksheet = workbook.addWorksheet(client + '_OTP_COUNT_' + datefrom + '_to_' + dateto); //creating worksheet
+                                let worksheet = workbook.addWorksheet('OTP_COUNT_' + datefrom + '_to_' + dateto); //creating worksheet
                                 //  WorkSheet Header
                                 worksheet.columns = [
                                     { header: 'Jumlah OTP', key: count}
@@ -1259,7 +1259,7 @@ function downloadReportCount(req,res,next){
                                 // Add Array Rows
                                 worksheet.addRows(jsonData);
         
-                                const fileName = client + '_OTP_COUNT_' + datefrom + '_to_' + dateto;
+                                const fileName = 'OTP_COUNT_' + datefrom + '_to_' + dateto;
         
                                 res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1287,9 +1287,9 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
-                                let worksheet = workbook.addWorksheet(client + '_' + status + '_OTP_COUNT'); //creating worksheet
+                                let worksheet = workbook.addWorksheet(status + '_OTP_COUNT'); //creating worksheet
                                 //  WorkSheet Header
                                 worksheet.columns = [
                                     { header: 'Jumlah OTP', key: count}
@@ -1297,7 +1297,7 @@ function downloadReportCount(req,res,next){
                                 // Add Array Rows
                                 worksheet.addRows(jsonData);
         
-                                const fileName = client + '_' + status + '_OTP_COUNT';
+                                const fileName = status + '_OTP_COUNT';
         
                                 res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1325,7 +1325,7 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
                                 let worksheet = workbook.addWorksheet(status + '_OTP_COUNT_' + datefrom); //creating worksheet
                                 //  WorkSheet Header
@@ -1363,7 +1363,7 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
                                 let worksheet = workbook.addWorksheet(status + '_OTP_COUNT_' + dateto); //creating worksheet
                                 //  WorkSheet Header
@@ -1401,9 +1401,9 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
-                                let worksheet = workbook.addWorksheet(client + '_OTP_COUNT_' + datefrom); //creating worksheet
+                                let worksheet = workbook.addWorksheet('OTP_COUNT_' + datefrom); //creating worksheet
                                 //  WorkSheet Header
                                 worksheet.columns = [
                                     { header: 'Jumlah OTP', key: count}
@@ -1411,7 +1411,7 @@ function downloadReportCount(req,res,next){
                                 // Add Array Rows
                                 worksheet.addRows(jsonData);
         
-                                const fileName = client + '_OTP_COUNT_' + datefrom;
+                                const fileName = 'OTP_COUNT_' + datefrom;
         
                                 res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1439,9 +1439,9 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
-                                let worksheet = workbook.addWorksheet(client + '_OTP_COUNT_' + dateto); //creating worksheet
+                                let worksheet = workbook.addWorksheet('OTP_COUNT_' + dateto); //creating worksheet
                                 //  WorkSheet Header
                                 worksheet.columns = [
                                     { header: 'Jumlah OTP', key: count}
@@ -1449,7 +1449,7 @@ function downloadReportCount(req,res,next){
                                 // Add Array Rows
                                 worksheet.addRows(jsonData);
         
-                                const fileName = client + '_OTP_COUNT_' + dateto;
+                                const fileName = 'OTP_COUNT_' + dateto;
         
                                 res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1477,7 +1477,7 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
                                 let worksheet = workbook.addWorksheet('OTP_COUNT_' + datefrom + '_to_' + dateto); //creating worksheet
                                 //  WorkSheet Header
@@ -1515,7 +1515,7 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
                                 let worksheet = workbook.addWorksheet(status + '_OTP_COUNT'); //creating worksheet
                                 //  WorkSheet Header
@@ -1553,9 +1553,9 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
-                                let worksheet = workbook.addWorksheet(client + '_OTP_COUNT'); //creating worksheet
+                                let worksheet = workbook.addWorksheet('OTP_COUNT'); //creating worksheet
                                 //  WorkSheet Header
                                 worksheet.columns = [
                                     { header: 'Jumlah OTP', key: count}
@@ -1563,7 +1563,7 @@ function downloadReportCount(req,res,next){
                                 // Add Array Rows
                                 worksheet.addRows(jsonData);
         
-                                const fileName = client + '_OTP_COUNT';
+                                const fileName = 'OTP_COUNT';
         
                                 res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1591,7 +1591,7 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
                                 let worksheet = workbook.addWorksheet('OTP_COUNT_' + datefrom); //creating worksheet
                                 //  WorkSheet Header
@@ -1629,7 +1629,7 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
                                 let worksheet = workbook.addWorksheet('OTP_COUNT_' + dateto); //creating worksheet
                                 //  WorkSheet Header
@@ -1667,7 +1667,7 @@ function downloadReportCount(req,res,next){
                                     message: 'Mohon maaf laporan dengan data tersebut tidak ada.',
                                 });
                             } else {
-                                const jsonData = JSON.parse(JSON.stringify(data));
+                                const jsonData = JSON.parse(JSON.stringify(dataQty));
                                 let workbook = new excel.Workbook(); //creating workbook
                                 let worksheet = workbook.addWorksheet('OTP_COUNT'); //creating worksheet
                                 //  WorkSheet Header
@@ -1728,7 +1728,7 @@ function downloadOtpReport(req,res,next){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_OTP_' + status + '_LIST_' + datefrom + '_to_' + dateto); //creating worksheet
+                        let worksheet = workbook.addWorksheet('OTP_' + status + '_LIST_' + datefrom + '_to_' + dateto); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'Tanggal', key: 'sent_date'},
@@ -1740,7 +1740,7 @@ function downloadOtpReport(req,res,next){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
 
-                        const fileName = client + '_OTP_' + status + '_LIST_' + datefrom + '_to_' + dateto;
+                        const fileName = 'OTP_' + status + '_LIST_' + datefrom + '_to_' + dateto;
 
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1806,7 +1806,7 @@ function downloadOtpReport(req,res,next){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_OTP_' + status + '_LIST_' + dateto + '_to_' + dateto); //creating worksheet
+                        let worksheet = workbook.addWorksheet('OTP_' + status + '_LIST_' + dateto + '_to_' + dateto); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'Tanggal', key: 'sent_date'},
@@ -1818,7 +1818,7 @@ function downloadOtpReport(req,res,next){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
 
-                        const fileName = client + '_OTP_' + status + '_LIST_' + dateto + '_to_' + dateto;
+                        const fileName = 'OTP_' + status + '_LIST_' + dateto + '_to_' + dateto;
 
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1884,7 +1884,7 @@ function downloadOtpReport(req,res,next){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_OTP_LIST_' + dateto + '_to_' + dateto); //creating worksheet
+                        let worksheet = workbook.addWorksheet('OTP_LIST_' + dateto + '_to_' + dateto); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'Tanggal', key: 'sent_date'},
@@ -1896,7 +1896,7 @@ function downloadOtpReport(req,res,next){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
 
-                        const fileName = client + '_OTP_LIST_' + dateto + '_to_' + dateto;
+                        const fileName = 'OTP_LIST_' + dateto + '_to_' + dateto;
 
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1923,7 +1923,7 @@ function downloadOtpReport(req,res,next){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_OTP_' + status + '_LIST'); //creating worksheet
+                        let worksheet = workbook.addWorksheet('OTP_' + status + '_LIST'); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'Tanggal', key: 'sent_date'},
@@ -1935,7 +1935,7 @@ function downloadOtpReport(req,res,next){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
 
-                        const fileName = client + '_OTP_' + status + '_LIST';
+                        const fileName = 'OTP_' + status + '_LIST';
 
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -2040,7 +2040,7 @@ function downloadOtpReport(req,res,next){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_OTP_LIST_' + datefrom + '_to_' + datefrom); //creating worksheet
+                        let worksheet = workbook.addWorksheet('OTP_LIST_' + datefrom + '_to_' + datefrom); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'Tanggal', key: 'sent_date'},
@@ -2052,7 +2052,7 @@ function downloadOtpReport(req,res,next){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
 
-                        const fileName = client + '_OTP_LIST_' + datefrom + '_to_' + datefrom;
+                        const fileName = 'OTP_LIST_' + datefrom + '_to_' + datefrom;
 
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -2079,7 +2079,7 @@ function downloadOtpReport(req,res,next){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_OTP_LIST_' + dateto + '_to_' + dateto); //creating worksheet
+                        let worksheet = workbook.addWorksheet('OTP_LIST_' + dateto + '_to_' + dateto); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'Tanggal', key: 'sent_date'},
@@ -2091,7 +2091,7 @@ function downloadOtpReport(req,res,next){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
 
-                        const fileName = client + '_OTP_LIST_' + dateto + '_to_' + dateto;
+                        const fileName = 'OTP_LIST_' + dateto + '_to_' + dateto;
 
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -2196,7 +2196,7 @@ function downloadOtpReport(req,res,next){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_OTP_LIST'); //creating worksheet
+                        let worksheet = workbook.addWorksheet('OTP_LIST'); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'Tanggal', key: 'sent_date'},
@@ -2208,7 +2208,7 @@ function downloadOtpReport(req,res,next){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
 
-                        const fileName = client + '_OTP_LIST';
+                        const fileName = 'OTP_LIST';
 
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -2530,7 +2530,7 @@ function downloadOtpDailyTokenUsage(req,res,next){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_OTP_DAILY_USAGE_' + datefrom + '_to_' + dateto); //creating worksheet
+                        let worksheet = workbook.addWorksheet('OTP_DAILY_USAGE_' + datefrom + '_to_' + dateto); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'Tanggal', key: 'date'},
@@ -2540,7 +2540,7 @@ function downloadOtpDailyTokenUsage(req,res,next){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
 
-                        const fileName = client + '_OTP_DAILY_USAGE_' + datefrom + '_to_' + dateto;
+                        const fileName = 'OTP_DAILY_USAGE_' + datefrom + '_to_' + dateto;
 
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -2831,7 +2831,7 @@ function downloadOtpTokenTotalUsage(req,res,next){
                     } else {
                         const jsonData = JSON.parse(JSON.stringify(data));
                         let workbook = new excel.Workbook(); //creating workbook
-                        let worksheet = workbook.addWorksheet(client + '_OTP_TOTAL_USAGE_' + datefrom + '_to_' + dateto); //creating worksheet
+                        let worksheet = workbook.addWorksheet('OTP_TOTAL_USAGE_' + datefrom + '_to_' + dateto); //creating worksheet
                         //  WorkSheet Header
                         worksheet.columns = [
                             { header: 'Client', key: 'sender'},
@@ -2840,7 +2840,7 @@ function downloadOtpTokenTotalUsage(req,res,next){
                         // Add Array Rows
                         worksheet.addRows(jsonData);
 
-                        const fileName = client + '_OTP_TOTAL_USAGE_' + datefrom + '_to_' + dateto;
+                        const fileName = 'OTP_TOTAL_USAGE_' + datefrom + '_to_' + dateto;
 
                         res.setHeader('Access-Control-Expose-Headers','Content-Disposition');
                         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

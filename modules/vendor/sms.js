@@ -208,7 +208,7 @@ function scheduleSMS(req,res,next){
         if (tkn === 0) {
           res.status(200)
           .json({
-              status: 'failed',
+              status: 2,
               message: 'Token habis. Silahkan Top Up.'
           });
         } else {
@@ -238,7 +238,7 @@ function scheduleSMS(req,res,next){
               .then(() => {
                 res.status(200)
                 .json({
-                    status: 'success',
+                    status: 1,
                     message: 'Pesan berhasil dijadwalkan.'
                 });
               })
