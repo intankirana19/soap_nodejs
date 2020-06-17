@@ -72,7 +72,7 @@ function sendSMS(req,res,next){
                         });
                 }else{
                   const resp = JSON.parse(body);
-                  console.log(resp);
+                  //console.log(resp);
   
                   if (resp.code === 1) {
                     db.dbs.tx(async t1 => {
@@ -261,8 +261,8 @@ function checkToken(req,res,next){
   const token1 = req.header('authorization');
   const token2 = req.cookies['token'];
 
-  console.log('token1', token1);
-  console.log('token2');
+  // console.log('token1', token1);
+  // console.log('token2');
   checkUser(token1).then(function(result){
 
       if(result == 0){

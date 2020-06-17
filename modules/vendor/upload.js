@@ -8,7 +8,7 @@ const request = require('request-promise');
 let checkUser = function(token1) {
     return new Promise(function(resolve, reject) {
         const checkToken = auth.verifyToken(token1);
-        console.log(checkToken)
+        //console.log(checkToken)
         if (checkToken.code == 1) {
             resolve(checkToken.user.data);
         }else{
@@ -74,10 +74,10 @@ function scheduleMultiple(req,res, next){
 
                             if (tkn < phoneNumber.length) {
                                 res.status(200)
-                                        .json({
-                                            status: 2,
-                                            message: 'Token tidak cukup. Silahkan Top Up.'
-                                        });
+                                .json({
+                                    status: 2,
+                                    message: 'Token tidak cukup. Silahkan Top Up.'
+                                });
                             } else {
                                 const client = await t.one('select sender from sms.clients where id = $1', [result.client_id]);
 
@@ -107,6 +107,7 @@ function scheduleMultiple(req,res, next){
 
                         })
                         .then(() => {
+                            //console.log('path: ', path)
                             Fs.unlinkSync(path);
                             res.status(200)
                             .json({
@@ -119,6 +120,7 @@ function scheduleMultiple(req,res, next){
                         });
 
                     });
+                    // Fs.unlinkSync(path);
                 }
             });
         }
@@ -360,7 +362,7 @@ function sendMultiple(req,res, next){
                                 // .json({
                                 //     status: 'success',
                                 //     message: `Processing broadcast to ${phoneNumber.length} receipients`
-                                // });
+                                // });s
                             }, 4000);
                         })
                         .catch(error => {

@@ -12,7 +12,7 @@ var http = require('http');
 /**
  * Get port from environment and store in Express.
  */
-console.log(global.gConfig.node_port)
+// console.log(global.gConfig.node_port)
 var port = normalizePort(process.env.PORT || global.gConfig.node_port, '0.0.0.0');
 app.set('port', port);
 

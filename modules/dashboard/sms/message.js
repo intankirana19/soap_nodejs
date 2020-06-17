@@ -7,7 +7,7 @@ var auth = require('../../shared/auth');
 let checkUser = function(token1) {
     return new Promise(function(resolve, reject) {
         const checkToken = auth.verifyToken(token1);
-        console.log(checkToken)
+        //console.log(checkToken)
         if (checkToken.code == 1) {
             resolve(checkToken.user.data);
         }else{
@@ -63,18 +63,6 @@ function createSms(req,res,next){
                 return next(error);
             });
         
-            // db.dbs.none(q1, [msguid, text, clientId])
-            // .then(function (data) {
-    
-            //     res.status(200)
-            //     .json({
-            //         status: 'success',
-            //         message: 'Pesan Broadcast berhasil dibuat.'
-            //     });
-            // })
-            // .catch(function (err) {
-            //     return next(err);
-            // });
         }
     });
 }

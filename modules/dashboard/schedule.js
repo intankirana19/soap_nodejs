@@ -8,7 +8,7 @@ const excel = require('exceljs');
 let checkUser = function(token1) {
     return new Promise(function(resolve, reject) {
         const checkToken = auth.verifyToken(token1);
-        console.log(checkToken)
+        //console.log(checkToken)
         if (checkToken.code == 1) {
             resolve(checkToken.user.data);
         }else{

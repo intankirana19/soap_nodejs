@@ -62,7 +62,7 @@ const jwt = require('jsonwebtoken');
                 const token = jwt.sign({
                     data: data
                 }, jwtKey, { expiresIn: '24h' });
-                console.log(data)
+                //console.log(data)
                 const c = await t.one(q2, [data.client_id]);
                 const log = "Log In" + " - " + c.sender + " - " + data.username;
                 await t.none(q3, [log, data.id]);
@@ -74,7 +74,7 @@ const jwt = require('jsonwebtoken');
                 })
                 
             } else{
-                console.log('fdafdaf')
+                //console.log('fdafdaf')
                 // res.status(200)
                 // .json({
                 //     status: 2,
@@ -102,7 +102,7 @@ const jwt = require('jsonwebtoken');
     function verifyToken(token1){
         var tokenOne = jwt.verify(token1, jwtKey, (err, verifiedJwt) => {
             
-            console.log(err)
+            //console.log(err)
             if(err){
                 const data = {
                     code : 0,
@@ -150,7 +150,7 @@ const jwt = require('jsonwebtoken');
         //     }
         // });
         // if(tokenOne.code == 1 && tokenTwo.code == 1){
-        console.log(tokenOne)
+        //console.log(tokenOne)
         if(tokenOne.code == 1){
             return tokenOne;
         }else{

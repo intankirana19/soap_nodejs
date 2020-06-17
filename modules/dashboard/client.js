@@ -60,7 +60,7 @@ function getAllClients(req,res,next){
             var itemperpage = req.query.itemperpage;
             db.dbs.any('SELECT * FROM sms.clients WHERE is_delete = false ')
             .then(function (data) {
-                console.log('totalnya:',data.length)
+                //console.log('totalnya:',data.length)
                 var total = data.length;
             
             db.dbs.any('SELECT a.cltuid, a.name AS company, a.phone, a.email, a.pic, a.sender, a.create_at, a.update_at, a.is_active, a.is_delete, b.name AS rolename, a.id FROM sms.clients AS a LEFT JOIN sms.roles AS b ON a.type = b.id WHERE a.is_delete = false  ORDER BY a.update_at desc', [page,itemperpage])
@@ -130,7 +130,7 @@ function getAllClients(req,res,next){
                 }
             })
             .catch(function (err) {
-                console.log('error',err)
+                //console.log('error',err)
                 return next(err);
             });
         })
@@ -154,7 +154,7 @@ function otpClientList(req,res,next){
         }else{
             db.dbs.any('SELECT * FROM sms.clients WHERE is_delete = false ')
             .then(function (data) {
-                console.log('totalnya:',data.length)
+                //console.log('totalnya:',data.length)
                 var total = data.length;
 
             db.dbs.any('SELECT distinct o.sender AS otp_sender FROM sms.clients c LEFT JOIN otp.messages o ON c.cltuid = o.cltuid')
@@ -177,7 +177,7 @@ function otpClientList(req,res,next){
                 }
             })
             .catch(function (err) {
-                console.log('error',err)
+                //console.log('error',err)
                 return next(err);
             });
         })
