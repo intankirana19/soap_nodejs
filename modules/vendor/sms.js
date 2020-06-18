@@ -63,7 +63,7 @@ function sendSMS(req,res,next){
               };
   
               request.post({url: global.gConfig.api_reg+'sendsms.json',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
-                // request.post({url: 'http://localhost:5000/sms',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
+                // request.post({url: 'http://localhost:5000/sendsms.json',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
                 if (err) {
                   res.status(400)
                         .json({
@@ -230,7 +230,7 @@ function scheduleSMS(req,res,next){
                 var mmdd = month + date;
                 var schuid = "50" + mmdd + r;
 
-                await t.none('insert into sms.schedules (schuid,message,msisdn,send_date,send_via,status,client_id) values ($1,$2,$3,$4,$5,$6,$7)', [schuid, message.text, msisdn, send_date, 1, 1, result.client_id]);
+                await t.none('insert into sms.schedules (schuid,message,msisdn,send_date,send_via,status,client_id,message_id) values ($1,$2,$3,$4,$5,$6,$7,$8)', [schuid, message.text, msisdn, send_date, 1, 1, result.client_id,msg_id]);
                 await t.none('UPDATE sms.messages SET is_sent = $1 WHERE id = $2',[true, msg_id]);
                 const log = "Schedule Single Broadcast" + " - " + client.sender + " - " + result.username;
                 await t.none('INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)', [log, result.id]);

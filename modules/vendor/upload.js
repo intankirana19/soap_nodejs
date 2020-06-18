@@ -93,7 +93,7 @@ function scheduleMultiple(req,res, next){
                                 const phoneString = phoneNumber.toString();
                                 var r = phoneString.replace("{", "");
                                 var res2 = r.replace("}", "");
-                                await t.none('insert into sms.schedules (schuid,message,msisdn,send_date,send_via,status,client_id) values ($1,$2,$3,$4,$5,$6,$7)', [schuid, message.text, res2, send_date, 1, 1, result.client_id]);
+                                await t.none('insert into sms.schedules (schuid,message,msisdn,send_date,send_via,status,client_id,message_id) values ($1,$2,$3,$4,$5,$6,$7,$8)', [schuid, message.text, res2, send_date, 1, 1, result.client_id,msg_id]);
                                 const batch = await t.one('insert into sms.phone_batches (client_id) values ($1) RETURNING id', [result.client_id], b => b.id);
     
                                 for (i = 0; i < phoneNumber.length; i++) {
@@ -182,6 +182,8 @@ function sendMultiple(req,res, next){
                         // db.dbs.tx(async t => {
                         //     var msg_id = req.body.msg_id;
 
+                        //     await t.none('UPDATE sms.messages SET is_sent = $1 WHERE id = $2',[true, msg_id]);
+
                         //     const client = t.one('select sender from sms.clients where id = $1', [result.client_id]);
 
                         //     const message = t.one('select text from sms.messages where id = $1', [msg_id]);
@@ -192,6 +194,8 @@ function sendMultiple(req,res, next){
 
                         //     const token = await t.one('SELECT amount FROM sms.tokens WHERE client_id = $1',[result.client_id]);
                         //     const tkn = parseInt(token.amount);
+
+                        //     console.log('message after tkn', message.text);
 
                         //     if (tkn > 1) {
                         //         const log = "Send Multiple Broadcast" + " - " + client.sender + " - " + result.username;
@@ -205,8 +209,10 @@ function sendMultiple(req,res, next){
                         //                     message: 'Token tidak cukup. Silahkan Top Up.'
                         //                 });
                         //     } else {
+                        //         console.log('message before for loop', message.text);
                         //         for (i = 0; i < phoneNumber.length; i++) {
-
+                        //             const number = phoneNumber[i];
+                        //             console.log('message after for loop', message.text);
                         //             t.none('insert into sms.phone_containers (phone,client_id,batch_id) values ($1,$2,$3)', [number, result.client_id, batch]);
     
                         //             if (tkn <= 0) {
@@ -216,7 +222,7 @@ function sendMultiple(req,res, next){
                         //                     message: 'Token Habis. Silahkan Top Up.'
                         //                 });
                         //             } else {
-                        //                 t.none('UPDATE sms.messages SET is_sent = $1 WHERE id = $2',[true, msg_id]);
+                        //                 console.log('message after else', message.text);
                         //                 let user64 = auth.smsUser();
                         //                 if(global.gConfig.config_id == 'local' || global.gConfig.config_id == 'development'){
                         //                     var sender = 'MD Media';
@@ -230,8 +236,8 @@ function sendMultiple(req,res, next){
                         //                     msisdn: number,
                         //                 };
     
-                        //                 request.post({url: global.gConfig.api_reg+'sendsms.json',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
-                        //                 // request.post({url: 'http://localhost:5000/sms',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
+                        //                 // request.post({url: global.gConfig.api_reg+'sendsms.json',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
+                        //                 request.post({url: 'http://localhost:5000/sendsms.json',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
                         //                     if (err) {
                         //                         res.status(400)
                         //                             .json({
@@ -294,7 +300,7 @@ function sendMultiple(req,res, next){
                                             .then(function () {
                                                 db.dbs.one('SELECT amount FROM sms.tokens WHERE client_id = $1',[result.client_id])
                                                 .then(function (token) {
-                                                    console.log('number after token', number);
+                                                    // console.log('number after token', number);
                                                     const tkn = parseInt(token.amount);
 
                                                     if (tkn === 0) {
@@ -319,7 +325,7 @@ function sendMultiple(req,res, next){
                                                         };
 
                                                         // request.post({url: global.gConfig.api_reg+'sendsms.json',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
-                                                        request.post({url: 'http://localhost:5000/sms',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
+                                                        request.post({url: 'http://localhost:5000/sendsms.json',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
                                                             if (err) {
                                                                 res.status(400)
                                                                     .json({
@@ -381,6 +387,7 @@ function after (client_id,p, s, f, res, next) {
     .then(function (token) {
         const tkn = parseInt(token.amount);
         var tokenRemain = tkn - s;
+
 
         db.dbs.none('UPDATE sms.tokens SET amount = $1 WHERE client_id = $2',[tokenRemain, client_id])
         .then(() => {
