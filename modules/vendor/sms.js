@@ -273,8 +273,8 @@ function checkToken(req,res,next){
           });
       }else{
         var param = {
-          username : 'brainworxindo',
-          password: '72EP82jA'
+          username : global.gConfig.api_user,
+          password: global.gConfig.api_password
 
         };
         request.post({url: global.gConfig.api_token+'token.json',formData: param}, function optionalCallback(err, httpResponse, body) {
