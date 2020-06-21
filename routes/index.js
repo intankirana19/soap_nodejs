@@ -18,6 +18,9 @@ var smsToken = require('../modules/dashboard/sms/token');
 var otpToken = require('../modules/dashboard/otp/token');
 var schedule = require('../modules/dashboard/schedule');
 
+
+router.get('/', index.check_db);
+
 //check DB
 router.get('/ping', index.check_db);
 
