@@ -63,7 +63,6 @@ function sendSMS(req,res,next){
               };
   
               request.post({url: global.gConfig.api_reg+'sendsms.json',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
-                // request.post({url: 'http://localhost:5000/sendsms.json',headers: {'Authorization': 'Basic '+ user64}, form: formData}, function optionalCallback(err, httpResponse, body) {
                 if (err) {
                   res.status(400)
                         .json({
