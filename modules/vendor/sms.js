@@ -71,9 +71,9 @@ function sendSMS(req,res,next){
                         });
                 }else{
                   const resp = JSON.parse(body);
-                  //console.log(resp);
+                  console.log(resp);
   
-                  if (resp.code === 1) {
+                  if (resp.code === '1') {
                     db.dbs.tx(async t1 => {
                       const dispatch = await t1.one('insert into sms.dispatches (message_id) values ($1) RETURNING id', [msg_id], a => a.id);
   
