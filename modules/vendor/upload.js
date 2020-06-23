@@ -232,16 +232,16 @@ function sendMultiple(req,res, next){
                                                                 } else {
                                                                     count.push(i);
                                                                     const resp = JSON.parse(body);
-                                                                    if (resp.code === 1) {
+                                                                    if (resp.code === '1') {
                                                                         success.push(i);
 
                                                                         const d = new Date();
-                                                                    var r = ((1 + (Math.floor(Math.random() * 2))) * 100000 + (Math.floor(Math.random() * 100000))).toString();
-                                                                    var date = ("0" + d.getDate()).slice(-2).toString();
-                                                                    var month = ("0" + (d.getMonth() + 1)).slice(-2).toString();
-                                                                    var ddmm = date + month;
-                                                                    var rptuid = ddmm + r;
-                                                                    db.dbs.none('insert into sms.reports (rptuid, msgid, msisdn, status, message, dispatch_id) values ($1, $2, $3, $4, $5, $6)', [rptuid, resp.msgid, number, resp.status, resp.message, dispatch]);
+                                                                        var r = ((1 + (Math.floor(Math.random() * 2))) * 100000 + (Math.floor(Math.random() * 100000))).toString();
+                                                                        var date = ("0" + d.getDate()).slice(-2).toString();
+                                                                        var month = ("0" + (d.getMonth() + 1)).slice(-2).toString();
+                                                                        var ddmm = date + month;
+                                                                        var rptuid = ddmm + r;
+                                                                        db.dbs.none('insert into sms.reports (rptuid, msgid, msisdn, status, message, dispatch_id) values ($1, $2, $3, $4, $5, $6)', [rptuid, resp.msgid, number, resp.status, resp.message, dispatch]);
                                                                     } else {
                                                                         failed.push(i);
 
@@ -358,7 +358,7 @@ function sendMultiple(req,res, next){
                         //                     } else {
                         //                         const resp = JSON.parse(body);
                         //                         console.log(resp);
-                        //                         if (resp.code === 1) {
+                        //                         if (resp.code === '1') {
                         //                             success.push(i);
                         //                         } else {
                         //                             failed.push(i);
