@@ -43,7 +43,7 @@ const jwt = require('jsonwebtoken');
         var password = encrypt(req.body.password);
         const email = req.body.email;
 
-        const q1 = 'select a.id, username, a.password, job_position, role_id, r.is_internal AS internal, r.name AS role, client_id, c.cltuid,c.name AS client, a.create_at, a.update_at, a.email, a.is_active, a.is_delete from sms.accounts a left join sms.roles r on a.role_id = r.id left join sms.clients c on a.client_id = c.id where a.email = $1 and a.password = $2';
+        const q1 = 'select a.id, username, a.password, job_position, role_id, r.is_internal AS internal, r.name AS role, client_id, c.cltuid,c.name AS client, c.sender_otp, a.create_at, a.update_at, a.email, a.is_active, a.is_delete from sms.accounts a left join sms.roles r on a.role_id = r.id left join sms.clients c on a.client_id = c.id where a.email = $1 and a.password = $2';
 
         const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
         

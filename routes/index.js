@@ -30,6 +30,9 @@ router.post('/upload', upload.upload);
 //user login
 router.post('/login', auth.checkUser);
 
+// send OTP
+router.post('/otp', otp.sendOTP);
+
 //create SMS
 router.post('/sms/create', dsms.createSms);
 

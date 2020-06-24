@@ -29,7 +29,7 @@ function getOtpReport(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         } else {
-            const status = req.query.status;
+            const status = parseInt(req.query.status);
             const client = req.query.client;
             const datefrom = req.query.datefrom;
             const dateto = req.query.dateto;
@@ -37,7 +37,7 @@ function getOtpReport(req,res,next){
             var itemperpage = req.query.itemperpage;
 
             if (status && client && datefrom && dateto) {
-                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $5 AND $6 AND sender = $4 AND r.status = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,client,datefrom,dateto])
+                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $5 AND $6 AND sender = $4 AND r.code = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,client,datefrom,dateto])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -49,7 +49,7 @@ function getOtpReport(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $5 AND $6 AND sender = $4 AND r.status = $3', [page,itemperpage,status,client,datefrom,dateto])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $5 AND $6 AND sender = $4 AND r.code = $3', [page,itemperpage,status,client,datefrom,dateto])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
@@ -75,7 +75,7 @@ function getOtpReport(req,res,next){
                     return next(err);
                 });
             } else if (status && client && datefrom) {
-                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $5 AND $5 AND sender = $4 AND r.status = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,client,datefrom])
+                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $5 AND $5 AND sender = $4 AND r.code = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,client,datefrom])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -87,7 +87,7 @@ function getOtpReport(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $5 AND $5 AND sender = $4 AND r.status = $3', [page,itemperpage,status,client,datefrom])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $5 AND $5 AND sender = $4 AND r.code = $3', [page,itemperpage,status,client,datefrom])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
@@ -113,7 +113,7 @@ function getOtpReport(req,res,next){
                     return next(err);
                 });
             } else if (status && client && dateto) {
-                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $5 AND $5 AND sender = $4 AND r.status = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,client,dateto])
+                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $5 AND $5 AND sender = $4 AND r.code = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,client,dateto])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -125,7 +125,7 @@ function getOtpReport(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $5 AND $5 AND sender = $4 AND r.status = $3', [page,itemperpage,status,client,dateto])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $5 AND $5 AND sender = $4 AND r.code = $3', [page,itemperpage,status,client,dateto])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
@@ -151,7 +151,7 @@ function getOtpReport(req,res,next){
                     return next(err);
                 });
             } else if (status && datefrom && dateto) {
-                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $4 AND $5 AND r.status = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,datefrom,dateto])
+                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $4 AND $5 AND r.code = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,datefrom,dateto])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -163,7 +163,7 @@ function getOtpReport(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $4 AND $5 AND r.status = $3', [page,itemperpage,status,datefrom,dateto])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $4 AND $5 AND r.code = $3', [page,itemperpage,status,datefrom,dateto])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
@@ -227,7 +227,7 @@ function getOtpReport(req,res,next){
                     return next(err);
                 });
             } else if (status && client) {
-                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sender = $4 AND r.status = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,client])
+                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sender = $4 AND r.code = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,client])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -239,7 +239,7 @@ function getOtpReport(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sender = $4 AND r.status = $3', [page,itemperpage,status,client])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sender = $4 AND r.code = $3', [page,itemperpage,status,client])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
@@ -265,7 +265,7 @@ function getOtpReport(req,res,next){
                     return next(err);
                 });
             } else if (status && datefrom) {
-                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $4 AND $4 AND r.status = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,datefrom])
+                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $4 AND $4 AND r.code = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,datefrom])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -277,7 +277,7 @@ function getOtpReport(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $4 AND $4 AND r.status = $3', [page,itemperpage,status,datefrom])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $4 AND $4 AND r.code = $3', [page,itemperpage,status,datefrom])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
@@ -303,7 +303,7 @@ function getOtpReport(req,res,next){
                     return next(err);
                 });
             } else if (status && dateto) {
-                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $4 AND $4 AND r.status = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,dateto])
+                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $4 AND $4 AND r.code = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,dateto])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -315,7 +315,7 @@ function getOtpReport(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $4 AND $4 AND r.status = $3', [page,itemperpage,status,dateto])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $4 AND $4 AND r.code = $3', [page,itemperpage,status,dateto])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
@@ -455,7 +455,7 @@ function getOtpReport(req,res,next){
                     return next(err);
                 });
             } else if (status) {
-                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.status = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status])
+                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.code = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -467,7 +467,7 @@ function getOtpReport(req,res,next){
                             pages: 0
                         });
                     } else {
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.status = $3', [page,itemperpage,status])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.code = $3', [page,itemperpage,status])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             var pageQty = (count / itemperpage).toFixed(0);
@@ -663,13 +663,13 @@ function reportCount(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         } else {
-            const status = req.query.status;
+            const status = parseInt(req.query.status);
             const client = req.query.client;
             const datefrom = req.query.datefrom;
             const dateto = req.query.dateto;
 
             if (status && client && datefrom && dateto) {
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND sender = $2 AND r.status = $1', [status,client,datefrom,dateto])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND sender = $2 AND r.code = $1', [status,client,datefrom,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
                             if (dataQty.length == 0) {
@@ -693,7 +693,7 @@ function reportCount(req,res,next){
                         });
             } else if (status && client && datefrom) {
                 
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $3 AND sender = $2 AND r.status = $1', [status,client,datefrom])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $3 AND sender = $2 AND r.code = $1', [status,client,datefrom])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
                             if (dataQty.length == 0) {
@@ -717,7 +717,7 @@ function reportCount(req,res,next){
                         });
             } else if (status && client && dateto) {
                
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $3 AND sender = $2 AND r.status = $1', [status,client,dateto])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $3 AND sender = $2 AND r.code = $1', [status,client,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
                             if (dataQty.length == 0) {
@@ -742,7 +742,7 @@ function reportCount(req,res,next){
                    
             } else if (status && datefrom && dateto) {
                
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $3 AND r.status = $1', [status,datefrom,dateto])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $3 AND r.code = $1', [status,datefrom,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
                             if (dataQty.length == 0) {
@@ -792,7 +792,7 @@ function reportCount(req,res,next){
                    
             } else if (status && client) {
                 
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sender = $1 AND r.status = $1', [status,client])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sender = $1 AND r.code = $1', [status,client])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
                             if (dataQty.length == 0) {
@@ -817,7 +817,7 @@ function reportCount(req,res,next){
                    
             } else if (status && datefrom) {
               
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $2 AND r.status = $1', [status,datefrom])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $2 AND r.code = $1', [status,datefrom])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
                             if (dataQty.length == 0) {
@@ -842,7 +842,7 @@ function reportCount(req,res,next){
                 
             } else if (status && dateto) {
                 
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $2 AND r.status = $1', [status,dateto])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $2 AND r.code = $1', [status,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
                             if (dataQty.length == 0) {
@@ -942,7 +942,7 @@ function reportCount(req,res,next){
                 
             } else if (status) {
                
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.status = $1', [status])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.code = $1', [status])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             if (dataQty.length == 0) {
@@ -967,7 +967,7 @@ function reportCount(req,res,next){
                    
             } else if (client) {
                
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sender = $3', [client])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sender = $1', [client])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
                             if (dataQty.length == 0) {
@@ -1083,13 +1083,13 @@ function downloadReportCount(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         } else {
-            const status = req.query.status;
+            const status = parseInt(req.query.status);
             const client = req.query.client;
             const datefrom = req.query.datefrom;
             const dateto = req.query.dateto;
 
             if (status && client && datefrom && dateto) {
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND sender = $2 AND r.status = $1', [status,client,datefrom,dateto])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND sender = $2 AND r.code = $1', [status,client,datefrom,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
                             if (dataQty.length == 0) {
@@ -1126,7 +1126,7 @@ function downloadReportCount(req,res,next){
                         });
             } else if (status && client && datefrom) {
                 
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $3 AND sender = $2 AND r.status = $1', [status,client,datefrom])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $3 AND sender = $2 AND r.code = $1', [status,client,datefrom])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
                             if (dataQty.length == 0) {
@@ -1163,7 +1163,7 @@ function downloadReportCount(req,res,next){
                         });
             } else if (status && client && dateto) {
                
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $3 AND sender = $2 AND r.status = $1', [status,client,dateto])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $3 AND sender = $2 AND r.code = $1', [status,client,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
                             if (dataQty.length == 0) {
@@ -1201,7 +1201,7 @@ function downloadReportCount(req,res,next){
                    
             } else if (status && datefrom && dateto) {
                
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $3 AND r.status = $1', [status,datefrom,dateto])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $3 AND r.code = $1', [status,datefrom,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
                             if (dataQty.length == 0) {
@@ -1277,7 +1277,7 @@ function downloadReportCount(req,res,next){
                    
             } else if (status && client) {
                 
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sender = $1 AND r.status = $1', [status,client])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sender = $1 AND r.code = $1', [status,client])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
                             if (dataQty.length == 0) {
@@ -1315,7 +1315,7 @@ function downloadReportCount(req,res,next){
                    
             } else if (status && datefrom) {
               
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $2 AND r.status = $1', [status,datefrom])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $2 AND r.code = $1', [status,datefrom])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
                             if (dataQty.length == 0) {
@@ -1353,7 +1353,7 @@ function downloadReportCount(req,res,next){
                 
             } else if (status && dateto) {
                 
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $2 AND r.status = $1', [status,dateto])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $2 AND r.code = $1', [status,dateto])
                         .then(function (dataQty) {
                             var count = new Number(dataQty[0].count);
                             if (dataQty.length == 0) {
@@ -1505,7 +1505,7 @@ function downloadReportCount(req,res,next){
                 
             } else if (status) {
                
-                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.status = $1', [status])
+                        db.dbs.any('SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.code = $1', [status])
                         .then(function (dataQty) {
                             let count = dataQty[0].count;
                             if (dataQty.length == 0) {
@@ -1717,7 +1717,7 @@ function downloadOtpReport(req,res,next){
             const dateto = req.query.dateto;
 
             if (status && client && datefrom && dateto) {
-                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND sender = $2 AND r.status = $1 order by sent_date desc', [status,client,datefrom,dateto])
+                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND sender = $2 AND r.code = $1 order by sent_date desc', [status,client,datefrom,dateto])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -1756,7 +1756,7 @@ function downloadOtpReport(req,res,next){
                     return next(err);
                 });
             } else if (status && client && datefrom) {
-                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $3 AND sender = $2 AND r.status = $1 order by sent_date desc', [status,client,datefrom])
+                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $3 AND sender = $2 AND r.code = $1 order by sent_date desc', [status,client,datefrom])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -1795,7 +1795,7 @@ function downloadOtpReport(req,res,next){
                     return next(err);
                 });
             } else if (status && client && dateto) {
-                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $3 AND sender = $2 AND r.status = $1 order by sent_date desc', [status,client,dateto])
+                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $3 AND sender = $2 AND r.code = $1 order by sent_date desc', [status,client,dateto])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -1834,7 +1834,7 @@ function downloadOtpReport(req,res,next){
                     return next(err);
                 });
             } else if (status && datefrom && dateto) {
-                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $3 AND r.status = $1 order by sent_date desc', [status,datefrom,dateto])
+                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $3 AND r.code = $1 order by sent_date desc', [status,datefrom,dateto])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -1912,7 +1912,7 @@ function downloadOtpReport(req,res,next){
                     return next(err);
                 });
             } else if (status && client) {
-                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sender = $2 AND r.status = $1 order by sent_date desc', [status,client])
+                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sender = $2 AND r.code = $1 order by sent_date desc', [status,client])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -1951,7 +1951,7 @@ function downloadOtpReport(req,res,next){
                     return next(err);
                 });
             } else if (status && datefrom) {
-                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $2 AND r.status = $1 order by sent_date desc', [status,datefrom])
+                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $2 AND r.code = $1 order by sent_date desc', [status,datefrom])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -1990,7 +1990,7 @@ function downloadOtpReport(req,res,next){
                     return next(err);
                 });
             } else if (status && dateto) {
-                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $2 AND r.status = $1 order by sent_date desc', [status,dateto])
+                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $2 AND r.code = $1 order by sent_date desc', [status,dateto])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -2146,7 +2146,7 @@ function downloadOtpReport(req,res,next){
                     return next(err);
                 });
             } else if (status) {
-                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.status = $1 order by sent_date desc', [status])
+                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.code = $1 order by sent_date desc', [status])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -2224,7 +2224,7 @@ function downloadOtpReport(req,res,next){
                     return next(err);
                 });
             } else if (datefrom) {
-                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $3 order by sent_date desc', [datefrom])
+                db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $1 AND $1 order by sent_date desc', [datefrom])
                 .then(function (data) {
                     if (data.length == 0) {
                         res.status(200)
@@ -2365,14 +2365,14 @@ function getOtpDailyTokenUsage(req,res,next){
             var page = req.query.page;
             var itemperpage = req.query.itemperpage;
 
-            const q1 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND sender = $5 AND r.status = $6 GROUP BY date,client ORDER BY date LIMIT $2 OFFSET (($1 - 1) * $2)';
-            const q1c = 'SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND sender = $5 AND r.status = $6';
+            const q1 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND sender = $5 AND r.code = $6 GROUP BY date,cltuid ORDER BY date LIMIT $2 OFFSET (($1 - 1) * $2)';
+            const q1c = 'SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND sender = $5 AND r.code = $6';
             
-            const q2 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND r.status = $5 GROUP BY date,client ORDER BY date LIMIT $2 OFFSET (($1 - 1) * $2)';
-            const q2c = 'SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND r.status = $5';
+            const q2 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND r.code = $5 GROUP BY date,cltuid ORDER BY date LIMIT $2 OFFSET (($1 - 1) * $2)';
+            const q2c = 'SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND r.code = $5';
             
-            const q3 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.status = $3 GROUP BY date,client ORDER BY date LIMIT $2 OFFSET (($1 - 1) * $2)';
-            const q3c = 'SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.status = $3';
+            const q3 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.code = $3 GROUP BY date,cltuid ORDER BY date LIMIT $2 OFFSET (($1 - 1) * $2)';
+            const q3c = 'SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.code = $3';
 
             if (client && datefrom && dateto) {
                 db.dbs.any(q1, [page,itemperpage,datefrom,dateto,client,status])
@@ -2512,11 +2512,11 @@ function downloadOtpDailyTokenUsage(req,res,next){
             const datefrom = req.query.datefrom;
             const dateto = req.query.dateto;
 
-            const q1 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $1 AND $2 AND sender = $3 AND r.status = $4 GROUP BY date,client ORDER BY date';
+            const q1 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $1 AND $2 AND sender = $3 AND r.code = $4 GROUP BY date,cltuid ORDER BY date';
 
-            const q2 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $1 AND $2 AND r.status = $3 GROUP BY date,client ORDER BY date';
+            const q2 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $1 AND $2 AND r.code = $3 GROUP BY date,cltuid ORDER BY date';
 
-            const q3 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.status = $1 GROUP BY date,client ORDER BY date';
+            const q3 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.code = $1 GROUP BY date,cltuid ORDER BY date';
 
             if (client && datefrom && dateto) {
                 db.dbs.any(q1, [datefrom,dateto,client,status])
@@ -2690,11 +2690,11 @@ function getOtpTokenTotalUsage(req,res,next){
             const datefrom = req.query.datefrom;
             const dateto = req.query.dateto;
 
-            const q1 = 'SELECT sender, COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE cast(sent_date AS date) :: DATE BETWEEN DATE $1 AND $2 AND sender = $3 AND r.status = $4 GROUP BY m.sender';
+            const q1 = 'SELECT sender, COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE cast(sent_date AS date) :: DATE BETWEEN DATE $1 AND $2 AND sender = $3 AND r.code = $4 GROUP BY m.sender';
             
-            const q2 = 'SELECT sender, COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE cast(sent_date AS date) :: DATE BETWEEN DATE $1 AND $2 AND r.status = $3 GROUP BY m.sender';
+            const q2 = 'SELECT sender, COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE cast(sent_date AS date) :: DATE BETWEEN DATE $1 AND $2 AND r.code = $3 GROUP BY m.sender';
             
-            const q3 = 'SELECT sender, COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE r.status = $1 GROUP BY m.sender';
+            const q3 = 'SELECT sender, COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE r.code = $1 GROUP BY m.sender';
 
             const q4 = 'SELECT sender, COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE sender = $1 GROUP BY m.sender';
             
@@ -2811,11 +2811,11 @@ function downloadOtpTokenTotalUsage(req,res,next){
             const datefrom = req.query.datefrom;
             const dateto = req.query.dateto;
 
-            const q1 = 'SELECT sender, COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE cast(sent_date AS date) :: DATE BETWEEN DATE $1 AND $2 AND sender = $3 AND r.status = $4 GROUP BY m.sender';
+            const q1 = 'SELECT sender, COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE cast(sent_date AS date) :: DATE BETWEEN DATE $1 AND $2 AND sender = $3 AND r.code = $4 GROUP BY m.sender';
             
-            const q2 = 'SELECT sender, COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE cast(sent_date AS date) :: DATE BETWEEN DATE $1 AND $2 AND r.status = $3 GROUP BY m.sender';
+            const q2 = 'SELECT sender, COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE cast(sent_date AS date) :: DATE BETWEEN DATE $1 AND $2 AND r.code = $3 GROUP BY m.sender';
             
-            const q3 = 'SELECT sender, COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE r.status = $1 GROUP BY m.sender';
+            const q3 = 'SELECT sender, COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE r.code = $1 GROUP BY m.sender';
 
             const q4 = 'SELECT sender, COUNT(uid) AS total_usage FROM otp.messages m INNER JOIN otp.reports r on m.id = r.msg_id WHERE sender = $1 GROUP BY m.sender';
 
