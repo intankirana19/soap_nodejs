@@ -39,6 +39,21 @@ function getOtpReport(req,res,next){
             if (status && client && datefrom && dateto) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $5 AND $6 AND sender = $4 AND r.code = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,client,datefrom,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+                        
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -56,7 +71,7 @@ function getOtpReport(req,res,next){
                             if(pageQty == 0){
                                 pageQty = 1
                             }
-                
+
                             res.status(200)
                                 .json({
                                     status: 'success',
@@ -77,6 +92,21 @@ function getOtpReport(req,res,next){
             } else if (status && client && datefrom) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $5 AND $5 AND sender = $4 AND r.code = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,client,datefrom])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -115,6 +145,21 @@ function getOtpReport(req,res,next){
             } else if (status && client && dateto) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $5 AND $5 AND sender = $4 AND r.code = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,client,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -153,6 +198,21 @@ function getOtpReport(req,res,next){
             } else if (status && datefrom && dateto) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $4 AND $5 AND r.code = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,datefrom,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -191,6 +251,21 @@ function getOtpReport(req,res,next){
             } else if (client && datefrom && dateto) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $4 AND $5 AND sender = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,client,datefrom,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -229,6 +304,21 @@ function getOtpReport(req,res,next){
             } else if (status && client) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sender = $4 AND r.code = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,client])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -267,6 +357,21 @@ function getOtpReport(req,res,next){
             } else if (status && datefrom) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $4 AND $4 AND r.code = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,datefrom])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -305,6 +410,21 @@ function getOtpReport(req,res,next){
             } else if (status && dateto) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $4 AND $4 AND r.code = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -343,6 +463,21 @@ function getOtpReport(req,res,next){
             } else if (client && datefrom) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $4 AND $4 AND sender = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,client,datefrom])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -381,6 +516,21 @@ function getOtpReport(req,res,next){
             } else if (client && dateto) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $4 AND $4 AND sender = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,client,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -419,6 +569,21 @@ function getOtpReport(req,res,next){
             } else if (datefrom && dateto) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,datefrom,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -457,6 +622,21 @@ function getOtpReport(req,res,next){
             } else if (status) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.code = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,status])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -495,6 +675,21 @@ function getOtpReport(req,res,next){
             } else if (client) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sender = $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,client])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -533,6 +728,21 @@ function getOtpReport(req,res,next){
             } else if (datefrom) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,datefrom])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -571,6 +781,21 @@ function getOtpReport(req,res,next){
             } else if (dateto) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $3 order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -609,6 +834,21 @@ function getOtpReport(req,res,next){
             } else {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id order by sent_date desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -1719,6 +1959,21 @@ function downloadOtpReport(req,res,next){
             if (status && client && datefrom && dateto) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND sender = $2 AND r.code = $1 order by sent_date desc', [status,client,datefrom,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -1758,6 +2013,21 @@ function downloadOtpReport(req,res,next){
             } else if (status && client && datefrom) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $3 AND sender = $2 AND r.code = $1 order by sent_date desc', [status,client,datefrom])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -1797,6 +2067,21 @@ function downloadOtpReport(req,res,next){
             } else if (status && client && dateto) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $3 AND sender = $2 AND r.code = $1 order by sent_date desc', [status,client,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -1836,6 +2121,21 @@ function downloadOtpReport(req,res,next){
             } else if (status && datefrom && dateto) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $3 AND r.code = $1 order by sent_date desc', [status,datefrom,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -1875,6 +2175,21 @@ function downloadOtpReport(req,res,next){
             } else if (client && datefrom && dateto) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $3 AND sender = $1 order by sent_date desc', [client,datefrom,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -1914,6 +2229,21 @@ function downloadOtpReport(req,res,next){
             } else if (status && client) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sender = $2 AND r.code = $1 order by sent_date desc', [status,client])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -1953,6 +2283,21 @@ function downloadOtpReport(req,res,next){
             } else if (status && datefrom) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $2 AND r.code = $1 order by sent_date desc', [status,datefrom])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -1992,6 +2337,21 @@ function downloadOtpReport(req,res,next){
             } else if (status && dateto) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $2 AND r.code = $1 order by sent_date desc', [status,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -2031,6 +2391,21 @@ function downloadOtpReport(req,res,next){
             } else if (client && datefrom) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $2 AND sender = $1 order by sent_date desc', [client,datefrom])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -2070,6 +2445,21 @@ function downloadOtpReport(req,res,next){
             } else if (client && dateto) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $2 AND $2 AND sender = $1 order by sent_date desc', [client,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -2109,6 +2499,21 @@ function downloadOtpReport(req,res,next){
             } else if (datefrom && dateto) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $1 AND $2 order by sent_date desc', [datefrom,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -2148,6 +2553,21 @@ function downloadOtpReport(req,res,next){
             } else if (status) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.code = $1 order by sent_date desc', [status])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -2187,6 +2607,21 @@ function downloadOtpReport(req,res,next){
             } else if (client) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sender = $1 order by sent_date desc', [client])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -2226,6 +2661,21 @@ function downloadOtpReport(req,res,next){
             } else if (datefrom) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $1 AND $1 order by sent_date desc', [datefrom])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -2265,6 +2715,21 @@ function downloadOtpReport(req,res,next){
             } else if (dateto) {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $1 AND $1 order by sent_date desc', [dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -2304,6 +2769,21 @@ function downloadOtpReport(req,res,next){
             } else {
                 db.dbs.any('select sent_date, msisdn,sender,r.status,r.message FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id order by sent_date desc')
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.sent_date.getFullYear();
+                        const month = suffixHelper(datum.sent_date.getMonth() + 1);
+                        const day = suffixHelper(datum.sent_date.getDate());
+
+                        const hour = suffixHelper(datum.sent_date.getHours());
+                        const minute = suffixHelper(datum.sent_date.getMinutes());
+                        const second = suffixHelper(datum.sent_date.getSeconds());
+
+                        datum.sent_date = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -2365,18 +2845,29 @@ function getOtpDailyTokenUsage(req,res,next){
             var page = req.query.page;
             var itemperpage = req.query.itemperpage;
 
-            const q1 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND sender = $5 AND r.code = $6 GROUP BY date,cltuid ORDER BY date LIMIT $2 OFFSET (($1 - 1) * $2)';
+            const q1 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND sender = $5 AND r.code = $6 GROUP BY client,date,cltuid ORDER BY date desc LIMIT $2 OFFSET (($1 - 1) * $2)';
             const q1c = 'SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND sender = $5 AND r.code = $6';
             
-            const q2 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND r.code = $5 GROUP BY date,cltuid ORDER BY date LIMIT $2 OFFSET (($1 - 1) * $2)';
+            const q2 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND r.code = $5 GROUP BY client,date,cltuid ORDER BY date desc LIMIT $2 OFFSET (($1 - 1) * $2)';
             const q2c = 'SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $3 AND $4 AND r.code = $5';
             
-            const q3 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.code = $3 GROUP BY date,cltuid ORDER BY date LIMIT $2 OFFSET (($1 - 1) * $2)';
+            const q3 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.code = $3 GROUP BY client,date,cltuid ORDER BY date desc LIMIT $2 OFFSET (($1 - 1) * $2)';
             const q3c = 'SELECT COUNT(*) FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.code = $3';
 
             if (client && datefrom && dateto) {
                 db.dbs.any(q1, [page,itemperpage,datefrom,dateto,client,status])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.date.getFullYear();
+                        const month = suffixHelper(datum.date.getMonth() + 1);
+                        const day = suffixHelper(datum.date.getDate());
+
+                        datum.date = `${year}-${month}-${day}`;
+                    });
                     if (data.length == 0) { 
                         res.status(200)
                         .json({
@@ -2415,6 +2906,17 @@ function getOtpDailyTokenUsage(req,res,next){
             } else if (datefrom && dateto) {
                 db.dbs.any(q2, [page,itemperpage,datefrom,dateto,status])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.date.getFullYear();
+                        const month = suffixHelper(datum.date.getMonth() + 1);
+                        const day = suffixHelper(datum.date.getDate());
+
+                        datum.date = `${year}-${month}-${day}`;
+                    });
                     if (data.length == 0) { 
                         res.status(200)
                         .json({
@@ -2453,6 +2955,17 @@ function getOtpDailyTokenUsage(req,res,next){
             } else {
                 db.dbs.any(q3, [page,itemperpage,status])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.date.getFullYear();
+                        const month = suffixHelper(datum.date.getMonth() + 1);
+                        const day = suffixHelper(datum.date.getDate());
+
+                        datum.date = `${year}-${month}-${day}`;
+                    });
                     if (data.length == 0) { 
                         res.status(200)
                         .json({
@@ -2512,15 +3025,26 @@ function downloadOtpDailyTokenUsage(req,res,next){
             const datefrom = req.query.datefrom;
             const dateto = req.query.dateto;
 
-            const q1 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $1 AND $2 AND sender = $3 AND r.code = $4 GROUP BY date,cltuid ORDER BY date';
+            const q1 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $1 AND $2 AND sender = $3 AND r.code = $4 GROUP BY client,date,cltuid ORDER BY date';
 
-            const q2 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $1 AND $2 AND r.code = $3 GROUP BY date,cltuid ORDER BY date';
+            const q2 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE sent_date :: DATE BETWEEN DATE $1 AND $2 AND r.code = $3 GROUP BY client,date,cltuid ORDER BY date';
 
-            const q3 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.code = $1 GROUP BY date,cltuid ORDER BY date';
+            const q3 = 'SELECT sent_date :: DATE AS date, sender as client, count(uid) AS otp_usage FROM otp.messages m INNER JOIN otp.reports r ON m.id = r.msg_id WHERE r.code = $1 GROUP BY client,date,cltuid ORDER BY date';
 
             if (client && datefrom && dateto) {
                 db.dbs.any(q1, [datefrom,dateto,client,status])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.date.getFullYear();
+                        const month = suffixHelper(datum.date.getMonth() + 1);
+                        const day = suffixHelper(datum.date.getDate());
+
+                        datum.date = `${year}-${month}-${day}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -2558,6 +3082,17 @@ function downloadOtpDailyTokenUsage(req,res,next){
             } else if (datefrom && dateto) {
                 db.dbs.any(q2, [datefrom,dateto,status])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.date.getFullYear();
+                        const month = suffixHelper(datum.date.getMonth() + 1);
+                        const day = suffixHelper(datum.date.getDate());
+
+                        datum.date = `${year}-${month}-${day}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -2595,6 +3130,17 @@ function downloadOtpDailyTokenUsage(req,res,next){
             } else if(client) {
                 db.dbs.any(q4, [client])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.date.getFullYear();
+                        const month = suffixHelper(datum.date.getMonth() + 1);
+                        const day = suffixHelper(datum.date.getDate());
+
+                        datum.date = `${year}-${month}-${day}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -2632,6 +3178,17 @@ function downloadOtpDailyTokenUsage(req,res,next){
             } else {
                 db.dbs.any(q3, [status])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.date.getFullYear();
+                        const month = suffixHelper(datum.date.getMonth() + 1);
+                        const day = suffixHelper(datum.date.getDate());
+
+                        datum.date = `${year}-${month}-${day}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({

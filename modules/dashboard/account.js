@@ -738,6 +738,21 @@ function getLogs(req,res,next){
             } else if (client && dateto) {
                 db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 and a.client_id = $4 ORDER BY create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,dateto,client])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.create_at.getFullYear();
+                        const month = suffixHelper(datum.create_at.getMonth() + 1);
+                        const day = suffixHelper(datum.create_at.getDate());
+
+                        const hour = suffixHelper(datum.create_at.getHours());
+                        const minute = suffixHelper(datum.create_at.getMinutes());
+                        const second = suffixHelper(datum.create_at.getSeconds());
+
+                        datum.create_at = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     db.dbs.any('select count(*) from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 and a.client_id = $4', [page,itemperpage,dateto,client])
                     .then(function (dataQty) {
                         let count = dataQty[0].count;
@@ -765,6 +780,21 @@ function getLogs(req,res,next){
             } else if (datefrom && dateto) {
                 db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $4 ORDER BY create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,datefrom,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.create_at.getFullYear();
+                        const month = suffixHelper(datum.create_at.getMonth() + 1);
+                        const day = suffixHelper(datum.create_at.getDate());
+
+                        const hour = suffixHelper(datum.create_at.getHours());
+                        const minute = suffixHelper(datum.create_at.getMinutes());
+                        const second = suffixHelper(datum.create_at.getSeconds());
+
+                        datum.create_at = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -803,6 +833,21 @@ function getLogs(req,res,next){
             } else if (datefrom) {
                 db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 ORDER BY create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,datefrom])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.create_at.getFullYear();
+                        const month = suffixHelper(datum.create_at.getMonth() + 1);
+                        const day = suffixHelper(datum.create_at.getDate());
+
+                        const hour = suffixHelper(datum.create_at.getHours());
+                        const minute = suffixHelper(datum.create_at.getMinutes());
+                        const second = suffixHelper(datum.create_at.getSeconds());
+
+                        datum.create_at = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -841,6 +886,21 @@ function getLogs(req,res,next){
             } else if (dateto) {
                 db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where  l.create_at :: date between $3 and $3 ORDER BY create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.create_at.getFullYear();
+                        const month = suffixHelper(datum.create_at.getMonth() + 1);
+                        const day = suffixHelper(datum.create_at.getDate());
+
+                        const hour = suffixHelper(datum.create_at.getHours());
+                        const minute = suffixHelper(datum.create_at.getMinutes());
+                        const second = suffixHelper(datum.create_at.getSeconds());
+
+                        datum.create_at = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -879,6 +939,21 @@ function getLogs(req,res,next){
             } else if (client) {
                 db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id where a.client_id = $3 ORDER BY create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,client])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.create_at.getFullYear();
+                        const month = suffixHelper(datum.create_at.getMonth() + 1);
+                        const day = suffixHelper(datum.create_at.getDate());
+
+                        const hour = suffixHelper(datum.create_at.getHours());
+                        const minute = suffixHelper(datum.create_at.getMinutes());
+                        const second = suffixHelper(datum.create_at.getSeconds());
+
+                        datum.create_at = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -917,6 +992,21 @@ function getLogs(req,res,next){
             } else {
                 db.dbs.any('select l.name, c.sender, l.create_at from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id ORDER BY create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const year = datum.create_at.getFullYear();
+                        const month = suffixHelper(datum.create_at.getMonth() + 1);
+                        const day = suffixHelper(datum.create_at.getDate());
+
+                        const hour = suffixHelper(datum.create_at.getHours());
+                        const minute = suffixHelper(datum.create_at.getMinutes());
+                        const second = suffixHelper(datum.create_at.getSeconds());
+
+                        datum.create_at = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+                    });
                     db.dbs.any('select count(*) from sms.logs l left join sms.accounts a on l.account_id = a.id left join sms.clients c on a.client_id = c.id', [page,itemperpage])
                     .then(function (dataQty) {
                         let count = dataQty[0].count;

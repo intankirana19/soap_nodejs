@@ -35,8 +35,32 @@ function getAllClientSmsToken(req,res,next){
                 message: 'Not Authorized, Please RE-LOGIN'
             });
         }else{
-            db.dbs.any('SELECT t.id,amount,t.client_id,c.sender as client,t.create_at,t.update_at FROM sms.tokens t left join sms.clients c on t.client_id = c.id order by update_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage])
+            db.dbs.any('SELECT t.id,c.id as client_id, amount,t.client_id,c.sender as client,t.create_at,t.update_at FROM sms.tokens t left join sms.clients c on t.client_id = c.id order by update_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage])
             .then(function (data) {
+                data.map((datum, index) => {
+                    const suffixHelper = (target) => {
+                        return target > 9 ? target : `0${target}`;
+                    };
+
+                    const cyear = datum.create_at.getFullYear();
+                    const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                    const cday = datum.create_at.getDate();
+
+                    const chour = suffixHelper(datum.create_at.getHours());
+                    const cminute = suffixHelper(datum.create_at.getMinutes());
+                    const csecond = suffixHelper(datum.create_at.getSeconds());
+
+                    const uyear = datum.update_at.getFullYear();
+                    const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                    const uday = datum.update_at.getDate();
+
+                    const uhour = suffixHelper(datum.update_at.getHours());
+                    const uminute = suffixHelper(datum.update_at.getMinutes());
+                    const usecond = suffixHelper(datum.update_at.getSeconds());
+
+                    datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                    datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                });
                 if (data.length == 0) {
                     res.status(200)
                     .json({
@@ -91,6 +115,30 @@ function downloadAllClientSmsToken(req,res,next){
         }else{
             db.dbs.any('SELECT t.id,amount,t.client_id,c.sender as client,t.create_at,t.update_at FROM sms.tokens t left join sms.clients c on t.client_id = c.id order by update_at desc')
             .then(function (data) {
+                data.map((datum, index) => {
+                    const suffixHelper = (target) => {
+                        return target > 9 ? target : `0${target}`;
+                    };
+
+                    const cyear = datum.create_at.getFullYear();
+                    const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                    const cday = datum.create_at.getDate();
+
+                    const chour = suffixHelper(datum.create_at.getHours());
+                    const cminute = suffixHelper(datum.create_at.getMinutes());
+                    const csecond = suffixHelper(datum.create_at.getSeconds());
+
+                    const uyear = datum.update_at.getFullYear();
+                    const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                    const uday = datum.update_at.getDate();
+
+                    const uhour = suffixHelper(datum.update_at.getHours());
+                    const uminute = suffixHelper(datum.update_at.getMinutes());
+                    const usecond = suffixHelper(datum.update_at.getSeconds());
+
+                    datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                    datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                });
                 if (data.length == 0) {
                     res.status(200)
                     .json({
@@ -146,6 +194,30 @@ function getClientSmsToken(req,res,next){
 
             db.dbs.one('SELECT t.id,amount,t.client_id,c.sender as client,t.create_at,t.update_at FROM sms.tokens t left join sms.clients c on t.client_id = c.id WHERE c.id = ' + clientId)
             .then(function (data) {
+                data.map((datum, index) => {
+                    const suffixHelper = (target) => {
+                        return target > 9 ? target : `0${target}`;
+                    };
+
+                    const cyear = datum.create_at.getFullYear();
+                    const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                    const cday = datum.create_at.getDate();
+
+                    const chour = suffixHelper(datum.create_at.getHours());
+                    const cminute = suffixHelper(datum.create_at.getMinutes());
+                    const csecond = suffixHelper(datum.create_at.getSeconds());
+
+                    const uyear = datum.update_at.getFullYear();
+                    const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                    const uday = datum.update_at.getDate();
+
+                    const uhour = suffixHelper(datum.update_at.getHours());
+                    const uminute = suffixHelper(datum.update_at.getMinutes());
+                    const usecond = suffixHelper(datum.update_at.getSeconds());
+
+                    datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                    datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                });
                 res.status(200)
                 .json({
                     status: 'success',
@@ -251,6 +323,30 @@ function getTopUpHistory(req,res,next){
             if(client && datefrom && dateto){
                 db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $5 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,client,datefrom,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const cyear = datum.create_at.getFullYear();
+                        const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                        const cday = datum.create_at.getDate();
+
+                        const chour = suffixHelper(datum.create_at.getHours());
+                        const cminute = suffixHelper(datum.create_at.getMinutes());
+                        const csecond = suffixHelper(datum.create_at.getSeconds());
+
+                        const uyear = datum.update_at.getFullYear();
+                        const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                        const uday = datum.update_at.getDate();
+
+                        const uhour = suffixHelper(datum.update_at.getHours());
+                        const uminute = suffixHelper(datum.update_at.getMinutes());
+                        const usecond = suffixHelper(datum.update_at.getSeconds());
+
+                        datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                        datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                    });
                     if (data.length == 0) { 
                         res.status(200)
                         .json({
@@ -289,6 +385,30 @@ function getTopUpHistory(req,res,next){
             } else if(client && datefrom){
                 db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $4 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,client,datefrom])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const cyear = datum.create_at.getFullYear();
+                        const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                        const cday = datum.create_at.getDate();
+
+                        const chour = suffixHelper(datum.create_at.getHours());
+                        const cminute = suffixHelper(datum.create_at.getMinutes());
+                        const csecond = suffixHelper(datum.create_at.getSeconds());
+
+                        const uyear = datum.update_at.getFullYear();
+                        const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                        const uday = datum.update_at.getDate();
+
+                        const uhour = suffixHelper(datum.update_at.getHours());
+                        const uminute = suffixHelper(datum.update_at.getMinutes());
+                        const usecond = suffixHelper(datum.update_at.getSeconds());
+
+                        datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                        datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                    });
                     if (data.length == 0) { 
                         res.status(200)
                         .json({
@@ -327,6 +447,30 @@ function getTopUpHistory(req,res,next){
             } else if(client && dateto){
                 db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 and t.create_at :: date between $4 and $4 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,client,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const cyear = datum.create_at.getFullYear();
+                        const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                        const cday = datum.create_at.getDate();
+
+                        const chour = suffixHelper(datum.create_at.getHours());
+                        const cminute = suffixHelper(datum.create_at.getMinutes());
+                        const csecond = suffixHelper(datum.create_at.getSeconds());
+
+                        const uyear = datum.update_at.getFullYear();
+                        const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                        const uday = datum.update_at.getDate();
+
+                        const uhour = suffixHelper(datum.update_at.getHours());
+                        const uminute = suffixHelper(datum.update_at.getMinutes());
+                        const usecond = suffixHelper(datum.update_at.getSeconds());
+
+                        datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                        datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                    });
                     if (data.length == 0) { 
                         res.status(200)
                         .json({
@@ -365,6 +509,30 @@ function getTopUpHistory(req,res,next){
             } if(datefrom && dateto){
                 db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $4 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,datefrom,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const cyear = datum.create_at.getFullYear();
+                        const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                        const cday = datum.create_at.getDate();
+
+                        const chour = suffixHelper(datum.create_at.getHours());
+                        const cminute = suffixHelper(datum.create_at.getMinutes());
+                        const csecond = suffixHelper(datum.create_at.getSeconds());
+
+                        const uyear = datum.update_at.getFullYear();
+                        const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                        const uday = datum.update_at.getDate();
+
+                        const uhour = suffixHelper(datum.update_at.getHours());
+                        const uminute = suffixHelper(datum.update_at.getMinutes());
+                        const usecond = suffixHelper(datum.update_at.getSeconds());
+
+                        datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                        datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                    });
                     if (data.length == 0) { 
                         res.status(200)
                         .json({
@@ -403,6 +571,30 @@ function getTopUpHistory(req,res,next){
             } else if(client){
                 db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $3 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,client])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const cyear = datum.create_at.getFullYear();
+                        const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                        const cday = datum.create_at.getDate();
+
+                        const chour = suffixHelper(datum.create_at.getHours());
+                        const cminute = suffixHelper(datum.create_at.getMinutes());
+                        const csecond = suffixHelper(datum.create_at.getSeconds());
+
+                        const uyear = datum.update_at.getFullYear();
+                        const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                        const uday = datum.update_at.getDate();
+
+                        const uhour = suffixHelper(datum.update_at.getHours());
+                        const uminute = suffixHelper(datum.update_at.getMinutes());
+                        const usecond = suffixHelper(datum.update_at.getSeconds());
+
+                        datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                        datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                    });
                     if (data.length == 0) { 
                         res.status(200)
                         .json({
@@ -441,6 +633,30 @@ function getTopUpHistory(req,res,next){
             } else if(datefrom){
                 db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $3 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,datefrom])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const cyear = datum.create_at.getFullYear();
+                        const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                        const cday = datum.create_at.getDate();
+
+                        const chour = suffixHelper(datum.create_at.getHours());
+                        const cminute = suffixHelper(datum.create_at.getMinutes());
+                        const csecond = suffixHelper(datum.create_at.getSeconds());
+
+                        const uyear = datum.update_at.getFullYear();
+                        const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                        const uday = datum.update_at.getDate();
+
+                        const uhour = suffixHelper(datum.update_at.getHours());
+                        const uminute = suffixHelper(datum.update_at.getMinutes());
+                        const usecond = suffixHelper(datum.update_at.getSeconds());
+
+                        datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                        datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                    });
                     if (data.length == 0) { 
                         res.status(200)
                         .json({
@@ -479,6 +695,30 @@ function getTopUpHistory(req,res,next){
             } else if(dateto){
                 db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $3 and $3 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const cyear = datum.create_at.getFullYear();
+                        const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                        const cday = datum.create_at.getDate();
+
+                        const chour = suffixHelper(datum.create_at.getHours());
+                        const cminute = suffixHelper(datum.create_at.getMinutes());
+                        const csecond = suffixHelper(datum.create_at.getSeconds());
+
+                        const uyear = datum.update_at.getFullYear();
+                        const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                        const uday = datum.update_at.getDate();
+
+                        const uhour = suffixHelper(datum.update_at.getHours());
+                        const uminute = suffixHelper(datum.update_at.getMinutes());
+                        const usecond = suffixHelper(datum.update_at.getSeconds());
+
+                        datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                        datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                    });
                     if (data.length == 0) { 
                         res.status(200)
                         .json({
@@ -517,6 +757,30 @@ function getTopUpHistory(req,res,next){
             } else {
                 db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id group by t.create_at, t.id, c.sender ORDER BY t.create_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const cyear = datum.create_at.getFullYear();
+                        const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                        const cday = datum.create_at.getDate();
+
+                        const chour = suffixHelper(datum.create_at.getHours());
+                        const cminute = suffixHelper(datum.create_at.getMinutes());
+                        const csecond = suffixHelper(datum.create_at.getSeconds());
+
+                        const uyear = datum.update_at.getFullYear();
+                        const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                        const uday = datum.update_at.getDate();
+
+                        const uhour = suffixHelper(datum.update_at.getHours());
+                        const uminute = suffixHelper(datum.update_at.getMinutes());
+                        const usecond = suffixHelper(datum.update_at.getSeconds());
+
+                        datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                        datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                    });
                     if (data.length == 0) { 
                         res.status(200)
                         .json({
@@ -579,6 +843,30 @@ function downloadTopUpHistory(req,res,next){
             if(client && datefrom && dateto){
                 db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $1 and t.create_at :: date between $2 and $3 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [client,datefrom,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const cyear = datum.create_at.getFullYear();
+                        const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                        const cday = datum.create_at.getDate();
+
+                        const chour = suffixHelper(datum.create_at.getHours());
+                        const cminute = suffixHelper(datum.create_at.getMinutes());
+                        const csecond = suffixHelper(datum.create_at.getSeconds());
+
+                        const uyear = datum.update_at.getFullYear();
+                        const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                        const uday = datum.update_at.getDate();
+
+                        const uhour = suffixHelper(datum.update_at.getHours());
+                        const uminute = suffixHelper(datum.update_at.getMinutes());
+                        const usecond = suffixHelper(datum.update_at.getSeconds());
+
+                        datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                        datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -617,6 +905,30 @@ function downloadTopUpHistory(req,res,next){
             } else if(client && datefrom){
                 db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $1 and t.create_at :: date between $2 and $2 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [client,datefrom])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const cyear = datum.create_at.getFullYear();
+                        const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                        const cday = datum.create_at.getDate();
+
+                        const chour = suffixHelper(datum.create_at.getHours());
+                        const cminute = suffixHelper(datum.create_at.getMinutes());
+                        const csecond = suffixHelper(datum.create_at.getSeconds());
+
+                        const uyear = datum.update_at.getFullYear();
+                        const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                        const uday = datum.update_at.getDate();
+
+                        const uhour = suffixHelper(datum.update_at.getHours());
+                        const uminute = suffixHelper(datum.update_at.getMinutes());
+                        const usecond = suffixHelper(datum.update_at.getSeconds());
+
+                        datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                        datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -655,6 +967,30 @@ function downloadTopUpHistory(req,res,next){
             } else if(client && dateto){
                 db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $1 and t.create_at :: date between $2 and $2 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [client,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const cyear = datum.create_at.getFullYear();
+                        const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                        const cday = datum.create_at.getDate();
+
+                        const chour = suffixHelper(datum.create_at.getHours());
+                        const cminute = suffixHelper(datum.create_at.getMinutes());
+                        const csecond = suffixHelper(datum.create_at.getSeconds());
+
+                        const uyear = datum.update_at.getFullYear();
+                        const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                        const uday = datum.update_at.getDate();
+
+                        const uhour = suffixHelper(datum.update_at.getHours());
+                        const uminute = suffixHelper(datum.update_at.getMinutes());
+                        const usecond = suffixHelper(datum.update_at.getSeconds());
+
+                        datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                        datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -693,6 +1029,30 @@ function downloadTopUpHistory(req,res,next){
             } if(datefrom && dateto){
                 db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $1 and $2 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [datefrom,dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const cyear = datum.create_at.getFullYear();
+                        const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                        const cday = datum.create_at.getDate();
+
+                        const chour = suffixHelper(datum.create_at.getHours());
+                        const cminute = suffixHelper(datum.create_at.getMinutes());
+                        const csecond = suffixHelper(datum.create_at.getSeconds());
+
+                        const uyear = datum.update_at.getFullYear();
+                        const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                        const uday = datum.update_at.getDate();
+
+                        const uhour = suffixHelper(datum.update_at.getHours());
+                        const uminute = suffixHelper(datum.update_at.getMinutes());
+                        const usecond = suffixHelper(datum.update_at.getSeconds());
+
+                        datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                        datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -731,6 +1091,30 @@ function downloadTopUpHistory(req,res,next){
             } else if(client){
                 db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE client_id = $1 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [client])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const cyear = datum.create_at.getFullYear();
+                        const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                        const cday = datum.create_at.getDate();
+
+                        const chour = suffixHelper(datum.create_at.getHours());
+                        const cminute = suffixHelper(datum.create_at.getMinutes());
+                        const csecond = suffixHelper(datum.create_at.getSeconds());
+
+                        const uyear = datum.update_at.getFullYear();
+                        const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                        const uday = datum.update_at.getDate();
+
+                        const uhour = suffixHelper(datum.update_at.getHours());
+                        const uminute = suffixHelper(datum.update_at.getMinutes());
+                        const usecond = suffixHelper(datum.update_at.getSeconds());
+
+                        datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                        datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -769,6 +1153,30 @@ function downloadTopUpHistory(req,res,next){
             } else if(datefrom){
                 db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $1 and $1 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [datefrom])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const cyear = datum.create_at.getFullYear();
+                        const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                        const cday = datum.create_at.getDate();
+
+                        const chour = suffixHelper(datum.create_at.getHours());
+                        const cminute = suffixHelper(datum.create_at.getMinutes());
+                        const csecond = suffixHelper(datum.create_at.getSeconds());
+
+                        const uyear = datum.update_at.getFullYear();
+                        const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                        const uday = datum.update_at.getDate();
+
+                        const uhour = suffixHelper(datum.update_at.getHours());
+                        const uminute = suffixHelper(datum.update_at.getMinutes());
+                        const usecond = suffixHelper(datum.update_at.getSeconds());
+
+                        datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                        datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -807,6 +1215,30 @@ function downloadTopUpHistory(req,res,next){
             } else if(dateto){
                 db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id WHERE t.create_at :: date between $1 and $1 group by t.create_at, t.id, c.sender ORDER BY t.create_at desc', [dateto])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const cyear = datum.create_at.getFullYear();
+                        const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                        const cday = datum.create_at.getDate();
+
+                        const chour = suffixHelper(datum.create_at.getHours());
+                        const cminute = suffixHelper(datum.create_at.getMinutes());
+                        const csecond = suffixHelper(datum.create_at.getSeconds());
+
+                        const uyear = datum.update_at.getFullYear();
+                        const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                        const uday = datum.update_at.getDate();
+
+                        const uhour = suffixHelper(datum.update_at.getHours());
+                        const uminute = suffixHelper(datum.update_at.getMinutes());
+                        const usecond = suffixHelper(datum.update_at.getSeconds());
+
+                        datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                        datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({
@@ -845,6 +1277,30 @@ function downloadTopUpHistory(req,res,next){
             } else {
                 db.dbs.any('SELECT t.id,t.uid,amount,c.sender,t.status, t.topup_by,t.create_at,t.update_at FROM sms.topups t inner join sms.clients c on t.client_id = c.id group by t.create_at, t.id, c.sender ORDER BY t.create_at desc')
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const cyear = datum.create_at.getFullYear();
+                        const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                        const cday = datum.create_at.getDate();
+
+                        const chour = suffixHelper(datum.create_at.getHours());
+                        const cminute = suffixHelper(datum.create_at.getMinutes());
+                        const csecond = suffixHelper(datum.create_at.getSeconds());
+
+                        const uyear = datum.update_at.getFullYear();
+                        const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                        const uday = datum.update_at.getDate();
+
+                        const uhour = suffixHelper(datum.update_at.getHours());
+                        const uminute = suffixHelper(datum.update_at.getMinutes());
+                        const usecond = suffixHelper(datum.update_at.getSeconds());
+
+                        datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                        datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                    });
                     if (data.length == 0) {
                         res.status(200)
                         .json({

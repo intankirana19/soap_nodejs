@@ -131,6 +131,30 @@ function getMessageList(req,res,next){
             if (client) {
                 db.dbs.any('SELECT * FROM sms.messages WHERE client_id = $3 ORDER BY update_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage,client])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const cyear = datum.create_at.getFullYear();
+                        const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                        const cday = suffixHelper(datum.create_at.getDate());
+
+                        const chour = suffixHelper(datum.create_at.getHours());
+                        const cminute = suffixHelper(datum.create_at.getMinutes());
+                        const csecond = suffixHelper(datum.create_at.getSeconds());
+
+                        const uyear = datum.update_at.getFullYear();
+                        const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                        const uday = suffixHelper(datum.update_at.getDate());
+
+                        const uhour = suffixHelper(datum.update_at.getHours());
+                        const uminute = suffixHelper(datum.update_at.getMinutes());
+                        const usecond = suffixHelper(datum.update_at.getSeconds());
+
+                        datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                        datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                    });
                     if (data.length == 0) { 
                         res.status(200)
                         .json({
@@ -169,6 +193,30 @@ function getMessageList(req,res,next){
             } else {
                 db.dbs.any('SELECT * FROM sms.messages ORDER BY update_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage])
                 .then(function (data) {
+                    data.map((datum, index) => {
+                        const suffixHelper = (target) => {
+                            return target > 9 ? target : `0${target}`;
+                        };
+
+                        const cyear = datum.create_at.getFullYear();
+                        const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                        const cday = suffixHelper(datum.create_at.getDate());
+
+                        const chour = suffixHelper(datum.create_at.getHours());
+                        const cminute = suffixHelper(datum.create_at.getMinutes());
+                        const csecond = suffixHelper(datum.create_at.getSeconds());
+
+                        const uyear = datum.update_at.getFullYear();
+                        const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                        const uday = suffixHelper(datum.update_at.getDate());
+
+                        const uhour = suffixHelper(datum.update_at.getHours());
+                        const uminute = suffixHelper(datum.update_at.getMinutes());
+                        const usecond = suffixHelper(datum.update_at.getSeconds());
+
+                        datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                        datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                    });
                     if (data.length == 0) { 
                         res.status(200)
                         .json({

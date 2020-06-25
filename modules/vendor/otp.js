@@ -81,8 +81,10 @@ function sendOTP(req,res,next){
                       var year = ("0" + d.getYear()).slice(-2).toString();
                       var yymmdd = year + month + date;
                       var uid = yymmdd + r;
+                      
+                      const send_date = new Date();
 
-                      const message = await t1.one('INSERT INTO otp.messages (uid, message, msisdn, sender, cltuid) VALUES ($1, $2, $3, $4, $5) RETURNING id', [uid, text, msisdn, result.sender_otp, result.cltuid], m => m.id);
+                      const message = await t1.one('INSERT INTO otp.messages (uid, message, msisdn, sender, cltuid, send_date) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id', [uid, text, msisdn, result.sender_otp, result.cltuid, send_date], m => m.id);
   
                       await t1.none('insert into otp.reports (code, status, message, msgid, msg_id) values ($1, $2, $3, $4, $5)', [ 1, resp.status, resp.message, resp.msgid, message]);
   
