@@ -56,7 +56,7 @@ const jwt = require('jsonwebtoken');
                 res.status(200)
                 .json({
                     status: 3,
-                    message: 'Akun telah dinon-aktifkan'
+                    message: 'Akun telah dinon-aktifkan atau dihapus'
                 });
             } else if(data.length !=0){
                 const token = jwt.sign({

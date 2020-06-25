@@ -236,68 +236,147 @@ function addClient(req,res,next){
             const email = req.body.email;
             const pic = req.body.pic;
             const sender = req.body.sender;
+            const sender_otp = req.body.sender_otp;
             const pass = encrypt(req.body.password);
 
 
             const status = false;
 
-            const q1 = 'INSERT INTO sms.clients (cltuid,name,phone,email,pic,sender,password,is_active,is_delete) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $8)';
+            const q1 = 'INSERT INTO sms.clients (cltuid,name,phone,email,pic,sender,password,is_active,is_delete,sender_otp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $8, $9)';
             const q2 = 'SELECT id FROM sms.clients WHERE cltuid = $1';
             const q3 = 'INSERT INTO sms.tokens (amount, client_id, is_active) VALUES ($1, $2, $3)';
             const q4 = 'INSERT INTO otp.tokens (amount, cltuid, is_active) VALUES ($1, $2, $3)';
 
             const q5 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
 
-            db.dbs.tx(async t => {
-                await t.none(q1, [alias,name,phone,email,pic,sender,pass,status]);
-                const client = await t.one(q2, [alias]);
-                if ( type == 1) {
-                    await t.batch([
-                        t.none(q3, [0, client.id, true]),
-                        t.none(q4, [0, alias, true])
-                    ]);
+            db.dbs.any('SELECT cltuid FROM sms.clients WHERE cltuid = $1', [alias])
+            .then((a) => {
+                if (a.length === 0) {
+                    db.dbs.any('SELECT name FROM sms.clients WHERE name = $1', [name])
+                    .then((b) => {
 
-                    const log = "Add Regular & Premium Client" + " - " + result.username;
-                    await t.none(q5, [log, result.id]);
-                } else if ( type == 2){
-                    await t.batch([
-                        t.none(q3, [0, client.id, true]),
-                        t.none(q4, [0, alias, false])
-                    ]);
+                        if (b.length === 0) {
+                            db.dbs.any('SELECT phone FROM sms.clients WHERE phone = $1', [phone])
+                            .then((c) => {
 
-                    const log = "Add Regular Client" + " - " + result.username;
-                    await t.none(q5, [log, result.id]);
+                                if (c.length === 0) {
+                                    db.dbs.any('SELECT email FROM sms.clients WHERE email = $1', [email])
+                                    .then((d) => {
+
+                                        if (d.length === 0) {
+                                            db.dbs.any('SELECT sender FROM sms.clients WHERE sender = $1', [sender])
+                                            .then((e) => {
+
+                                                if (e.length === 0) {
+                                                    db.dbs.any('SELECT sender_otp FROM sms.clients WHERE phone = $1', [sender_otp])
+                                                    .then((f) => {
+                                                        if (f.length === 0) {
+                                                            db.dbs.tx(async t => {
+                                                                await t.none(q1, [alias,name,phone,email,pic,sender,pass,status,sender_otp]);
+                                                                const client = await t.one(q2, [alias]);
+                                                                await t.batch([
+                                                                    t.none(q3, [0, client.id, false]),
+                                                                    t.none(q4, [0, alias, false])
+                                                                ]);
+                                                                if ( type == 1) {
+                                                                    const log = "Add Regular & Premium Client" + " - " + result.username;
+                                                                    await t.none(q5, [log, result.id]);
+                                                                } else if ( type == 2){
+                                                                    const log = "Add Regular Client" + " - " + result.username;
+                                                                    await t.none(q5, [log, result.id]);
+                                                                } else {
+                                                                    const log = "Add Premium Client" + " - " + result.username;
+                                                                    await t.none(q5, [log, result.id]);
+                                                                }
+                                                            })
+                                                            .then(() => {
+                                                                res.status(200)
+                                                                .json({
+                                                                    status: 1,
+                                                                    message: 'Berhasil menambahkan klien.'
+                                                                });
+                                                            })
+                                                            .catch(error => {
+                                                                return next(error);
+                                                            });
+                                                            // db.dbs.none(query, [alias,name,phone,email,pic,sender,pass,status]) 
+                                                            // .then(function (data) {
+                                                            //     res.status(200)
+                                                            //     .json({
+                                                            //         status: 'success',
+                                                            //         message: 'Berhasil menambahkan klien.'
+                                                            //     });
+                                                            // })
+                                                            // .catch(function (err) {
+                                                            //     return next(err);
+                                                            // });
+                                                        } else {
+                                                            res.status(200)
+                                                            .json({
+                                                                status: 2,
+                                                                message: 'Nama pengirim otp ini sudah terdaftar.'
+                                                            });
+                                                        }
+                                                    })
+                                                    .catch(error => {
+                                                        return next(error);
+                                                    });
+                                                } else {
+                                                    res.status(200)
+                                                    .json({
+                                                        status: 2,
+                                                        message: 'Nama pengirim sms ini sudah terdaftar.'
+                                                    });
+                                                }
+                                            })
+                                            .catch(error => {
+                                                return next(error);
+                                            });
+                                        } else {
+                                            res.status(200)
+                                            .json({
+                                                status: 2,
+                                                message: 'Email perusahaan ini sudah terdaftar.'
+                                            });
+                                        }
+                                    })
+                                    .catch(error => {
+                                        return next(error);
+                                    });
+                                } else {
+                                    res.status(200)
+                                    .json({
+                                        status: 2,
+                                        message: 'Nomor perusahaan sudah terdaftar.'
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                return next(error);
+                            });
+                        } else {
+                            res.status(200)
+                            .json({
+                                status: 2,
+                                message: 'Nama perusahaan sudah terdaftar.'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        return next(error);
+                    });
                 } else {
-                    await t.batch([
-                        t.none(q3, [0, client.id, false]),
-                        t.none(q4, [0, alias, true])
-                    ]);
-
-                    const log = "Add Premium Client" + " - " + result.username;
-                    await t.none(q5, [log, result.id]);
+                    res.status(200)
+                    .json({
+                        status: 2,
+                        message: 'ID Name sudah terdaftar.'
+                    });
                 }
-            })
-            .then(() => {
-                res.status(200)
-                .json({
-                    status: 'success',
-                    message: 'Berhasil menambahkan klien.'
-                });
             })
             .catch(error => {
                 return next(error);
             });
-            // db.dbs.none(query, [alias,name,phone,email,pic,sender,pass,status]) 
-            // .then(function (data) {
-            //     res.status(200)
-            //     .json({
-            //         status: 'success',
-            //         message: 'Berhasil menambahkan klien.'
-            //     });
-            // })
-            // .catch(function (err) {
-            //     return next(err);
-            // });
+
         }
     });
 }
@@ -379,31 +458,65 @@ function activateClient(req,res,next){
 
             const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
             const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
+            const q4 = 'SELECT cltuid,type FROM sms.clients WHERE id = $1';
+            const q5 = 'UPDATE sms.tokens SET is_active = $1 WHERE client_id = $2';
+            const q6 = 'UPDATE otp.tokens SET is_active = $1 WHERE cltuid = $2';
+            const q7 = 'UPDATE sms.accounts SET is_active = $1 WHERE client_id = $2';
 
             db.dbs.tx(async t => {
                 await t.none(q1, [id, isActive]);
 
                 const c = await t.one(q2, [result.client_id]);
-
-                if(isActive == 'true') {
+                const cl = await t.one(q4, [id]);
+                if(isActive === true) {
+                    if ( cl.type == 1) {
+                        await t.batch([
+                            t.none(q5, [true,id]),
+                            t.none(q6, [true,cl.cltuid])
+                        ]);
+                    } else if ( cl.type == 2){
+                        await t.batch([
+                            t.none(q5, [true,id])
+                        ]);
+                    } else {
+                        await t.batch([
+                            t.none(q6, [true,cl.cltuid])
+                        ]);
+                    }
+                    await t.none(q7, [true, id]);
                     const log = "Activate Client (" + id + ") " + " - " + c.sender + " - " + result.username;
                     await t.none(q3, [log, result.id]);
                 } else {
+                    if ( cl.type == 1) {
+                        await t.batch([
+                            t.none(q5, [false, id]),
+                            t.none(q6, [false, cl.cltuid])
+                        ]);
+                    } else if ( cl.type == 2){
+                        await t.batch([
+                            t.none(q5, [false, id])
+                        ]);
+                    } else {
+                        await t.batch([
+                            t.none(q6, [false, cl.cltuid])
+                        ]);
+                    }
+                    await t.none(q7, [false, id]);
                     const log = "Deactivate Client (" + id + ") " + " - " + c.sender + " - " + result.username;
                     await t.none(q3, [log, result.id]);
                 }
             })
             .then(() => {
-                if(isActive == 'true') {
+                if(isActive === true) {
                     res.status(200)
                     .json({
-                        status: 'success',
+                        status: 1,
                         message: 'Klien berhasil diaktifkan.'
                     });
                 } else {
                     res.status(200)
                     .json({
-                        status: 'success',
+                        status: 1,
                         message: 'Klien berhasil dinon-aktifkan.'
                     });
                 }

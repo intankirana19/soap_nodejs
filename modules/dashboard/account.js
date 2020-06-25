@@ -214,23 +214,39 @@ function createAccount(req,res,next){
             const status = false;
 
             const q1 = 'INSERT INTO sms.accounts (username, password, job_position, role_id, client_id, email, is_active, is_delete) VALUES ($1, $2, $3, $4, $5, $6, $7, $7)';
-            
+
             const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
             const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
 
-            db.dbs.tx(async t => {
-                await t.none(q1, [user, pass, position, role, client, email, status]);
+            db.dbs.any('SELECT email FROM sms.accounts WHERE email = $1', [email])
+            .then((data) => {
 
-                const c = await t.one(q2, [result.client_id])
-                const log = "Add New Account" + " - " + c.sender + " - " + result.username;
-                await t.none(q3, [log, result.id])
-            })
-            .then(() => {
-                res.status(200)
-                .json({
-                    status: 'success',
-                    message: 'Akun berhasil dibuat.'
-                });
+                if (data.length === 0) {
+                    db.dbs.tx(async t => {
+                        await t.none(q1, [user, pass, position, role, client, email, status]);
+
+                        const c = await t.one(q2, [result.client_id])
+                        const log = "Add New Account" + " - " + c.sender + " - " + result.username;
+                        await t.none(q3, [log, result.id])
+                    })
+                    .then(() => {
+                        res.status(200)
+                        .json({
+                            status: 1,
+                            message: 'Akun berhasil dibuat.'
+                        });
+                    })
+                    .catch(error => {
+                        return next(error);
+                    });
+                } else {
+                    res.status(200)
+                    .json({
+                        status: 2,
+                        message: 'E-mail ini sudah terdaftar.'
+                    });
+                }
+
             })
             .catch(error => {
                 return next(error);
@@ -371,33 +387,55 @@ function activateAccount(req,res,next){
             const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
             const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
 
-            db.dbs.tx(async t => {
-                await t.none(q1, [id, isActive]);
+            db.dbs.one('SELECT client_id FROM sms.accounts WHERE id = $1', [id])
+            .then((acc) => {
+                db.dbs.one('SELECT is_active FROM sms.clients WHERE id = $1', [acc.client_id])
+                .then((cl) => {
 
-                const c = await t.one(q2, [result.client_id]);
+                    if (cl.is_active === true) {
 
-                if(isActive == 'true') {
-                    const log = "Activate Account (" + id + ") " + " - " + c.sender + " - " + result.username;
-                    await t.none(q3, [log, result.id]);
-                } else {
-                    const log = "Deactivate Account (" + id + ") " + " - " + c.sender + " - " + result.username;
-                    await t.none(q3, [log, result.id]);
-                }
-            })
-            .then(() => {
-                if(isActive == 'true') {
-                    res.status(200)
-                    .json({
-                        status: 'success',
-                        message: 'Akun berhasil diaktifkan.'
-                    });
-                } else {
-                    res.status(200)
-                    .json({
-                        status: 'success',
-                        message: 'Akun berhasil dinon-aktifkan.'
-                    });
-                }
+                        db.dbs.tx(async t => {
+                            await t.none(q1, [id, isActive]);
+            
+                            const c = await t.one(q2, [result.client_id]);
+            
+                            if(isActive == 'true') {
+                                const log = "Activate Account (" + id + ") " + " - " + c.sender + " - " + result.username;
+                                await t.none(q3, [log, result.id]);
+                            } else {
+                                const log = "Deactivate Account (" + id + ") " + " - " + c.sender + " - " + result.username;
+                                await t.none(q3, [log, result.id]);
+                            }
+                        })
+                        .then(() => {
+                            if(isActive == 'true') {
+                                res.status(200)
+                                .json({
+                                    status: 1,
+                                    message: 'Akun berhasil diaktifkan.'
+                                });
+                            } else {
+                                res.status(200)
+                                .json({
+                                    status: 1,
+                                    message: 'Akun berhasil dinon-aktifkan.'
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            return next(error);
+                        });
+                    } else {
+                        res.status(200)
+                        .json({
+                            status: 2,
+                            message: 'Client pemilik akun ini tidak aktif.'
+                        });
+                    }
+                })
+                .catch(error => {
+                    return next(error);
+                });
             })
             .catch(error => {
                 return next(error);
@@ -445,7 +483,7 @@ function deleteAccount(req,res,next){
 
             const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
             const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
-
+            
             db.dbs.tx(async t => {
                 await t.none(q1, [id]);
 
