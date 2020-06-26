@@ -5,7 +5,7 @@
         "app_desc": "Mitrabiz NodeJS API",
         "node_port": 3000,
         "json_indentation": 4,
-        "api_reg": "https://api.smsblast.id/v2/reg/",
+        "api_reg": "https://sim.mitrabiz.id/",
         "api_prem": "https://api.smsblast.id/v2/prem/",
         "api_token": "https://smsblast.id/api/v2/",
         "pg_host": "127.0.0.1",
