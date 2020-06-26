@@ -399,7 +399,7 @@ function activateAccount(req,res,next){
             
                             const c = await t.one(q2, [result.client_id]);
             
-                            if(isActive == 'true') {
+                            if(isActive == true) {
                                 const log = "Activate Account (" + id + ") " + " - " + c.sender + " - " + result.username;
                                 await t.none(q3, [log, result.id]);
                             } else {
@@ -408,7 +408,7 @@ function activateAccount(req,res,next){
                             }
                         })
                         .then(() => {
-                            if(isActive == 'true') {
+                            if(isActive == true) {
                                 res.status(200)
                                 .json({
                                     status: 1,
