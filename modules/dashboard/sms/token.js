@@ -194,30 +194,30 @@ function getClientSmsToken(req,res,next){
 
             db.dbs.one('SELECT t.id,amount,t.client_id,c.sender as client,t.create_at,t.update_at FROM sms.tokens t left join sms.clients c on t.client_id = c.id WHERE c.id = ' + clientId)
             .then(function (data) {
-                data.map((datum, index) => {
-                    const suffixHelper = (target) => {
-                        return target > 9 ? target : `0${target}`;
-                    };
+                // data.map((datum, index) => {
+                //     const suffixHelper = (target) => {
+                //         return target > 9 ? target : `0${target}`;
+                //     };
 
-                    const cyear = datum.create_at.getFullYear();
-                    const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
-                    const cday = datum.create_at.getDate();
+                //     const cyear = datum.create_at.getFullYear();
+                //     const cmonth = suffixHelper(datum.create_at.getMonth() + 1);
+                //     const cday = datum.create_at.getDate();
 
-                    const chour = suffixHelper(datum.create_at.getHours());
-                    const cminute = suffixHelper(datum.create_at.getMinutes());
-                    const csecond = suffixHelper(datum.create_at.getSeconds());
+                //     const chour = suffixHelper(datum.create_at.getHours());
+                //     const cminute = suffixHelper(datum.create_at.getMinutes());
+                //     const csecond = suffixHelper(datum.create_at.getSeconds());
 
-                    const uyear = datum.update_at.getFullYear();
-                    const umonth = suffixHelper(datum.update_at.getMonth() + 1);
-                    const uday = datum.update_at.getDate();
+                //     const uyear = datum.update_at.getFullYear();
+                //     const umonth = suffixHelper(datum.update_at.getMonth() + 1);
+                //     const uday = datum.update_at.getDate();
 
-                    const uhour = suffixHelper(datum.update_at.getHours());
-                    const uminute = suffixHelper(datum.update_at.getMinutes());
-                    const usecond = suffixHelper(datum.update_at.getSeconds());
+                //     const uhour = suffixHelper(datum.update_at.getHours());
+                //     const uminute = suffixHelper(datum.update_at.getMinutes());
+                //     const usecond = suffixHelper(datum.update_at.getSeconds());
 
-                    datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
-                    datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
-                });
+                //     datum.create_at = `${cyear}-${cmonth}-${cday} ${chour}:${cminute}:${csecond}`;
+                //     datum.update_at = `${uyear}-${umonth}-${uday} ${uhour}:${uminute}:${usecond}`;
+                // });
                 res.status(200)
                 .json({
                     status: 'success',
