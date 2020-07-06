@@ -1355,6 +1355,7 @@ if (today.getMonth() !== tomorrow.getMonth()) {
     cron.schedule('59 23 * * *', function() {
         const q1 = 'SELECT token FROM sms.token_reset_amount WHERE id = 2';
         const q2 = 'UPDATE otp.tokens SET amount = $1 WHERE is_active = true';
+        const q3 = 'UPDATE otp.tokens SET amount = $1 WHERE is_active = false';
 
 
                 db.dbs.tx(async t => {
@@ -1364,6 +1365,7 @@ if (today.getMonth() !== tomorrow.getMonth()) {
                     // console.log(amount.token);
                     
                     await t.none(q2, [amount.token]);
+                    await t.none(q3, [0]);
                 
                 })
                 .then(() => {

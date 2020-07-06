@@ -17,6 +17,7 @@ var otpReport = require('../modules/dashboard/otp/reports');
 var smsToken = require('../modules/dashboard/sms/token');
 var otpToken = require('../modules/dashboard/otp/token');
 var schedule = require('../modules/dashboard/schedule');
+var wa = require('../modules/vendor/whatsapp');
 
 
 router.get('/', index.check_db);
@@ -146,5 +147,10 @@ router.get('/sms/downloadtopuphistory', smsToken.downloadTopUpHistory);
 // router.patch('/report/update', report.updateReport);
 // router.get('/report', report.getReport);
 
+
+// WHATSAPP
+
+// send text message
+router.post('/wa/text', wa.sendTextMessage);
 
 module.exports = router;
