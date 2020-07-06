@@ -18,6 +18,7 @@ var smsToken = require('../modules/dashboard/sms/token');
 var otpToken = require('../modules/dashboard/otp/token');
 var schedule = require('../modules/dashboard/schedule');
 var wa = require('../modules/vendor/whatsapp');
+// var whatsApp = require('../modules/vendor/whatsapp');
 
 
 router.get('/', index.check_db);
@@ -142,6 +143,12 @@ router.get('/sms/downloadclienttoken', smsToken.downloadAllClientSmsToken);
 router.get('/sms/downloaddailyusage', smsReport.downloadSmsDailyTokenUsage);
 router.get('/sms/downloadtotalusage', smsReport.downloadSmsTokenTotalUsage);
 router.get('/sms/downloadtopuphistory', smsToken.downloadTopUpHistory);
+
+//WhatsApp
+
+router.post('/wa/inbound', whatsApp.inbound);
+router.post('/wa/status', whatsApp.status);
+
 
 // router.post('/report/save', report.saveReport);
 // router.patch('/report/update', report.updateReport);
