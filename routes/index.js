@@ -4,21 +4,8 @@ var router = express.Router();
 
 //modules
 var index = require('../modules/index');
-var upload = require('../modules/vendor/upload');
-var auth = require('../modules/shared/auth');
-var sms = require('../modules/vendor/sms');
-var otp = require('../modules/vendor/otp');
-var dsms = require('../modules/dashboard/sms/message');
-var account = require('../modules/dashboard/account');
-var client = require('../modules/dashboard/client');
-var tokenReset = require('../modules/dashboard/token');
-var smsReport = require('../modules/dashboard/sms/reports');
-var otpReport = require('../modules/dashboard/otp/reports');
-var smsToken = require('../modules/dashboard/sms/token');
-var otpToken = require('../modules/dashboard/otp/token');
-var schedule = require('../modules/dashboard/schedule');
-var wa = require('../modules/vendor/whatsapp');
-// var whatsApp = require('../modules/vendor/whatsapp');
+var auth = require('../modules/auth');
+var member = require('../modules/members');
 
 
 router.get('/', index.check_db);
@@ -26,138 +13,17 @@ router.get('/', index.check_db);
 //check DB
 router.get('/ping', index.check_db);
 
-//upload
-router.post('/upload', upload.upload);
-
-//user login
+// LOGIN
 router.post('/login', auth.checkUser);
 
-// send OTP
-router.post('/otp', otp.sendOTP);
+// Member
+router.get('/memberlist', member.memberListPaging);
+router.get('/members', member.memberList);
+router.get('/memberByID/:id', member.memberByID);
+router.post('/memberadd', member.addMember);
+router.post('/memberedit', member.editMember);
+router.post('/memberdelete', member.deleteMember);
+router.post('/memberstatus', member.activateMember);
 
-//create SMS
-router.post('/sms/create', dsms.createSms);
-
-//edit SMS
-router.patch('/sms/edit', dsms.editSms);
-
-// SMS List
-router.get('/sms/list', dsms.getMessageList);
-
-// sms by id
-router.get('/sms/byid/:id', dsms.getMessageByID);
-
-//send SMS
-router.post('/sms', sms.sendSMS);
-router.post('/sms/multiple', upload.sendMultiple);
-
-// schedule
-router.post('/schedule/single', sms.scheduleSMS);
-router.post('/schedule/multiple', upload.scheduleMultiple);
-
-// schedule list
-router.get('/schedulelist', schedule.getSchedule);
-
-// schedule by id
-router.get('/schedulebyid/:id', schedule.getScheduleByID);
-
-// modify schedule
-router.post('/modifyschedule', schedule.changeScheduleTime);
-
-// cancel schedule
-router.post('/cancelschedule', schedule.cancelSchedule);
-
-
-// check MD Media SMS Token
-router.post('/sms/token', sms.checkToken);
-
-// check MD Media OTP Token
-router.post('/otp/token', otp.checkToken);
-
-// //Dashboard-Account
-router.get('/account/list', account.getAllAccounts);
-router.get('/account/:accid', account.getAccount);
-router.post('/account/add', account.createAccount);
-router.patch('/account/edit', account.editAccount);
-router.patch('/account/activate', account.activateAccount);
-router.patch('/account/delete', account.deleteAccount);
-router.patch('/account/changepassword', account.changePassword);
-
-// //Dashboard-Account Roles
-router.get('/role/roleslist', account.getRoles);
-router.get('/clientroleslist', account.clientRoleList);
-router.get('/account/role/:role_id', account.accountRole);
-
-//Dashboard-Logs
-router.get('/acc/log', account.getLogs);
-
-//Dashboard-Clients
-router.get('/client/list', client.getAllClients);
-router.get('/client/otplist', client.otpClientList);
-router.get('/client/:id', client.getClient);
-router.post('/client/add', client.addClient);
-router.patch('/client/edit', client.editClient);
-router.patch('/client/activate', client.activateClient);
-router.patch('/client/delete', client.deleteClient);
-
-// Dashboard- Monthly Token Reset Amount
-router.get('/reset/list', tokenReset.getList);
-router.post('/reset/add', tokenReset.add);
-router.patch('/reset/edit', tokenReset.edit);
-
-//Dashboard-sms
-router.get('/sms/getreports', smsReport.getSmsReport);
-router.get('/sms/reportcount', smsReport.reportCount);
-router.get('/sms/gettokenlist', smsToken.getAllClientSmsToken);
-router.get('/sms/getclienttoken', smsToken.getClientSmsToken);
-router.post('/sms/topupclienttoken', smsToken.topUpClientSmsToken);
-router.get('/sms/dailyusage', smsReport.getSmsDailyTokenUsage);
-router.get('/sms/totalusage', smsReport.getSmsTokenTotalUsage);
-router.get('/sms/topuphistory', smsToken.getTopUpHistory);
-//Dashboard-otp
-router.get('/otp/getreports', otpReport.getOtpReport);
-router.get('/otp/reportcount', otpReport.reportCount);
-router.get('/otp/gettokenlist', otpToken.getAllClientOtpToken);
-router.get('/otp/getclienttoken', otpToken.getClientOtpToken);
-router.post('/otp/topupclienttoken', otpToken.topUpClientOtpToken);
-
-
-router.get('/user/list', account.getUser);
-router.get('/otp/dailyusage', otpReport.getOtpDailyTokenUsage);
-router.get('/otp/totalusage', otpReport.getOtpTokenTotalUsage);
-router.get('/otp/topuphistory', otpToken.getTopUpHistory);
-
-// Download OTP Reports
-router.get('/otp/downloadotpreport', otpReport.downloadOtpReport);
-router.get('/otp/downloaddailyusage', otpReport.downloadOtpDailyTokenUsage);
-router.get('/otp/downloadtotalusage', otpReport.downloadOtpTokenTotalUsage);
-router.get('/otp/downloadreportcount', otpReport.downloadReportCount);
-router.get('/otp/downloadclienttoken', otpToken.downloadAllClientOtpToken);
-router.get('/otp/downloadtopuphistory', otpToken.downloadTopUpHistory);
-
-
-// Download SMS Reports
-router.get('/sms/downloadsmsreport', smsReport.downloadReport);
-router.get('/sms/downloadreportcount', smsReport.downloadReportCount);
-router.get('/sms/downloadclienttoken', smsToken.downloadAllClientSmsToken);
-router.get('/sms/downloaddailyusage', smsReport.downloadSmsDailyTokenUsage);
-router.get('/sms/downloadtotalusage', smsReport.downloadSmsTokenTotalUsage);
-router.get('/sms/downloadtopuphistory', smsToken.downloadTopUpHistory);
-
-//WhatsApp
-
-router.post('/wa/inbound', whatsApp.inbound);
-router.post('/wa/status', whatsApp.status);
-
-
-// router.post('/report/save', report.saveReport);
-// router.patch('/report/update', report.updateReport);
-// router.get('/report', report.getReport);
-
-
-// WHATSAPP
-
-// send text message
-router.post('/wa/text', wa.sendTextMessage);
 
 module.exports = router;

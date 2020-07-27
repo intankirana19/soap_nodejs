@@ -1,11 +1,11 @@
 "use strict";
 var crypto = require("crypto");
-const db = require('../../config/db');
+const db = require('../config/db');
 const jwt = require('jsonwebtoken');
 
-    const keys = new Buffer.from('MitraBizKey17088');
-    const ivs = new Buffer('MitraBizInitssss');
-    const jwtKey = 'MitraBizKey17088'
+    const keys = new Buffer.from('GJKIKey230720');
+    const ivs = new Buffer('GJKIInitssss');
+    const jwtKey = 'GJKIKey230720'
 
     function getAlgorithm() {
 
@@ -14,8 +14,8 @@ const jwt = require('jsonwebtoken');
             case 16:
                 return 'aes-128-cbc';
             case 32:
-                return 'aes-256-cbc';   
-        }   
+                return 'aes-256-cbc';
+        }
         throw new Error('Invalid key length: ' + key.length);
     }
 
@@ -43,15 +43,9 @@ const jwt = require('jsonwebtoken');
         var password = encrypt(req.body.password);
         const email = req.body.email;
 
-        const q1 = 'select a.id, username, a.password, job_position, role_id, r.is_internal AS internal, r.name AS role, client_id, c.cltuid,c.name AS client, c.sender_otp, a.create_at, a.update_at, a.email, a.is_active, a.is_delete from sms.accounts a left join sms.roles r on a.role_id = r.id left join sms.clients c on a.client_id = c.id where a.email = $1 and a.password = $2';
-
-        const q2 = 'SELECT sender FROM sms.clients WHERE id = $1';
-        
-        const q3 = 'INSERT INTO sms.logs (name, account_id) VALUES ($1, $2)';
-
         db.dbs.tx(async t => {
-            const data = await t.one(q1, [email, password]);
-            
+            const data = await t.one('SELECT a.id, a.member_id, m.name, m.nickname, m.gender, m.group, a.username, a.e-mail, a.role_id, r.name , a.is_admin, a.is_active, a.is_delete FROM accounts a LEFT JOIN roles r ON a.role_id = r.id LEFT JOIN members m ON a.member_id = m.id WHERE a.email = $1 AND a.password = $2', [email, password]);
+
             if (data.is_active === false || data.is_delete === true) {
                 res.status(200)
                 .json({
@@ -59,40 +53,56 @@ const jwt = require('jsonwebtoken');
                     message: 'Akun telah dinon-aktifkan atau dihapus'
                 });
             } else if(data.length !=0){
-                const token = jwt.sign({
-                    data: data
-                }, jwtKey, { expiresIn: '24h' });
-                //console.log(data)
-                const c = await t.one(q2, [data.client_id]);
-                const log = "Log In" + " - " + c.sender + " - " + data.username;
-                await t.none(q3, [log, data.id]);
-                res.cookie('token', token, { maxAge: 3600000, httpOnly: true });
-                res.status(200)
-                .json({
-                    status: 1,
-                    token: token
-                })
-                
+                if (data.is_admin === true) {
+                    const token = jwt.sign({
+                        data: data
+                    }, jwtKey, { expiresIn: '24h' });
+                    //console.log(data)
+
+                    const log = "Admin Log In" + " - " + data.nickname;
+                    await t.none('INSERT INTO sms.logs (activity, account_id) VALUES ($1, $2)', [log, data.id]);
+                    res.cookie('token', token, { maxAge: 3600000, httpOnly: true });
+                    res.status(200)
+                    .json({
+                        status: 1,
+                        token: token
+                    })
+                } else {
+                    const token = jwt.sign({
+                        data: data
+                    }, jwtKey, { expiresIn: '24h' });
+                    //console.log(data)
+
+                    const log = "Member Log In" + " - " + data.nickname;
+                    await t.none('INSERT INTO sms.logs (activity, account_id) VALUES ($1, $2)', [log, data.id]);
+                    res.cookie('token', token, { maxAge: 3600000, httpOnly: true });
+                    res.status(200)
+                    .json({
+                        status: 1,
+                        token: token
+                    })
+                }
+
             } else{
                 //console.log('fdafdaf')
                 // res.status(200)
                 // .json({
                 //     status: 2,
-                //     message: 'Invalid Username or Password'
+                //     message: 'Invalid E-mail or Password'
                 // });
             }
         })
         .then(() => {
 
-            
+
 
         })
-        .catch(error => {            
+        .catch(error => {
             if(error.code===0){
             res.status(200)
                 .json({
                     status: 2,
-                    message: 'Invalid Username or Password'
+                    message: 'Invalid E-mail or Password'
                 })
             }
         });
@@ -165,7 +175,6 @@ const jwt = require('jsonwebtoken');
         return base64;
     }
 
-    
 module.exports = {
     encrypt:encrypt,
     decrypt:decrypt,
