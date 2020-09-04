@@ -4,8 +4,8 @@ var crypto = require("crypto");
 const db = require('../config/db');
 var auth = require('./auth');
 
-const keys = new Buffer.from('GJKIKey230720');
-const ivs = new Buffer('GJKIInitssss');
+const keys = new Buffer.from('GJKIPHRKeys23720');
+const ivs = new Buffer('GJKIPrimaHarapan');
 
     function getAlgorithm() {
 
@@ -59,7 +59,7 @@ function memberListPaging(req,res,next){
             var page = req.query.page;
             var itemperpage = req.query.itemperpage;
 
-            db.dbs.any('SELECT m.id, m.name, m.nickname, m.gender, m.birth_p, m.birth_d, m.phone, m.email, m.address, m.status, m.mother AS mother_id, x.name AS mother, m.father AS father_id, y.name AS father, m.couple AS couple_id, z.name AS couple, m.married, m.group AS group_id, g.name AS group, m.baptism, m.baptism_d, m.branch AS branch_id, b.name AS branch, m.is_active FROM members m LEFT JOIN members x ON m.mother = x.id LEFT JOIN members y ON m.father = y.id LEFT JOIN members z ON m.couple = z.id LEFT JOIN groups g ON m.group = g.id LEFT JOIN branches b ON m.branch = b.id WHERE m.is_delete = false ORDER BY m.update_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage])
+            db.dbs.any('SELECT m.id, m.name, m.nickname, m.gender, m.birth_p, m.birth_d, m.phone, m.email, m.address, m.status, m.mother AS mother_id, x.name AS mother, m.father AS father_id, y.name AS father, m.couple AS couple_id, z.name AS couple, m.married, m.group_id AS group_id, g.name AS group, m.baptism, m.baptism_d, m.branch AS branch_id, b.name AS branch, m.is_active FROM members m LEFT JOIN members x ON m.mother = x.id LEFT JOIN members y ON m.father = y.id LEFT JOIN members z ON m.couple = z.id LEFT JOIN groups g ON m.group_id = g.id LEFT JOIN branches b ON m.branch = b.id WHERE m.is_delete = false ORDER BY m.update_at desc LIMIT $2 OFFSET (($1 - 1) * $2)', [page,itemperpage])
             .then(function (data) {
                 if (data.length == 0) {
                     res.status(200)
@@ -155,7 +155,7 @@ function memberByID(req,res,next){
         }else{
             const id = req.params.id;
 
-            db.dbs.one('SELECT m.id, m.name, m.nickname, m.gender, m.birth_p, m.birth_d, m.phone, m.email, m.address, m.status, m.mother AS mother_id, x.name AS mother, m.father AS father_id, y.name AS father, m.couple AS couple_id, z.name AS couple, m.married, m.group AS group_id, g.name AS group, m.baptism, m.baptism_d, m.branch AS branch_id, b.name AS branch, m.is_active FROM members m LEFT JOIN members x ON m.mother = x.id LEFT JOIN members y ON m.father = y.id LEFT JOIN members z ON m.couple = z.id LEFT JOIN groups g ON m.group = g.id LEFT JOIN branches b ON m.branch = b.id WHERE m.id = $1', [id])
+            db.dbs.one('SELECT m.id, m.name, m.nickname, m.gender, m.birth_p, m.birth_d, m.phone, m.email, m.address, m.status, m.mother AS mother_id, x.name AS mother, m.father AS father_id, y.name AS father, m.couple AS couple_id, z.name AS couple, m.married, m.group_id AS group_id, g.name AS group, m.baptism, m.baptism_d, m.branch AS branch_id, b.name AS branch, m.is_active FROM members m LEFT JOIN members x ON m.mother = x.id LEFT JOIN members y ON m.father = y.id LEFT JOIN members z ON m.couple = z.id LEFT JOIN groups g ON m.group_id = g.id LEFT JOIN branches b ON m.branch = b.id WHERE m.id = $1', [id])
             .then(function (data) {
                 if (data.length == 0) {
                     res.status(200)
@@ -207,7 +207,7 @@ function addMember(req,res,next){
             const father = req.body.father;
             const couple = req.body.couple;
             const married = req.body.married;
-            const group = req.body.group;
+            const group_id = req.body.group_id;
             const baptism = req.body.baptism;
             const baptism_d = req.body.baptism_d;
             const branch = req.body.branch;
@@ -216,7 +216,7 @@ function addMember(req,res,next){
             .then((a) => {
                 if (a.length === 0) {
                     db.dbs.tx(async t => {
-                        await t.none('INSERT INTO members (name,nickname,gender,birth_p,birth_d,phone,email,address,status,mother,father,couple,married,group,baptism,baptism_d,branch) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)', [name,nickname,gender,birth_p,birth_d,phone,email,address,status,mother,father,couple,married,group,baptism,baptism_d,branch]);
+                        await t.none('INSERT INTO members (name, nickname, gender, birth_p, birth_d, phone, email, address, status, mother, father, couple, married, group_id, baptism, baptism_d, branch) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)', [name,nickname,gender,birth_p,birth_d,phone,email,address,status,mother,father,couple,married,group_id,baptism,baptism_d,branch]);
                         const log = "Tambah Jemaat - " + result.nickname;
                         await t.none('INSERT INTO logs (activity, account_id) VALUES ($1, $2)', [log, result.id]);
                     })
@@ -271,7 +271,7 @@ function editMember(req,res,next){
             const father = req.body.father;
             const couple = req.body.couple;
             const married = req.body.married;
-            const group = req.body.group;
+            const group_id = req.body.group_id;
             const baptism = req.body.baptism;
             const baptism_d = req.body.baptism_d;
             const branch = req.body.branch;
@@ -280,7 +280,7 @@ function editMember(req,res,next){
             .then((a) => {
                 if (a.length === 0) {
                     db.dbs.tx(async t => {
-                        await t.none('UPDATE members SET name = $1, nickname = $2, birth_p = $3, birth_d = $4, phone = $5, email = $6, address = $7, status = $8, mother = $9, father = $10, couple = $11, married = $12, group = $13, baptism = $14, baptism_d = $15, branch = $16 WHERE id = $17', [name,nickname,birth_p,birth_d,phone,email,address,status,mother,father,couple,married,group,baptism,baptism_d,branch,id]);
+                        await t.none('UPDATE members SET name = $1, nickname = $2, birth_p = $3, birth_d = $4, phone = $5, email = $6, address = $7, status = $8, mother = $9, father = $10, couple = $11, married = $12, group_id = $13, baptism = $14, baptism_d = $15, branch = $16 WHERE id = $17', [name,nickname,birth_p,birth_d,phone,email,address,status,mother,father,couple,married,group_id,baptism,baptism_d,branch,id]);
                         const log = "Ubah data jemaat (" + id + ") - " + result.nickname;
                         await t.none('INSERT INTO logs (activity, account_id) VALUES ($1, $2)', [log, result.id]);
                     })

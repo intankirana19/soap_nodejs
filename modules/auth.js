@@ -3,9 +3,11 @@ var crypto = require("crypto");
 const db = require('../config/db');
 const jwt = require('jsonwebtoken');
 
-    const keys = new Buffer.from('GJKIKey230720');
-    const ivs = new Buffer('GJKIInitssss');
-    const jwtKey = 'GJKIKey230720'
+
+    const keys = new Buffer.from('GJKIPHRKeys23720');
+    const ivs = new Buffer('GJKIPrimaHarapan');
+    const jwtKey = 'GJKIPHRKeys23720'
+
 
     function getAlgorithm() {
 
@@ -32,7 +34,7 @@ const jwt = require('jsonwebtoken');
     
     function decrypt (messagebase64) {
         var key = Buffer.from(keys, 'base64');
-        var iv = Buffer.from(ivs, 'base64');   
+        var iv = Buffer.from(ivs, 'base64');
         var decipher = crypto.createDecipheriv(getAlgorithm(keys), key, iv);
         let dec = decipher.update(messagebase64, 'base64');
         dec += decipher.final();
@@ -43,8 +45,14 @@ const jwt = require('jsonwebtoken');
         var password = encrypt(req.body.password);
         const email = req.body.email;
 
+        // console.log('pass:', password);
+        // console.log('email', email);
+
         db.dbs.tx(async t => {
-            const data = await t.one('SELECT a.id, a.member_id, m.name, m.nickname, m.gender, m.group, a.username, a.e-mail, a.role_id, r.name , a.is_admin, a.is_active, a.is_delete FROM accounts a LEFT JOIN roles r ON a.role_id = r.id LEFT JOIN members m ON a.member_id = m.id WHERE a.email = $1 AND a.password = $2', [email, password]);
+            const data = await t.one('SELECT a.id, a.member_id, m.name, m.nickname, m.gender, m.group_id, a.username, a.email, a.role_id, r.name AS role, a.is_admin, a.is_active, a.is_delete FROM accounts a LEFT JOIN roles r ON a.role_id = r.id LEFT JOIN members m ON a.member_id = m.id WHERE a.email = $1 AND a.password = $2', [email, password]);
+
+            // const data = await t.one('SELECT * FROM accounts WHERE email = $1 AND password = $2', [email, password]);
+            console.log('data:', data);
 
             if (data.is_active === false || data.is_delete === true) {
                 res.status(200)
@@ -60,7 +68,7 @@ const jwt = require('jsonwebtoken');
                     //console.log(data)
 
                     const log = "Admin Log In" + " - " + data.nickname;
-                    await t.none('INSERT INTO sms.logs (activity, account_id) VALUES ($1, $2)', [log, data.id]);
+                    await t.none('INSERT INTO logs (activity, account_id) VALUES ($1, $2)', [log, data.id]);
                     res.cookie('token', token, { maxAge: 3600000, httpOnly: true });
                     res.status(200)
                     .json({
@@ -74,7 +82,7 @@ const jwt = require('jsonwebtoken');
                     //console.log(data)
 
                     const log = "Member Log In" + " - " + data.nickname;
-                    await t.none('INSERT INTO sms.logs (activity, account_id) VALUES ($1, $2)', [log, data.id]);
+                    await t.none('INSERT INTO logs (activity, account_id) VALUES ($1, $2)', [log, data.id]);
                     res.cookie('token', token, { maxAge: 3600000, httpOnly: true });
                     res.status(200)
                     .json({
@@ -84,6 +92,7 @@ const jwt = require('jsonwebtoken');
                 }
 
             } else{
+                console.log('nothing');
                 //console.log('fdafdaf')
                 // res.status(200)
                 // .json({
@@ -93,7 +102,6 @@ const jwt = require('jsonwebtoken');
             }
         })
         .then(() => {
-
 
 
         })

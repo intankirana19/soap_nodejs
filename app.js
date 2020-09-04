@@ -8,7 +8,7 @@ var indexRouter = require('./routes/index');
 var cors = require('cors');
 const db = require('./config/db');
 var schedule = require('node-schedule');
-var auth = require('./modules/shared/auth');
+var auth = require('./modules/auth');
 const request = require('request-promise');
 
 // process.env.NODE_ENV = 'production';

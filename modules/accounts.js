@@ -3,9 +3,8 @@
 var crypto = require("crypto");
 const db = require('../config/db');
 var auth = require('./auth');
-
-const keys = new Buffer.from('MitraBizKey17088');
-    const ivs = new Buffer('MitraBizInitssss');
+const keys = new Buffer.from('GJKIPHRKeys23720');
+const ivs = new Buffer('GJKIPrimaHarapan');
 
     function getAlgorithm() {
 
@@ -197,7 +196,7 @@ function addAccount(req,res,next){
             const member_id = req.body.member_id;
             const username = req.body.username;
             const email = req.body.email;
-            const password = req.body.password;
+            const password = encrypt(req.body.password);
             const role_id = req.body.role_id;
             const is_admin = req.body.is_admin;
 
