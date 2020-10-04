@@ -3,18 +3,14 @@
 var soap = require('strong-soap').soap;
 
 
-    function checkUser(req,res,next){
-        var password = req.body.password;
-        const username = req.body.username;
+    function levelList(res,next){
 
         var requestArgs = {
-            username: username,
-            pass: password
         };
 
         var options = {};
         soap.createClient(global.gConfig.wsdl, options, function(err, client) {
-            var method = client['CheckUser'];
+            var method = client['UserLevelList'];
             method(requestArgs, function(err, result, envelope, soapHeader) {
                 //response envelope
                 // console.log('Response Envelope: \n' + envelope);
@@ -25,17 +21,11 @@ var soap = require('strong-soap').soap;
 
                 if (err) {
                     return next(err);
-                } else if (r.CheckUserResult === "0") {
-                    res.status(200)
-                    .json({
-                        status: 1,
-                        message: 'Berhasil Login.'
-                    });
                 } else {
                     res.status(200)
                     .json({
-                        status: 2,
-                        message: 'Username atau Password Salah.'
+                        status: 1,
+                        message: r
                     });
                 }
             });
@@ -45,5 +35,5 @@ var soap = require('strong-soap').soap;
 
 
 module.exports = {
-    checkUser:checkUser,
+    levelList:levelList,
 }

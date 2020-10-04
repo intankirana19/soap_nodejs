@@ -1,38 +1,26 @@
 {
     "development": {
         "config_id": "development",
-        "app_name": "GJKI API",
-        "app_desc": "GJKI NodeJS API",
+        "app_name": "SWITCHING SERVICE API",
+        "app_desc": "SWITCHING SERVICE NodeJS API",
         "node_port": 3000,
         "json_indentation": 4,
-        "pg_host": "",
-        "pg_port": 5432,
-        "pg_db": "gjki_dev",
-        "pg_user": "",
-        "pg_password": ""
+        "wsdl": "http://103.195.31.222:2502/webinfo/service.asmx?WSDL"
     },
     "local": {
         "config_id": "local",
-        "app_name": "GJKI API",
-        "app_desc": "GJKI NodeJS API",
+        "app_name": "SWITCHING SERVICE API",
+        "app_desc": "SWITCHING SERVICE NodeJS API",
         "node_port": 3000,
         "json_indentation": 4,
-        "pg_host": "localhost",
-        "pg_port": 5432,
-        "pg_db": "gjki",
-        "pg_user": "postgres",
-        "pg_password": "password"
+        "wsdl": "http://103.195.31.222:2502/webinfo/service.asmx?WSDL"
     },
     "production": {
         "config_id": "production",
-        "app_name": "GJKI API",
-        "app_desc": "GJKI NodeJS API",
+        "app_name": "SWITCHING SERVICE API",
+        "app_desc": "SWITCHING SERVICE NodeJS API",
         "node_port": 8080,
         "json_indentation": 4,
-        "pg_host": "",
-        "pg_port": 5432,
-        "pg_db": "gjki_prod",
-        "pg_user": "",
-        "pg_password": ""
+        "wsdl": "http://103.195.31.222:2502/webinfo/service.asmx?WSDL"
     }
 }
